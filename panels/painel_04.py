@@ -1,8 +1,7 @@
 # painel_04.py (CORRIGIDO E COMPLETO)
 import tkinter as tk
 from tkinter import ttk, colorchooser
-from persistencia.base_panel import BasePanel
-import config
+from panels.base_panel import BasePanel
 
 
 class PainelWidgetsVisuais(BasePanel):

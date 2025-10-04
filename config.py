@@ -3,12 +3,19 @@ from typing import Dict, Tuple
 import os
 
 # --- Flags de Controle ---
+# Se False, bloqueia TODAS as tentativas de conexão com o banco de dados.
+DATABASE_ENABLED = True
+
+# Se True, executa o script de criação do banco na inicialização (se necessário).
+INITIALIZE_DATABASE_ON_STARTUP = False
+
 # Ativa/Desativa a tela de login. False inicia com um usuário 'Desenvolvedor'.
 USE_LOGIN = True
-# Ativa/Desativa a inicialização do banco de dados.
-USE_DATABASE = True
 # Se True, redireciona todas as saídas do console (print, erros) para o arquivo de log.
 REDIRECT_CONSOLE_TO_LOG = True
+
+# --- MODIFICAÇÃO: Nova configuração de segurança ---
+MAX_LOGIN_ATTEMPTS = 3
 
 
 # --- Aparência e Estilo ---

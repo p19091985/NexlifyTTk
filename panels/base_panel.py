@@ -1,8 +1,11 @@
-import tkinter as tk
+# panels/base_panel.py (CORRIGIDO)
+from tkinter import ttk
 
-class BasePanel(tk.Frame):
+# MODIFICAÇÃO: Herda de ttk.Frame para consistência com o ttkbootstrap
+class BasePanel(ttk.Frame):
     """
     A classe base para todos os painéis de conteúdo da aplicação.
+    Agora baseada em ttk.Frame para integração correta com temas.
     """
     # NOME E ÍCONE EXIBIDOS NA BARRA LATERAL
     PANEL_NAME = "Nome do Painel"
@@ -10,7 +13,6 @@ class BasePanel(tk.Frame):
 
     # LISTA DE NÍVEIS DE ACESSO QUE PODEM VER ESTE PAINEL.
     # Se a lista estiver vazia, todos os usuários podem ver.
-    # Exemplo: ALLOWED_ACCESS = ["Administrador Global", "Gerente de TI"]
     ALLOWED_ACCESS = []
 
     def __init__(self, parent, app_controller, **kwargs):

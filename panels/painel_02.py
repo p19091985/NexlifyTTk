@@ -1,128 +1,123 @@
 # panels/painel_02.py
 import tkinter as tk
-from tkinter import ttk, messagebox
-import pandas as pd
-from persistencia.base_panel import BasePanel
-from persistencia.repository import GenericRepository
+from tkinter import ttk
+import ttkbootstrap as bstrap
+from ttkbootstrap.scrolled import ScrolledFrame
+from ttkbootstrap.toast import ToastNotification
+from panels.base_panel import BasePanel
 
 
-class PainelTiposLinguagem(BasePanel):
-    PANEL_NAME = "Tipos de Linguagem"
-    PANEL_ICON = "🏷️"
-    ALLOWED_ACCESS = ['Administrador Global', 'Gerente de TI']
-
-    def __init__(self, parent, app_controller, **kwargs):
-        super().__init__(parent, app_controller, **kwargs)
-        self.selected_item_id = None
+class PainelExemplosBootstrap(BasePanel):
+    PANEL_NAME = "Exemplos ttkbootstrap"
+    PANEL_ICON = "📚"
+    ALLOWED_ACCESS = []  # Acessível a todos
 
     def create_widgets(self):
-        main_frame = ttk.Frame(self, padding=15)
-        main_frame.pack(fill="both", expand=True)
+        # Frame principal com scroll para acomodar todos os exemplos
+        scrolled_frame = ScrolledFrame(self, autohide=True, padding=15)
+        scrolled_frame.pack(fill="both", expand=True)
 
-        # --- Frame do Formulário (Esquerda) ---
-        form_frame = ttk.LabelFrame(main_frame, text=" Cadastro de Tipo ", padding=15)
-        form_frame.pack(side="left", fill="y", padx=(0, 10))
-        self._create_form_widgets(form_frame)
+        main_container = ttk.Frame(scrolled_frame)
+        main_container.pack(fill="both", expand=True)
+        main_container.columnconfigure(0, weight=1, uniform="group1")
+        main_container.columnconfigure(1, weight=1, uniform="group1")
 
-        # --- Frame da Tabela (Direita) ---
-        table_frame = ttk.LabelFrame(main_frame, text=" Tipos Cadastrados ", padding=15)
-        table_frame.pack(side="right", fill="both", expand=True)
-        self._create_table_widgets(table_frame)
+        # --- COLUNA DA ESQUERDA ---
+        left_column = ttk.Frame(main_container)
+        left_column.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
 
-        self._carregar_dados()
+        # --- Botões e Estilos ---
+        btn_frame = ttk.LabelFrame(left_column, text=" Botões e Estilos ", padding=10)
+        btn_frame.pack(fill="x", expand=True, pady=(0, 10))
 
-    def _create_form_widgets(self, parent):
-        ttk.Label(parent, text="Nome do Tipo:").pack(anchor="w")
-        self.nome_var = tk.StringVar()
-        self.nome_entry = ttk.Entry(parent, textvariable=self.nome_var, width=30)
-        self.nome_entry.pack(anchor="w", pady=(5, 15))
-        self.nome_entry.focus()
+        ttk.Button(btn_frame, text="Success (Sólido)", style="success.TButton").pack(fill="x", pady=2)
+        ttk.Button(btn_frame, text="Info (Outline)", style="info.Outline.TButton").pack(fill="x", pady=2)
+        ttk.Button(btn_frame, text="Danger (Link)", style="danger.Link.TButton").pack(fill="x", pady=2)
+        ttk.Button(btn_frame, text="Desativado", style="secondary.TButton", state="disabled").pack(fill="x", pady=2)
 
-        btn_frame = ttk.Frame(parent)
-        btn_frame.pack(fill="x")
+        # --- Caixas de Seleção (Checkbuttons) ---
+        check_frame = ttk.LabelFrame(left_column, text=" Caixas de Seleção ", padding=10)
+        check_frame.pack(fill="x", expand=True, pady=(0, 10))
 
-        self.save_button = ttk.Button(btn_frame, text="Salvar", command=self._save_item, style="Accent.TButton")
-        self.save_button.pack(side="left", expand=True, fill="x", padx=(0, 5))
+        ttk.Checkbutton(check_frame, text="Estilo Padrão").pack(anchor="w")
+        ttk.Checkbutton(check_frame, text="Estilo 'Toolbutton'", style="info.Toolbutton").pack(anchor="w", pady=5)
+        ttk.Checkbutton(check_frame, text="Estilo 'Round Toggle'", style="success.Roundtoggle.TCheckbutton").pack(
+            anchor="w")
 
-        self.delete_button = ttk.Button(btn_frame, text="Excluir", command=self._delete_item)
-        self.delete_button.pack(side="left", expand=True, fill="x")
+        # --- Botões de Opção (Radiobuttons) ---
+        radio_frame = ttk.LabelFrame(left_column, text=" Botões de Opção ", padding=10)
+        radio_frame.pack(fill="x", expand=True, pady=(0, 10))
+        radio_var = tk.StringVar(value="opt1")
+        ttk.Radiobutton(radio_frame, text="Opção Padrão 1", variable=radio_var, value="opt1").pack(anchor="w")
+        ttk.Radiobutton(radio_frame, text="Opção Padrão 2", variable=radio_var, value="opt2").pack(anchor="w")
+        ttk.Radiobutton(radio_frame, text="Estilo 'Toolbutton'", style="warning.Toolbutton", variable=radio_var,
+                        value="opt3").pack(anchor="w", pady=5)
 
-        ttk.Button(parent, text="Limpar Formulário", command=self._clear_form).pack(fill="x", pady=(10, 0))
+        # --- COLUNA DA DIREITA ---
+        right_column = ttk.Frame(main_container)
+        right_column.grid(row=0, column=1, sticky="nsew", padx=(10, 0))
 
-    def _create_table_widgets(self, parent):
-        inner_frame = ttk.Frame(parent)
-        inner_frame.pack(fill="both", expand=True)
+        # --- Medidores e Progresso (Interativos) ---
+        meter_frame = ttk.LabelFrame(right_column, text=" Medidores e Progresso ", padding=10)
+        meter_frame.pack(fill="x", expand=True, pady=(0, 10))
 
-        columns = ('id', 'nome')
-        self.tree = ttk.Treeview(inner_frame, columns=columns, show='headings', selectmode='browse')
-        self.tree.heading('id', text='ID')
-        self.tree.heading('nome', text='Nome')
-        self.tree.column('id', width=50, anchor='center')
-        self.tree.column('nome', width=200)
+        self.meter_var = tk.IntVar(value=75)
+        # MODIFICAÇÃO 1: Adiciona o trace na variável para chamar a função de atualização
+        self.meter_var.trace_add("write", self._update_meter)
 
-        scrollbar = ttk.Scrollbar(inner_frame, orient="vertical", command=self.tree.yview)
-        self.tree.configure(yscrollcommand=scrollbar.set)
 
-        self.tree.pack(side='left', fill='both', expand=True)
-        scrollbar.pack(side='right', fill='y')
+        self.meter = bstrap.Meter(meter_frame, metersize=180, padding=5, amountused=75,
+                             metertype="semi", subtext="Nível de Bateria",
+                             interactive=True, bootstyle="success")
+        self.meter.pack()
 
-        self.tree.bind('<<TreeviewSelect>>', self._on_item_select)
+        ttk.Label(meter_frame, text="Ajuste o valor:").pack(pady=(10, 0))
+        scale = ttk.Scale(meter_frame, from_=0, to=100, variable=self.meter_var, style="success.Horizontal.TScale")
+        scale.pack(fill="x", expand=True, pady=5)
 
-    def _save_item(self):
-        nome = self.nome_var.get().strip()
-        if not nome:
-            messagebox.showerror("Erro de Validação", "O campo 'Nome' é obrigatório.", parent=self)
-            return
+        ttk.Progressbar(meter_frame, variable=self.meter_var, style="success-striped.Horizontal.TProgressbar").pack(
+            fill="x", expand=True)
 
-        try:
-            if self.selected_item_id is None:
-                df = pd.DataFrame([{'nome': nome}])
-                GenericRepository.write_dataframe_to_table(df, "tipos_linguagem")
-                messagebox.showinfo("Sucesso", "Tipo cadastrado!", parent=self)
-            else:
-                GenericRepository.update_table("tipos_linguagem", {'nome': nome}, {'id': self.selected_item_id})
-                messagebox.showinfo("Sucesso", "Tipo atualizado!", parent=self)
+        # --- Widgets Avançados ---
+        adv_frame = ttk.LabelFrame(right_column, text=" Widgets Avançados ", padding=10)
+        adv_frame.pack(fill="x", expand=True, pady=(0, 10))
 
-            self._clear_form()
-            self._carregar_dados()
-        except Exception as e:
-            messagebox.showerror("Erro no Banco", f"Não foi possível salvar. O tipo já pode existir.\nDetalhe: {e}",
-                                 parent=self)
+        ttk.Label(adv_frame, text="Seletor de Data (DateEntry):").pack(anchor="w")
+        date_entry = bstrap.DateEntry(adv_frame, bootstyle="primary", firstweekday=0, dateformat="%d/%m/%Y")
+        date_entry.pack(fill="x", pady=5)
 
-    def _delete_item(self):
-        if self.selected_item_id is None:
-            messagebox.showwarning("Atenção", "Selecione um item na tabela para excluir.", parent=self)
-            return
+        ttk.Label(adv_frame, text="Notificação Toast:").pack(anchor="w", pady=(10, 0))
+        toast_btn = ttk.Button(adv_frame, text="Exibir Notificação", command=self._show_toast, style="info.TButton")
+        toast_btn.pack(fill="x", pady=5)
 
-        if messagebox.askyesno("Confirmar", f"Deseja excluir o tipo ID {self.selected_item_id}?", icon='warning',
-                               parent=self):
-            try:
-                GenericRepository.delete_from_table("tipos_linguagem", {'id': self.selected_item_id})
-                self._clear_form()
-                self._carregar_dados()
-            except Exception as e:
-                messagebox.showerror("Erro no Banco", f"Não foi possível excluir.\nDetalhe: {e}", parent=self)
+        # --- Abas (Notebook) ---
+        notebook_frame = ttk.LabelFrame(right_column, text=" Abas (Notebook) ", padding=10)
+        notebook_frame.pack(fill="x", expand=True, pady=(0, 10))
 
-    def _clear_form(self):
-        self.selected_item_id = None
-        self.nome_var.set("")
-        self.tree.selection_set('')
-        self.nome_entry.focus()
+        notebook = ttk.Notebook(notebook_frame, bootstyle="primary")
+        notebook.pack(fill="x", expand=True, pady=5)
 
-    def _on_item_select(self, event=None):
-        selected_items = self.tree.selection()
-        if not selected_items: return
+        tab1 = ttk.Frame(notebook, padding=10)
+        ttk.Label(tab1, text="Conteúdo da primeira aba.").pack()
+        notebook.add(tab1, text="Aba 1")
 
-        item = self.tree.item(selected_items[0])
-        values = item['values']
-        self.selected_item_id = values[0]
-        self.nome_var.set(values[1])
+        tab2 = ttk.Frame(notebook, padding=10)
+        ttk.Label(tab2, text="Conteúdo da segunda aba com um ícone.").pack()
+        notebook.add(tab2, text="Aba 2 📄")
 
-    def _carregar_dados(self):
-        for item in self.tree.get_children():
-            self.tree.delete(item)
 
-        df_tipos = GenericRepository.read_table_to_dataframe("tipos_linguagem")
-        if not df_tipos.empty:
-            for _, row in df_tipos.iterrows():
-                self.tree.insert("", "end", values=list(row))
+    def _update_meter(self, *args):
+        """Atualiza a propriedade 'amountused' do Meter com o valor da variável."""
+        current_value = self.meter_var.get()
+        self.meter.configure(amountused=current_value)
+
+    def _show_toast(self):
+        """Exibe uma notificação flutuante (toast)."""
+        toast = ToastNotification(
+            title="Notificação de Exemplo",
+            message="Esta é uma mensagem de toast do ttkbootstrap!",
+            duration=3000,
+            bootstyle="info",
+            position=(20, 20, 'se')  # Canto inferior direito da tela
+        )
+        toast.show_toast()

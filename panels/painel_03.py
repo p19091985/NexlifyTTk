@@ -5,7 +5,7 @@ import pandas as pd
 import io
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from persistencia.base_panel import BasePanel
+from panels.base_panel import BasePanel
 import config
 
 class PainelDashboard(BasePanel):

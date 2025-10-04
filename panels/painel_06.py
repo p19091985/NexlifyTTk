@@ -1,71 +1,87 @@
-# painel_01.py (CORRIGIDO)
+# panels/painel_06.py
 import tkinter as tk
 from tkinter import ttk
-from persistencia.base_panel import BasePanel
-import config  # <--- IMPORTAÇÃO ADICIONADA
+from panels.base_panel import BasePanel
 
-class PainelVisualizacaoDados(BasePanel):
-    PANEL_NAME = "Visualização de Dados"
-    PANEL_ICON = "📊"
-    ALLOWED_ACCESS = [
-        'Administrador Global',
-        'Diretor de Operações',
-        'Gerente de TI',
-        'Analista de Dados'
-    ]
+
+# Para usar componentes do ttkbootstrap, descomente a linha abaixo
+# import ttkbootstrap as bstrap
+
+
+class PainelEsqueleto(BasePanel):
+    """
+    Este é um painel de modelo (esqueleto) para a criação de novas telas.
+    Copie este arquivo para criar um novo painel.
+    """
+    # 1. Defina o nome que aparecerá na barra lateral e no menu
+    PANEL_NAME = "Painel Esqueleto"
+
+    # 2. Escolha um ícone para o painel
+    PANEL_ICON = "📋"
+
+    # 3. Defina os perfis de utilizador que podem aceder a este painel.
+    #    Deixe a lista vazia `[]` para permitir o acesso a todos.
+    ALLOWED_ACCESS = []
+
+    def __init__(self, parent, app_controller, **kwargs):
+        """
+        O construtor do painel. A chamada super().__init__ é essencial.
+        """
+        # Não se esqueça de chamar o __init__ da classe pai (BasePanel)
+        super().__init__(parent, app_controller, **kwargs)
+
+        # Aqui você pode inicializar variáveis de estado específicas deste painel, se necessário
+        # Ex: self.dados_do_grafico = None
 
     def create_widgets(self):
+        """
+        Este é o método principal onde a interface do seu painel é construída.
+        """
+        # --- Início da Área de Criação de Widgets ---
+
+        # É uma boa prática criar um frame principal com padding
         main_frame = ttk.Frame(self, padding=20)
         main_frame.pack(fill="both", expand=True)
 
-        # --- LINHA CORRIGIDA ---
-        # Usando a fonte do config para garantir consistência e evitar o TypeError
-        title_font = config.FONTS["section_title"]
-        title_label = ttk.Label(main_frame, text="Widget Treeview com Estilo", font=title_font)
-        title_label.pack(pady=(0, 20))
+        # Exemplo de um título para o seu painel
+        titulo = ttk.Label(
+            main_frame,
+            text="Este é o seu Novo Painel",
+            font=("-size", 16, "-weight", "bold")
+        )
+        titulo.pack(pady=(0, 20))
 
-        # --- Treeview ---
-        style = ttk.Style()
-        style.configure("Treeview", rowheight=25, font=("Segoe UI", 10))
-        style.configure("Treeview.Heading", font=('Segoe UI', 10, 'bold'))
-        style.map('Treeview', background=[('selected', '#0078D7')], foreground=[('selected', 'white')])
+        # Exemplo de um frame para organizar o conteúdo
+        conteudo_frame = ttk.LabelFrame(main_frame, text=" Área de Conteúdo ", padding=15)
+        conteudo_frame.pack(fill="both", expand=True)
 
-        tree_frame = ttk.Frame(main_frame)
-        tree_frame.pack(fill="both", expand=True)
+        instrucoes = ttk.Label(
+            conteudo_frame,
+            text="Adicione aqui os seus widgets, como botões, campos de entrada, tabelas, etc.",
+            wraplength=400  # Faz com que o texto quebre a linha automaticamente
+        )
+        instrucoes.pack(pady=10)
 
-        self.tree = ttk.Treeview(tree_frame, selectmode='browse')
-        self.tree.pack(side='left', fill='both', expand=True)
+        # Exemplo de um botão que chama um método deste painel
+        botao_exemplo = ttk.Button(
+            conteudo_frame,
+            text="Clique-me",
+            command=self._on_botao_exemplo_click,
+            style="success.TButton"
+        )
+        botao_exemplo.pack(pady=10)
 
-        scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
-        scrollbar.pack(side='right', fill='y')
-        self.tree.configure(yscrollcommand=scrollbar.set)
+        # --- Fim da Área de Criação de Widgets ---
 
-        self.tree['columns'] = ('Linguagem', 'Tipo', 'Ano de Criação')
+    # É uma boa prática usar métodos privados (com _ no início) para os handlers de eventos
+    def _on_botao_exemplo_click(self):
+        """
+        Este método é chamado quando o 'botao_exemplo' é clicado.
+        """
+        # Use o messagebox do tkinter para feedback ao utilizador
+        from tkinter import messagebox
+        messagebox.showinfo("Aviso", "O botão de exemplo foi clicado!", parent=self)
 
-        self.tree.column("#0", width=200, minwidth=150)
-        self.tree.column("Linguagem", anchor=tk.W, width=150)
-        self.tree.column("Tipo", anchor=tk.CENTER, width=120)
-        self.tree.column("Ano de Criação", anchor=tk.E, width=100)
-
-        self.tree.heading("#0", text="Categoria", anchor=tk.W)
-        self.tree.heading("Linguagem", text="Linguagem", anchor=tk.W)
-        self.tree.heading("Tipo", text="Tipagem", anchor=tk.CENTER)
-        self.tree.heading("Ano de Criação", text="Ano", anchor=tk.E)
-
-        self.tree.tag_configure('oddrow', background='#f0f0f0')
-        self.tree.tag_configure('evenrow', background='white')
-
-        self._inserir_dados()
-
-    def _inserir_dados(self):
-        dados = {
-            "Linguagens Compiladas": [("C++", "Estática", 1985), ("Java", "Estática", 1995), ("Rust", "Estática", 2010), ("Go", "Estática", 2009), ("C#", "Estática", 2000)],
-            "Linguagens Interpretadas": [("Python", "Dinâmica", 1991), ("JavaScript", "Dinâmica", 1995), ("Ruby", "Dinâmica", 1995), ("PHP", "Dinâmica", 1995)]
-        }
-        count = 0
-        for categoria, linguagens in dados.items():
-            parent = self.tree.insert("", "end", text=categoria, open=True)
-            for lang_data in linguagens:
-                tag = 'evenrow' if count % 2 == 0 else 'oddrow'
-                self.tree.insert(parent, "end", text=lang_data[0], values=lang_data, tags=(tag,))
-                count += 1
+        # Exemplo de como aceder a métodos da aplicação principal (app_controller)
+        # usuario_atual = self.app.get_current_user()
+        # print(f"Botão clicado pelo utilizador: {usuario_atual['name']}")
