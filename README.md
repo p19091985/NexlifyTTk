@@ -1,5 +1,3 @@
-Com certeza\! Baseado em toda a estrutura e funcionalidades presentes no código que você forneceu, preparei um arquivo `README.md` completo e profissional.
-
 Este README não apenas descreve o projeto, mas também serve como um guia de instalação, configuração e uso para outros desenvolvedores ou para o seu eu do futuro.
 
 -----
