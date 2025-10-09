@@ -2,17 +2,17 @@
 from typing import Dict, Tuple
 import os
 
-# --- Flags de Controle ---
+#  Flags de Controle 
 DATABASE_ENABLED = True
 INITIALIZE_DATABASE_ON_STARTUP = True
 USE_LOGIN = True
 REDIRECT_CONSOLE_TO_LOG = True
 
-# --- Segurança ---
+#  Segurança 
 MAX_LOGIN_ATTEMPTS = 3
 
 
-# --- Aparência e Estilo ---
+#  Aparência e Estilo 
 # ESTA É A FLAG QUE CONTROLA O ACESSO AO PAINEL DE TEMAS.
 # Se False, o item de menu "Aparência e Tema..." será desabilitado.
 ENABLE_THEME_MENU = True
@@ -26,11 +26,11 @@ FONTS: Dict[str, Tuple[str, int, str]] = {
     "body": (FONT_FAMILY, 10, "normal"),
 }
 
-# --- Geometria da Janela ---
+#  Geometria da Janela 
 MAIN_WINDOW_RATIO = 0.7
 MAIN_WINDOW_MIN_SIZE_RATIO = 0.5
 
-# --- Configurações de Log ---
+#  Configurações de Log 
 LOG_LEVEL = "INFO"
-# CORREÇÃO: Adicionada aspas duplas no final da string para fechá-la.
+#  Adicionada aspas duplas no final da string para fechá-la.
 LOG_FORMAT = "%(asctime)s [%(levelname)-8s] %(name)-15s - %(message)s"

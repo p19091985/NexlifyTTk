@@ -41,7 +41,7 @@ class UltimateTestSuite(BaseTestSuite):
         self.q.put({"type": "total_tests", "count": len(tests)})
 
         for method, args, name, severity in tests:
-            # --- CORREÇÃO: Chamando o método correto da classe base ---
+            #: Chamando o método correto da classe base 
             self._execute_and_report(method, *args, scenario_name=name, severity=severity, retries=2)
 
     def test_autenticacao(self, username, password, should_succeed):

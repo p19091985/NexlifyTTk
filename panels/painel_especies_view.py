@@ -51,7 +51,7 @@ class GatosView(ttk.Frame):
     def _create_table_widgets(self, parent):
         inner_frame = ttk.Frame(parent)
         inner_frame.pack(fill="both", expand=True)
-        # --- MODIFICAÇÃO: Colunas da view definidas em minúsculas ---
+        #Colunas da view definidas em minúsculas 
         columns = ('id', 'nome_especie', 'pais_origem', 'temperamento')
         self.tree = ttk.Treeview(inner_frame, columns=columns, show='headings', selectmode='browse')
 

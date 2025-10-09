@@ -4,7 +4,7 @@ import os
 import logging
 from typing import Dict, Any, MutableMapping
 
-# --- NOVA FUNÇÃO RECURSIVA para mesclar configurações com qualquer profundidade ---
+#  NOVA FUNÇÃO RECURSIVA para mesclar configurações com qualquer profundidade 
 def _deep_merge_defaults(source: MutableMapping, defaults: MutableMapping) -> bool:
     """
     Mescla recursivamente as chaves do dicionário 'defaults' em 'source'

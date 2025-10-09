@@ -26,9 +26,9 @@ class TiposLinguagemController:
     def load_data(self):
         """ Pede os dados ao Model e manda a View exibi-los. """
         try:
-            # --- Comunicação Controller -> Model ---
+            #  Comunicação Controller -> Model 
             data = self.model.get_all_tipos()
-            # --- Comunicação Controller -> View ---
+            #  Comunicação Controller -> View 
             self.view.populate_treeview(data)
         except ConnectionError as e:
             self.view.show_error("Erro de Carga", str(e))
@@ -69,14 +69,14 @@ class TiposLinguagemController:
         confirm_msg = f"Deseja excluir o tipo ID {self.selected_item_id}?\nEsta ação não pode ser desfeita."
         if self.view.ask_yes_no("Confirmar Exclusão", confirm_msg):
             try:
-                # --- Comunicação Controller -> Model ---
+                #  Comunicação Controller -> Model 
                 self.model.delete_tipo(self.selected_item_id)
                 self.clear_form()
                 self.load_data()
                 if self.on_close_callback:
                     self.on_close_callback()
             except ConnectionError as e:
-                # --- Comunicação Controller -> View ---
+                #  Comunicação Controller -> View 
                 self.view.show_error("Erro de Banco de Dados", str(e))
 
     def clear_form(self):

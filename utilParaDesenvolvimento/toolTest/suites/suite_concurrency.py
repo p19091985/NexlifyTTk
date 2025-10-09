@@ -57,5 +57,5 @@ class ConcurrencyTestSuite(BaseTestSuite):
         return details
 
     def run(self):
-        """MODIFICAÇÃO: Usa o novo wrapper da classe base para executar o toolTest único."""
+        """ Usa o novo wrapper da classe base para executar o toolTest único."""
         self._run_single_test_as_suite(self.test_300_concurrent_logins, severity=TestSeverity.CRITICAL)

@@ -77,7 +77,7 @@ class LoginDialog(bstrap.Toplevel):
 
         user_data = auth.verify_user_credentials(username, password)
 
-        # --- MODIFICAÇÃO: Verifica o novo sinalizador de erro de conexão ---
+        #Verifica o novo sinalizador de erro de conexão 
         if user_data == "connection_error":
             messagebox.showerror("Problema de Conexão",
                                  "Não foi possível conectar ao banco de dados.\n\n"

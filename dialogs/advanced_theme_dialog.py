@@ -23,7 +23,7 @@ class AdvancedThemeDialog(bstrap.Toplevel):
         self.preview_style = bstrap.Style()
         self.current_settings = self.settings_manager.load_settings()
 
-        # --- Variáveis de Controlo da UI ---
+        #  Variáveis de Controlo da UI 
         self.theme_var = tk.StringVar(value=self.current_settings['theme'])
         self.font_family_var = tk.StringVar(value=self.current_settings.get('font_family', 'Segoe UI'))
         self.font_size_var = tk.IntVar(value=self.current_settings.get('font_size', 10))
@@ -40,7 +40,7 @@ class AdvancedThemeDialog(bstrap.Toplevel):
         self.position_center()
         self.grab_set()
 
-        # --- MODIFICAÇÃO: Garante que o cancelamento restaure o tema salvo ---
+        #Garante que o cancelamento restaure o tema salvo 
         self.protocol("WM_DELETE_WINDOW", self._on_cancel)
 
     def _create_widgets(self):
@@ -50,7 +50,7 @@ class AdvancedThemeDialog(bstrap.Toplevel):
         action_frame.pack(fill='x', pady=(0, 10))
         ttk.Button(action_frame, text="Restaurar Padrões", command=self._restore_defaults,
                    style="warning.TButton").pack(side='left')
-        # --- MODIFICAÇÃO: Botão Cancelar agora chama _on_cancel ---
+        #Botão Cancelar agora chama _on_cancel 
         ttk.Button(action_frame, text="Cancelar", command=self._on_cancel, style="secondary.TButton").pack(side='right')
         ttk.Button(action_frame, text="Salvar e Fechar", command=self._save_and_close, style="success.TButton").pack(
             side='right', padx=5)
@@ -182,7 +182,7 @@ class AdvancedThemeDialog(bstrap.Toplevel):
             "focus_ring": self.focus_ring_var.get()
         }
         self.settings_manager.save_settings(new_settings)
-        # MODIFICAÇÃO: Usa a função centralizada para aplicar o tema
+        #  Usa a função centralizada para aplicar o tema
         self.app._apply_theme_settings(self.app.style, new_settings)
         messagebox.showinfo("Configurações Salvas", "O novo tema e as personalizações foram aplicados.", parent=self)
         self.destroy()

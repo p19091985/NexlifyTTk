@@ -42,7 +42,7 @@ class ClassicTestSuite(BaseTestSuite):
 
         self.q.put({"type": "total_tests", "count": len(tests_to_run)})
 
-        # MODIFICAÇÃO: A lógica de execução foi movida para a classe base.
+        #  A lógica de execução foi movida para a classe base.
         for method, args, scenario_name in tests_to_run:
             self._execute_and_report(method, *args, scenario_name=scenario_name)
 

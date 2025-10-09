@@ -46,7 +46,7 @@ def verify_user_credentials(username, password):
                 logger.warning(f"Usuário não encontrado: {username}")
                 return None
 
-    # --- MODIFICAÇÃO: Captura o ConnectionError especificamente ---
+    #Captura o ConnectionError especificamente 
     except ConnectionError as e:
         logger.critical(f"Falha de conexão durante a autenticação: {e}")
         return "connection_error"

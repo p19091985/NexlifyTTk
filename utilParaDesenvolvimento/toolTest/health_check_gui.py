@@ -142,7 +142,7 @@ class SystemCheckerApp:
 
         log_message = f"Teste '{result['name']}' concluído com status: {status}"
         if status in ['FAIL', 'WARNING']:
-            log_message += f"\n--- DETALHES ---\n{result['details']}\n----------------"
+            log_message += f"\n DETALHES \n{result['details']}\n-"
         self.log(log_message, level=status.lower())
 
     def run_all_checks(self):
@@ -150,7 +150,7 @@ class SystemCheckerApp:
         for item in self.tree.get_children():
             self.tree.delete(item)
 
-        self.log("--------------------------------------------------")
+        self.log("--")
         self.log("Iniciando diagnóstico completo do sistema...")
         self.run_in_thread(self._run_all_checks_thread)
 

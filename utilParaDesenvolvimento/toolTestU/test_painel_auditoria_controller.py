@@ -23,7 +23,7 @@ class TestPainelAuditoria(unittest.TestCase):
             self.controller = PainelAuditoria(self.root, mock_dependencies.MockAppController())
             self.controller.create_widgets()
 
-        # CORREÇÃO: Patching dos métodos de classe
+        #  Patching dos métodos de classe
         self.read_lang_patcher = patch('panels.painel_auditoria_controller.GenericRepository.read_table_to_dataframe')
         self.read_log_patcher = patch('panels.painel_auditoria_controller.GenericRepository.read_table_to_dataframe')
         self.service_patcher = patch('panels.painel_auditoria_controller.DataService.reclassificar_e_logar')

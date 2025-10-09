@@ -6,7 +6,7 @@ import sys
 import re
 import logging
 
-# --- Configuração Inicial ---
+#  Configuração Inicial 
 # Adiciona o diretório raiz do projeto ao path para garantir que a importação funcione
 try:
     PROJECT_ROOT = Path(__file__).parent.resolve()
@@ -57,11 +57,11 @@ class HashUpdaterApp(tk.Tk):
         except tk.TclError:
             self.style.theme_use('default')
 
-        # --- Widgets ---
+        #  Widgets 
         main_frame = ttk.Frame(self, padding=20)
         main_frame.pack(fill="both", expand=True)
 
-        # --- NOVO: Frame de Seleção de Arquivo ---
+        #  NOVO: Frame de Seleção de Arquivo 
         file_frame = ttk.LabelFrame(main_frame, text=" 1. Selecione o Arquivo SQL ", padding=10)
         file_frame.pack(fill="x", pady=(0, 15))
         file_frame.columnconfigure(0, weight=1)
@@ -128,7 +128,7 @@ class HashUpdaterApp(tk.Tk):
 
         try:
             schema_file = Path(target_file_path)
-            self._log("--- INICIANDO PROCESSO DE ATUALIZAÇÃO ---")
+            self._log(" INICIANDO PROCESSO DE ATUALIZAÇÃO ")
             self._log(f"Lendo o arquivo: {schema_file.name}", "info")
 
             sql_content = schema_file.read_text(encoding='utf-8')
@@ -154,14 +154,14 @@ class HashUpdaterApp(tk.Tk):
             if sql_content != original_content:
                 self._log("\nSalvando alterações no arquivo...", "info")
                 schema_file.write_text(sql_content, encoding='utf-8')
-                self._log("\n--- PROCESSO CONCLUÍDO COM SUCESSO! ---", "success")
+                self._log("\n PROCESSO CONCLUÍDO COM SUCESSO! ", "success")
                 self._log(f"O arquivo '{schema_file.name}' foi atualizado com os novos hashes.", "success")
             else:
-                self._log("\n--- PROCESSO CONCLUÍDO ---", "success")
+                self._log("\n PROCESSO CONCLUÍDO ", "success")
                 self._log("Nenhuma alteração foi necessária ou possível.", "success")
 
         except Exception as e:
-            self._log(f"\n--- OCORREU UM ERRO! ---", "error")
+            self._log(f"\n OCORREU UM ERRO! ", "error")
             self._log(f"Detalhes do erro: {e}", "error")
             logging.exception("Erro detalhado no console:")
         finally:

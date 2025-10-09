@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 import shutil
 
-# --- Bloco de Inicialização e Importação Segura ---
+#  Bloco de Inicialização e Importação Segura 
 try:
     PROJECT_ROOT = Path(__file__).parent.parent.resolve()
     if str(PROJECT_ROOT) not in sys.path:
@@ -24,7 +24,7 @@ except ImportError as e:
     )
     sys.exit(1)
 
-# --- Constantes ---
+#  Constantes 
 APP_TITLE = "Nexlify DevTools - Gestor de Configuração e Segurança"
 MAIN_GEOMETRY = "1050x800"
 MIN_SIZE = (900, 650)
@@ -86,7 +86,7 @@ class ConnectionManagerFrame(ttk.Frame):
         self.db_configs = {}
         active_db = None
         current_db = None
-        marker_pattern = re.compile(r"---\s*Configuração para\s+(.*?)\s*---", re.IGNORECASE)
+        marker_pattern = re.compile(r"\s*Configuração para\s+(.*?)\s*", re.IGNORECASE)
         for line in self.ini_lines:
             match = marker_pattern.search(line)
             if match:
@@ -124,7 +124,7 @@ class ConnectionManagerFrame(ttk.Frame):
             return
         new_lines = []
         current_db = None
-        marker_pattern = re.compile(r"---\s*Configuração para\s+(.*?)\s*---", re.IGNORECASE)
+        marker_pattern = re.compile(r"\s*Configuração para\s+(.*?)\s*", re.IGNORECASE)
         for line in self.ini_lines:
             match = marker_pattern.search(line)
             if match:
@@ -312,7 +312,7 @@ class CryptoManagerFrame(ttk.Frame):
 class CredentialViewerFrame(ttk.Frame):
     """Aba para visualizar credenciais em arquivos .ini e .sql."""
 
-    # --- PONTO CHAVE ---
+    #  
     # Dicionário com as senhas conhecidas para verificação.
     SENHAS_CONHECIDAS = {
         'admin': 'admin', 'diretor.op': 'dir123', 'gerente.ti': 'ti123',
@@ -408,7 +408,7 @@ class CredentialViewerFrame(ttk.Frame):
                 for match in user_tuple_pattern.finditer(insert_block_text):
                     login, hash_senha = match.groups()
 
-                    # --- PONTO CHAVE: Lógica de verificação ---
+                    # : Lógica de verificação 
                     decrypted_value = "N/A (Hash Bcrypt)"
                     if login in self.SENHAS_CONHECIDAS:
                         known_password = self.SENHAS_CONHECIDAS[login]

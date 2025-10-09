@@ -26,7 +26,7 @@ class ParallelDivineSuite(BaseTestSuite):
 
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             for method, name, args, kwargs in all_tests:
-                # --- CORREÇÃO: Chamando o método correto da classe base ---
+                #: Chamando o método correto da classe base 
                 executor.submit(self._execute_and_report, method, *args, scenario_name=name, **kwargs)
 
         self.q.put({"type": "suite_end", "name": self.suite_name})

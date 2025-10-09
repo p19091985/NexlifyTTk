@@ -43,7 +43,7 @@ class PainelGestaoEspecies(BasePanel):
             messagebox.showwarning("Validação", "O nome da espécie é obrigatório.", parent=self)
             return
 
-        # --- MODIFICAÇÃO: Chaves do dicionário em minúsculas ---
+        #Chaves do dicionário em minúsculas 
         data = {
             'nome_especie': nome,
             'pais_origem': self.pais_var.get().strip(),
@@ -55,7 +55,7 @@ class PainelGestaoEspecies(BasePanel):
                 GenericRepository.write_dataframe_to_table(df, "especie_gatos")
                 messagebox.showinfo("Sucesso", "Nova espécie cadastrada!", parent=self)
             else:
-                # --- MODIFICAÇÃO: Chave da condição em minúsculas ---
+                #Chave da condição em minúsculas 
                 GenericRepository.update_table("especie_gatos", data, {'id': self.selected_item_id})
                 messagebox.showinfo("Sucesso", "Espécie atualizada!", parent=self)
             self.limpar_formulario()
@@ -70,7 +70,7 @@ class PainelGestaoEspecies(BasePanel):
         if messagebox.askyesno("Confirmar Exclusão", "Tem certeza que deseja excluir esta espécie?", icon='warning',
                                parent=self):
             try:
-                # --- MODIFICAÇÃO: Chave da condição em minúsculas ---
+                #Chave da condição em minúsculas 
                 GenericRepository.delete_from_table("especie_gatos", {'id': self.selected_item_id})
                 messagebox.showinfo("Sucesso", "Espécie excluída!", parent=self)
                 self.limpar_formulario()

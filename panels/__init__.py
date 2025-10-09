@@ -1,14 +1,14 @@
 # panels/__init__.py
 
-# ----------------------------------------------------------------------------------
+# -
 # REGISTRO CENTRAL DE PAINÉIS
 #
 # Este arquivo importa a classe controladora principal de cada painel
 # e a adiciona à lista `ALL_PANELS`. A aplicação principal (app.py) usa
 # esta lista para carregar dinamicamente todos os painéis disponíveis.
-# ----------------------------------------------------------------------------------
+# -
 
-# --- Painéis Principais de Funcionalidade ---
+#  Painéis Principais de Funcionalidade 
 
 # 1. Painel para gerir a tabela de Linguagens de Programação.
 from .painelGestaoLinguagens import PainelGestaoLinguagens
@@ -19,7 +19,7 @@ from .painel_auditoria_controller import PainelAuditoria
 # 3. Painel de Catálogo de Espécies (versão com lógica no mesmo arquivo).
 from .painel_catalogo_controller import PainelCatalogoEspecies
 
-# --- Painéis que demonstram Padrões de Arquitetura e UI ---
+#  Painéis que demonstram Padrões de Arquitetura e UI 
 
 # 4. Painel de Gestão de Espécies (versão MVC original).
 from .painel_especies_controller import PainelGestaoEspecies
@@ -34,7 +34,7 @@ from .painel_componentes_ui_controller import PainelComponentesUI
 from .painel_modelo_controller import PainelModelo
 
 
-# --- LISTA FINAL DE PAINÉIS ---
+#  LISTA FINAL DE PAINÉIS 
 # A ordem nesta lista determina a ordem em que os botões aparecerão na barra lateral.
 
 ALL_PANELS = [

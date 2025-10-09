@@ -1,7 +1,7 @@
 # modals/tipos_linguagem_model.py
 import pandas as pd
 from sqlalchemy import exc
-# --- PONTO CHAVE: O Model importa a camada de persistência ---
+# : O Model importa a camada de persistência 
 from persistencia.repository import GenericRepository
 
 class TiposLinguagemModel:
@@ -16,7 +16,7 @@ class TiposLinguagemModel:
         A View e o Controller não sabem como essa busca é feita, apenas pedem os dados.
         """
         try:
-            # --- USO DA PERSISTÊNCIA ---
+            #  USO DA PERSISTÊNCIA 
             return GenericRepository.read_table_to_dataframe("tipos_linguagem")
         except exc.SQLAlchemyError as e:
             # Propaga a exceção para ser tratada pelo controller
@@ -28,7 +28,7 @@ class TiposLinguagemModel:
             raise ValueError("O campo 'Nome' é obrigatório.")
         try:
             df = pd.DataFrame([{'nome': nome}])
-            # --- USO DA PERSISTÊNCIA ---
+            #  USO DA PERSISTÊNCIA 
             GenericRepository.write_dataframe_to_table(df, "tipos_linguagem")
         except exc.IntegrityError:
             raise ValueError(f"O nome '{nome}' já existe.")
@@ -40,7 +40,7 @@ class TiposLinguagemModel:
         if not nome:
             raise ValueError("O campo 'Nome' é obrigatório.")
         try:
-            # --- USO DA PERSISTÊNCIA ---
+            #  USO DA PERSISTÊNCIA 
             GenericRepository.update_table("tipos_linguagem", {'nome': nome}, {'id': item_id})
         except exc.IntegrityError:
             raise ValueError(f"O nome '{nome}' já existe.")
@@ -50,7 +50,7 @@ class TiposLinguagemModel:
     def delete_tipo(self, item_id: int):
         """ Exclui um tipo de linguagem usando o repositório. """
         try:
-            # --- USO DA PERSISTÊNCIA ---
+            #  USO DA PERSISTÊNCIA 
             GenericRepository.delete_from_table("tipos_linguagem", {'id': item_id})
         except exc.IntegrityError:
             raise ConnectionError("Não foi possível excluir. Este tipo está em uso por uma ou mais linguagens.")

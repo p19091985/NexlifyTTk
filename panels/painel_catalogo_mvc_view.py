@@ -56,7 +56,7 @@ class CatalogoEspeciesView(ttk.Frame):
         ttk.Button(parent, text="Limpar Formulário", command=self.controller.limpar_form, style="secondary.Outline.TButton").grid(row=2, column=0, columnspan=2, sticky="ew", padx=2, pady=5)
 
     def _create_table(self, parent):
-        # --- MODIFICAÇÃO: Colunas da view definidas em minúsculas ---
+        #Colunas da view definidas em minúsculas 
         columns = ('id', 'nome_especie', 'pais_origem', 'temperamento')
         self.tree = ttk.Treeview(parent, columns=columns, show='headings', selectmode='browse')
         for col in columns: self.tree.heading(col, text=col.replace('_', ' ').title())

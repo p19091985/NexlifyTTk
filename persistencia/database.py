@@ -71,7 +71,7 @@ class DatabaseManager:
         """
         Cria e retorna a engine do SQLAlchemy usando a configuração ativa do .ini.
         """
-        # CORREÇÃO: Implementa a verificação da flag DATABASE_ENABLED
+        #  Implementa a verificação da flag DATABASE_ENABLED
         if not config.DATABASE_ENABLED:
             logging.warning("Acesso ao banco de dados está desativado em config.py. Nenhuma engine será criada.")
             return None

@@ -4,7 +4,7 @@ import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-# --- Classes de Suporte ---
+#  Classes de Suporte 
 
 class StreamToLogger:
     """
@@ -27,7 +27,7 @@ class StreamToLogger:
         """Método flush, necessário para a interface de stream."""
         pass
 
-# --- Função de Configuração ---
+#  Função de Configuração 
 
 def setup_loggers():
     """
@@ -45,7 +45,7 @@ def setup_loggers():
     log_format = logging.Formatter(LOG_FORMAT)
     log_level = getattr(logging, LOG_LEVEL.upper(), logging.INFO)
 
-    # --- Logger Principal da Aplicação (app.log) ---
+    #  Logger Principal da Aplicação (app.log) 
     # Em vez de usar logging.basicConfig, configuramos loggers nomeados.
     # Isso evita conflitos com outras bibliotecas.
     app_logger = logging.getLogger("main_app")
@@ -68,7 +68,7 @@ def setup_loggers():
     console_handler.setFormatter(log_format)
     app_logger.addHandler(console_handler)
 
-    # --- Logger para Tentativas de Login (login.log) ---
+    #  Logger para Tentativas de Login (login.log) 
     login_logger = logging.getLogger("login_attempts")
     login_logger.setLevel(log_level)
     login_logger.propagate = False

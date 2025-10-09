@@ -10,9 +10,9 @@ from tkinter import ttk
 # Importa as funções reais que precisamos para criar dados de mock realistas
 import persistencia.auth as auth_utils
 
-# ----------------------------------------------------------------------
+# -
 # MOCKS DE SAÍDA E CONFIGURAÇÃO
-# ----------------------------------------------------------------------
+# -
 class MockLogger(MagicMock):
     """Mock completo para o logger, para evitar falhas de atributos."""
     def __init__(self, *args, **kwargs):
@@ -31,10 +31,10 @@ class MockConfig:
     LOG_LEVEL = 'INFO'
     LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
-# ----------------------------------------------------------------------
+# -
 # DADOS SIMULADOS (MOCK DATA)
-# ----------------------------------------------------------------------
-# CORREÇÃO CRÍTICA: Usa a função de hash real para criar dados de teste realistas.
+# -
+# Usa a função de hash real para criar dados de teste realistas.
 HASH_SENHA_123 = auth_utils.hash_password('senha123')
 
 MOCK_USUARIOS_DB = pd.DataFrame({
@@ -55,9 +55,9 @@ MOCK_DF_LOG = pd.DataFrame([
     {'ID': 1, 'TIMESTAMP': pd.Timestamp.now(), 'LOGIN_USUARIO': 'admin', 'ACAO': 'Teste'}
 ])
 
-# ----------------------------------------------------------------------
+# -
 # MOCKS DA CAMADA DE BANCO DE DADOS
-# ----------------------------------------------------------------------
+# -
 class MockEngine:
     """Simula a Engine do SQLAlchemy, incluindo o retorno de resultados."""
     def __init__(self, fail_connect=False):
@@ -90,13 +90,13 @@ class MockDatabaseManager:
     def set_engine_state(cls, state='default'):
         cls._fail_connect = (state == 'fail_connect')
 
-    # CORREÇÃO: Adiciona os métodos que estavam faltando para evitar erros de atributo
+    #  Adiciona os métodos que estavam faltando para evitar erros de atributo
     initialize_database = MagicMock()
     _parse_active_config = MagicMock(return_value={'type': 'sqlite'})
 
-# ----------------------------------------------------------------------
+# -
 # MOCKS DE GUI E APLICAÇÃO
-# ----------------------------------------------------------------------
+# -
 class MockAppController:
     """Simulação do App Controller."""
     def get_current_user(self):
@@ -120,9 +120,9 @@ class MockViewBase(MagicMock):
         self.get_selected_item_data.return_value = {'id': 1, 'nome': 'Funcional'}
         self.ask_yes_no.return_value = True
 
-# ----------------------------------------------------------------------
+# -
 # FUNÇÃO PARA ATIVAR OS MOCKS GLOBAIS
-# ----------------------------------------------------------------------
+# -
 def setup_global_mocks():
     """Injeta os mocks no sys.modules. Deve ser chamado antes dos imports dos testes."""
     sys.modules['config'] = MockConfig()

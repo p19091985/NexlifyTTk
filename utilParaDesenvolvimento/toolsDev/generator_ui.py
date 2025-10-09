@@ -179,7 +179,7 @@ class ComponentBuilder(ttk.Frame):
     def _on_table_select_thread(self, table_name):
         try:
             inspector = self.generator.get_db_inspector()
-            # --- CORREÇÃO DO BUG ---
+            # DO BUG 
             columns, pk_name = self.generator.get_table_details(inspector, table_name)
 
             def _update_preview():
@@ -226,7 +226,7 @@ class ComponentBuilder(ttk.Frame):
         try:
             if context['panel_type'] == "MVC CRUD":
                 inspector = self.generator.get_db_inspector()
-                # --- CORREÇÃO DO BUG ---
+                # DO BUG 
                 columns, pk_name = self.generator.get_table_details(inspector, context['table_name'])
                 context['columns'] = columns
                 context['primary_key'] = pk_name

@@ -66,7 +66,7 @@ class PainelCatalogoEspeciesMVC(BasePanel):
         if not nome:
             messagebox.showwarning("Validação", "O campo 'Nome da Espécie' é obrigatório.", parent=self)
             return
-        # --- MODIFICAÇÃO: Chaves do dicionário em minúsculas ---
+        #Chaves do dicionário em minúsculas 
         data = {'nome_especie': nome, 'pais_origem': self.pais_var.get().strip(),
                 'temperamento': self.temperamento_var.get().strip()}
         try:
@@ -81,11 +81,11 @@ class PainelCatalogoEspeciesMVC(BasePanel):
         if self.selected_item_id is None:
             messagebox.showwarning("Atenção", "Selecione um item da tabela para atualizar.", parent=self)
             return
-        # --- MODIFICAÇÃO: Chaves do dicionário em minúsculas ---
+        #Chaves do dicionário em minúsculas 
         update_values = {'nome_especie': self.nome_var.get().strip(), 'pais_origem': self.pais_var.get().strip(),
                          'temperamento': self.temperamento_var.get().strip()}
         try:
-            # --- MODIFICAÇÃO: Chave da condição em minúsculas ---
+            #Chave da condição em minúsculas 
             GenericRepository.update_table("especie_gatos", update_values=update_values,
                                            where_conditions={'id': self.selected_item_id})
             messagebox.showinfo("Sucesso", "Espécie atualizada com sucesso!", parent=self)
@@ -102,7 +102,7 @@ class PainelCatalogoEspeciesMVC(BasePanel):
                                    icon='warning', parent=self):
             return
         try:
-            # --- MODIFICAÇÃO: Chave da condição em minúsculas ---
+            #Chave da condição em minúsculas 
             GenericRepository.delete_from_table("especie_gatos", where_conditions={'id': self.selected_item_id})
             messagebox.showinfo("Sucesso", "Espécie excluída com sucesso!", parent=self)
             self.carregar_dados()

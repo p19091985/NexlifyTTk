@@ -28,7 +28,7 @@ class DatabaseStressTestSuite(BaseTestSuite):
         # Garante que o mock de repositório está limpo antes de iniciar
         self.repo._data = {}
 
-        # --- MÉTODOS DE AÇÃO RESTAURADOS ---
+        #  MÉTODOS DE AÇÃO RESTAURADOS 
 
     def _action_read_linguagens(self):
         """Lê a tabela de linguagens."""
@@ -154,5 +154,5 @@ class DatabaseStressTestSuite(BaseTestSuite):
         return details
 
     def run(self):
-        """MODIFICAÇÃO: Usa o novo wrapper da classe base."""
+        """ Usa o novo wrapper da classe base."""
         self._run_single_test_as_suite(self.test_sustained_db_load, severity=TestSeverity.CRITICAL)

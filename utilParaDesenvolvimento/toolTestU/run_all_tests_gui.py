@@ -7,7 +7,7 @@ import importlib
 import os
 import sys
 
-# --- CORREÇÃO PRINCIPAL 1: Adiciona o diretório RAIZ do projeto ao PATH ---
+#  Adiciona o diretório RAIZ do projeto ao PATH 
 # Isso garante que todos os testes consigam encontrar a pasta 'persistencia'.
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, project_root)
@@ -66,7 +66,7 @@ class TestRunnerGUI(tk.Tk):
         self.clipboard_append(self.result_text.get("1.0", tk.END))
         messagebox.showinfo("Sucesso", "Log copiado para o clipboard.", parent=self)
 
-    # --- CORREÇÃO ADICIONAL: Adiciona o método _log_result que estava faltando ---
+    #  Adiciona o método _log_result que estava faltando 
     def _log_result(self, message, tag):
         """Adiciona uma mensagem ao widget de texto com uma tag de cor."""
         self.result_text.insert(tk.END, message, (tag,))
@@ -88,7 +88,7 @@ class TestRunnerGUI(tk.Tk):
                 importlib.reload(module)
                 suite.addTests(loader.loadTestsFromModule(module))
             except Exception as e:
-                log_msg = f"--- ERRO FATAL AO CARREGAR O ARQUIVO: {module_name.upper()} ---\n{type(e).__name__}: {e}\n\n"
+                log_msg = f" ERRO FATAL AO CARREGAR O ARQUIVO: {module_name.upper()} \n{type(e).__name__}: {e}\n\n"
                 self._log_result(log_msg, "red")
 
         proxy_stream = StreamProxy(self.result_text)

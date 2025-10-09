@@ -3,7 +3,7 @@ import ttkbootstrap as bstrap
 import sys
 
 def run_test():
-    print("--- INICIANDO TESTE DE AMBIENTE TTKBOOTSTRAP ---")
+    print(" INICIANDO TESTE DE AMBIENTE TTKBOOTSTRAP ")
     print(f"Versão do Python: {sys.version}")
     try:
         # 1. Criar a janela principal
@@ -22,10 +22,10 @@ def run_test():
         # 3. Iniciar o loop da aplicação
         print("Passo 3: Iniciando o mainloop()...")
         window.mainloop()
-        print("--- TESTE FINALIZADO COM SUCESSO ---")
+        print(" TESTE FINALIZADO COM SUCESSO ")
 
     except Exception as e:
-        print(f"\n--- OCORREU UM ERRO DURANTE O TESTE ---")
+        print(f"\n OCORREU UM ERRO DURANTE O TESTE ")
         import traceback
         traceback.print_exc()
 

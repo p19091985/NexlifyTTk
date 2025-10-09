@@ -4,7 +4,7 @@ from unittest.mock import patch, MagicMock, call
 import logging
 from pathlib import Path
 
-# --- CORREÇÃO PRINCIPAL 2: Usa o caminho de importação absoluto ---
+# PRINCIPAL 2: Usa o caminho de importação absoluto 
 # Agora o Python sabe onde encontrar o pacote 'persistencia'
 from persistencia.logger import StreamToLogger, setup_loggers
 

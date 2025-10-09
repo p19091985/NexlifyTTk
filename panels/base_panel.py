@@ -1,7 +1,7 @@
 # panels/base_panel.py (CORRIGIDO)
 from tkinter import ttk
 
-# MODIFICAÇÃO: Herda de ttk.Frame para consistência com o ttkbootstrap
+#  Herda de ttk.Frame para consistência com o ttkbootstrap
 class BasePanel(ttk.Frame):
     """
     A classe base para todos os painéis de conteúdo da aplicação.

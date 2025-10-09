@@ -73,7 +73,7 @@ class MockRepository:
 
             return len(df[idx])
 
-    # --- FUNÇÃO CORRIGIDA ---
+    #  FUNÇÃO CORRIGIDA 
     @staticmethod
     def delete_from_table(table, where_conditions):
         with MockRepository._lock:

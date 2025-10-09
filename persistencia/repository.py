@@ -60,7 +60,7 @@ class GenericRepository:
             logging.warning(f"Operação de leitura em '{table_name}' abortada (banco desativado).")
             return pd.DataFrame()
 
-        # MODIFICAÇÃO: Nomes de tabela e colunas na query sempre em maiúsculas
+        #  Nomes de tabela e colunas na query sempre em maiúsculas
         query_cols = ', '.join([col.upper() for col in columns]) if columns else '*'
         query_str = f"SELECT {query_cols} FROM {table_name.upper()}"
 
@@ -70,7 +70,7 @@ class GenericRepository:
         try:
             df = pd.read_sql(text(query_str), conn, params=params)
 
-            # --- PONTO CHAVE DA IMUNIDADE: Padroniza colunas para minúsculas após a leitura ---
+            #  DA IMUNIDADE: Padroniza colunas para minúsculas após a leitura 
             if not df.empty:
                 df.columns = [col.lower() for col in df.columns]
 
@@ -111,7 +111,7 @@ class GenericRepository:
             with engine.connect() as conn:
                 df = pd.read_sql(query, conn)
 
-                # --- PONTO CHAVE DA IMUNIDADE: Padroniza colunas para minúsculas após a leitura ---
+                #  DA IMUNIDADE: Padroniza colunas para minúsculas após a leitura 
                 if not df.empty:
                     df.columns = [col.lower() for col in df.columns]
 
@@ -197,7 +197,7 @@ class GenericRepository:
         if not update_values or not where_conditions:
             raise ValueError("Update requer valores para atualizar e uma condição WHERE.")
 
-        # MODIFICAÇÃO: Garante que colunas na cláusula SET estejam em maiúsculas
+        #  Garante que colunas na cláusula SET estejam em maiúsculas
         set_clauses = [f"{key.upper()} = :{key}" for key in update_values.keys()]
         where_clause, where_params = cls._build_where_clause(where_conditions)
 

@@ -5,7 +5,7 @@ import threading
 import logging
 import os
 from datetime import datetime
-import tkinter as tk  # <-- CORREÇÃO: Importação adicionada
+import tkinter as tk  # <--  Importação adicionada
 from tkinter import ttk, scrolledtext, filedialog, PhotoImage
 
 import pandas as pd
@@ -441,7 +441,7 @@ class UltimateTestDashboard(bstrap.Window):
 
             ts_formatted = datetime.fromtimestamp(result.timestamp).strftime('%d/%m/%Y %H:%M:%S')
 
-            details_content = f"""--- DETALHES DO TESTE ---
+            details_content = f""" DETALHES DO TESTE 
 Suíte:       {result.suite_name}
 Classe:      {result.class_name}
 Método:      {result.method_name}
@@ -450,11 +450,11 @@ Severidade:  {result.severity.value}
 Duração:     {result.duration:.6f}s
 Timestamp:   {ts_formatted}
 
---- METADADOS E PERFORMANCE ---
+ METADADOS E PERFORMANCE 
 Retentativas:{result.retry_count}
 Metadados:   {result.metadata}
 
---- LOG E STACKTRACE ---
+ LOG E STACKTRACE 
 {result.details}"""
             self.details_text.insert('1.0', details_content)
             self.details_text.config(state="disabled")
