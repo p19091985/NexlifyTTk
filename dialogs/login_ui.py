@@ -5,7 +5,6 @@ import logging
 import time
 import ttkbootstrap as bstrap
 
-# --- MODIFICAÇÃO: Importa o config para aceder à nova variável ---
 import config
 from persistencia import auth
 
@@ -21,10 +20,7 @@ class LoginDialog(bstrap.Toplevel):
         self.parent = parent
         self.user_info = None
         self.attempts = 0
-
-        # --- MODIFICAÇÃO: Usa a variável do arquivo de configuração ---
         self.max_attempts = config.MAX_LOGIN_ATTEMPTS
-
         self.login_logger = logging.getLogger("login_attempts")
 
         self.title("Login do Sistema")
@@ -61,7 +57,7 @@ class LoginDialog(bstrap.Toplevel):
         self.pass_entry.bind("<Return>", lambda e: self._on_login())
         btn_frame = ttk.Frame(main_frame)
         btn_frame.pack(fill="x", pady=(10, 0))
-        btn_frame.columnconfigure(0, weight=1)
+        btn_frame.columnconfigure(0, weight=1);
         btn_frame.columnconfigure(1, weight=1)
         login_btn = ttk.Button(btn_frame, text="Entrar", command=self._on_login, style='success.TButton')
         login_btn.grid(row=0, column=0, sticky="ew", padx=(0, 5))
@@ -78,12 +74,24 @@ class LoginDialog(bstrap.Toplevel):
             messagebox.showwarning("Campos Vazios", "Por favor, preencha usuário e senha.", parent=self)
             self._shake_window()
             return
+
         user_data = auth.verify_user_credentials(username, password)
-        if user_data:
+
+        # --- MODIFICAÇÃO: Verifica o novo sinalizador de erro de conexão ---
+        if user_data == "connection_error":
+            messagebox.showerror("Problema de Conexão",
+                                 "Não foi possível conectar ao banco de dados.\n\n"
+                                 "Verifique sua rede, o servidor do banco e tente novamente mais tarde.",
+                                 parent=self)
+            self.user_info = "connection_error"
+            self.destroy()
+
+        elif user_data:  # Se user_data não for None nem a string de erro, o login foi um sucesso.
             self.login_logger.info(f"SUCESSO - Login para: '{username}'")
             self.user_info = user_data
             self.destroy()
-        else:
+
+        else:  # Se for None, é um erro de credenciais inválidas.
             self.attempts += 1
             remaining = self.max_attempts - self.attempts
             self.login_logger.warning(f"FALHA - Tentativa {self.attempts}/{self.max_attempts} para: '{username}'")
@@ -107,22 +115,35 @@ class LoginDialog(bstrap.Toplevel):
     def _shake_window(self):
         self.lift()
         x, y = self.winfo_x(), self.winfo_y()
-        shake_intensity = 5
-        shake_duration_ms = 40
         for _ in range(2):
-            self.geometry(f"+{x + shake_intensity}+{y}")
-            self.update_idletasks()
-            time.sleep(shake_duration_ms / 1000)
-            self.geometry(f"+{x - shake_intensity}+{y}")
-            self.update_idletasks()
-            time.sleep(shake_duration_ms / 1000)
+            self.geometry(f"+{x + 5}+{y}");
+            self.update_idletasks();
+            time.sleep(0.04)
+            self.geometry(f"+{x - 5}+{y}");
+            self.update_idletasks();
+            time.sleep(0.04)
         self.geometry(f"+{x}+{y}")
 
     def _center_window(self):
-        self.update_idletasks()
-        w, h = self.winfo_width(), self.winfo_height()
-        parent_x, parent_y = self.parent.winfo_rootx(), self.parent.winfo_rooty()
-        parent_w, parent_h = self.parent.winfo_width(), self.parent.winfo_height()
-        x = parent_x + (parent_w // 2) - (w // 2)
-        y = parent_y + (parent_h // 2) - (h // 2)
-        self.geometry(f"+{x}+{y}")
+        """
+        Centraliza a janela no meio do monitor principal.
+        Este método garante que, mesmo em setups com múltiplos monitores, a janela
+        apareça no centro da tela onde a aplicação principal foi iniciada.
+        """
+        self.update_idletasks()  # Garante que as dimensões da janela foram calculadas
+
+        # Obtém as dimensões da própria janela de login
+        window_width = self.winfo_width()
+        window_height = self.winfo_height()
+
+        # Obtém as dimensões da tela principal (o monitor onde a janela 'pai' está).
+        # Na maioria dos sistemas, winfo_screenwidth/height refere-se ao monitor primário.
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        # Calcula a posição (coordenadas x e y) para o centro da tela
+        center_x = (screen_width // 2) - (window_width // 2)
+        center_y = (screen_height // 2) - (window_height // 2)
+
+        # Define a geometria da janela para a posição calculada
+        self.geometry(f"+{center_x}+{center_y}")

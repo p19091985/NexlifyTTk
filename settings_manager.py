@@ -2,7 +2,25 @@
 import json
 import os
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, MutableMapping
+
+# --- NOVA FUNÇÃO RECURSIVA para mesclar configurações com qualquer profundidade ---
+def _deep_merge_defaults(source: MutableMapping, defaults: MutableMapping) -> bool:
+    """
+    Mescla recursivamente as chaves do dicionário 'defaults' em 'source'
+    sem sobrescrever os valores existentes em 'source'.
+    Retorna True se alguma chave foi adicionada (indicando que o arquivo precisa ser salvo).
+    """
+    is_dirty = False
+    for key, value in defaults.items():
+        if key not in source:
+            source[key] = value
+            is_dirty = True
+        elif isinstance(value, MutableMapping) and isinstance(source.get(key), MutableMapping):
+            # Se ambos os valores são dicionários, desce um nível para mesclar recursivamente
+            if _deep_merge_defaults(source[key], value):
+                is_dirty = True
+    return is_dirty
 
 
 class SettingsManager:
@@ -11,7 +29,6 @@ class SettingsManager:
     def __init__(self, project_root: str, filename: str = "settings.json") -> None:
         self.filepath = os.path.join(project_root, filename)
 
-        # --- MODIFICAÇÃO: Adicionadas as novas chaves de configuração ---
         self.default_settings = {
             "theme": "litera",
             "font_family": "Segoe UI",
@@ -35,19 +52,10 @@ class SettingsManager:
             with open(self.filepath, 'r', encoding='utf-8') as f:
                 settings = json.load(f)
 
-            is_dirty = False
-            for key, value in self.default_settings.items():
-                if key not in settings:
-                    settings[key] = value
-                    is_dirty = True
-                elif isinstance(value, dict):
-                    for sub_key in value:
-                        if sub_key not in settings[key]:
-                            settings[key][sub_key] = value[sub_key]
-                            is_dirty = True
 
-            if is_dirty:
+            if _deep_merge_defaults(settings, self.default_settings):
                 self.save_settings(settings)
+                logging.info("Novas chaves de configuração padrão foram adicionadas ao arquivo settings.json.")
 
             logging.info(f"Configurações carregadas de {self.filepath}")
             return settings

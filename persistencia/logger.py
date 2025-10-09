@@ -1,60 +1,96 @@
 # persistencia/logger.py
 import logging
 import sys
-import os
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
+# --- Classes de Suporte ---
 
 class StreamToLogger:
     """
     Um objeto 'file-like' que redireciona chamadas de 'write' para um logger.
     Usado para capturar stdout e stderr.
     """
-    def __init__(self, logger, log_level=logging.INFO):
+    def __init__(self, logger: logging.Logger, level: int):
         self.logger = logger
-        self.log_level = log_level
+        self.level = level
         self.linebuf = ''
 
-    def write(self, buf):
+    def write(self, buf: str):
         """Redireciona o buffer para o logger."""
         for line in buf.rstrip().splitlines():
             # Remove espaços em branco desnecessários e loga
             if line.strip():
-                self.logger.log(self.log_level, line.rstrip())
+                self.logger.log(self.level, line.rstrip())
 
     def flush(self):
         """Método flush, necessário para a interface de stream."""
         pass
 
+# --- Função de Configuração ---
 
 def setup_loggers():
     """
-    Configura os loggers principais da aplicação.
+    Configura os loggers principais da aplicação, incluindo rotação de arquivos
+    para segurança em acesso concorrente e controle de tamanho.
     """
     # Importa a configuração aqui para evitar importação circular
     from config import LOG_LEVEL, LOG_FORMAT
 
-    # Garante que o diretório de logs exista
-    log_dir = os.path.join(os.path.dirname(__file__), '..', 'logs')
-    os.makedirs(log_dir, exist_ok=True)
+    # Garante que o diretório de logs exista usando pathlib (mais moderno)
+    project_root = Path(__file__).parent.parent.resolve()
+    log_dir = project_root / "logs"
+    log_dir.mkdir(exist_ok=True)
 
-    log_file_path = os.path.join(log_dir, 'app.log')
+    log_format = logging.Formatter(LOG_FORMAT)
+    log_level = getattr(logging, LOG_LEVEL.upper(), logging.INFO)
 
-    # Configuração do logger raiz
-    logging.basicConfig(
-        level=getattr(logging, LOG_LEVEL.upper(), logging.INFO),
-        format=LOG_FORMAT,
-        handlers=[
-            logging.FileHandler(log_file_path, encoding='utf-8'),
-            logging.StreamHandler(sys.stdout) # Também mostra no console
-        ]
+    # --- Logger Principal da Aplicação (app.log) ---
+    # Em vez de usar logging.basicConfig, configuramos loggers nomeados.
+    # Isso evita conflitos com outras bibliotecas.
+    app_logger = logging.getLogger("main_app")
+    app_logger.setLevel(log_level)
+    app_logger.propagate = False # Evita duplicar logs no logger root
+
+    # Handler para arquivo com rotação (thread-safe e com controle de tamanho)
+    # Rotação: 5 arquivos de no máximo 2MB cada.
+    app_handler = RotatingFileHandler(
+        log_dir / "app.log",
+        maxBytes=2*1024*1024, # 2 MB
+        backupCount=5,
+        encoding='utf-8'
     )
+    app_handler.setFormatter(log_format)
+    app_logger.addHandler(app_handler)
 
-    # Configuração de um logger específico para tentativas de login
+    # Handler para console (para depuração durante o desenvolvimento)
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(log_format)
+    app_logger.addHandler(console_handler)
+
+    # --- Logger para Tentativas de Login (login.log) ---
     login_logger = logging.getLogger("login_attempts")
-    login_file_handler = logging.FileHandler(os.path.join(log_dir, 'login.log'), encoding='utf-8')
-    login_file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
-    login_logger.addHandler(login_file_handler)
-    login_logger.setLevel(logging.INFO)
-    login_logger.propagate = False # Evita que o log de login vá para o app.log
+    login_logger.setLevel(log_level)
+    login_logger.propagate = False
 
-    logging.info("Loggers configurados com sucesso.")
+    # Handler de arquivo com rotação para o log de login
+    login_handler = RotatingFileHandler(
+        log_dir / "login.log",
+        maxBytes=1*1024*1024, # 1 MB
+        backupCount=3,
+        encoding='utf-8'
+    )
+    login_handler.setFormatter(log_format)
+    login_logger.addHandler(login_handler)
+
+    # Loggers específicos para redirecionamento de stdout e stderr
+    # Eles usarão o handler do logger principal para centralizar a saída
+    stdout_logger = logging.getLogger("stdout")
+    stdout_logger.addHandler(app_handler)
+    stdout_logger.setLevel(logging.INFO)
+
+    stderr_logger = logging.getLogger("stderr")
+    stderr_logger.addHandler(app_handler)
+    stderr_logger.setLevel(logging.ERROR)
+
+    logging.info("Sistema de logging configurado com rotação de arquivos para acesso seguro.")

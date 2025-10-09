@@ -3,23 +3,21 @@ from typing import Dict, Tuple
 import os
 
 # --- Flags de Controle ---
-# Se False, bloqueia TODAS as tentativas de conexão com o banco de dados.
 DATABASE_ENABLED = True
-
-# Se True, executa o script de criação do banco na inicialização (se necessário).
-INITIALIZE_DATABASE_ON_STARTUP = False
-
-# Ativa/Desativa a tela de login. False inicia com um usuário 'Desenvolvedor'.
+INITIALIZE_DATABASE_ON_STARTUP = True
 USE_LOGIN = True
-# Se True, redireciona todas as saídas do console (print, erros) para o arquivo de log.
 REDIRECT_CONSOLE_TO_LOG = True
 
-# --- MODIFICAÇÃO: Nova configuração de segurança ---
+# --- Segurança ---
 MAX_LOGIN_ATTEMPTS = 3
 
 
 # --- Aparência e Estilo ---
-FONT_FAMILY = "Segoe UI" # Fonte mais moderna para Windows, com fallback
+# ESTA É A FLAG QUE CONTROLA O ACESSO AO PAINEL DE TEMAS.
+# Se False, o item de menu "Aparência e Tema..." será desabilitado.
+ENABLE_THEME_MENU = True
+
+FONT_FAMILY = "Segoe UI"
 FONTS: Dict[str, Tuple[str, int, str]] = {
     "default": (FONT_FAMILY, 10, "normal"),
     "sidebar_button": (FONT_FAMILY, 11, "normal"),
@@ -34,4 +32,5 @@ MAIN_WINDOW_MIN_SIZE_RATIO = 0.5
 
 # --- Configurações de Log ---
 LOG_LEVEL = "INFO"
+# CORREÇÃO: Adicionada aspas duplas no final da string para fechá-la.
 LOG_FORMAT = "%(asctime)s [%(levelname)-8s] %(name)-15s - %(message)s"

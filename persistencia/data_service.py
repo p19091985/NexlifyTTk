@@ -21,32 +21,33 @@ class DataService:
         if not engine:
             return False, "Não foi possível conectar ao banco de dados."
 
-        with engine.connect() as connection:
-            with connection.begin() as transaction:
-                try:
-                    update_values = {'categoria': nova_categoria}
-                    where_conditions = {'nome': nome_linguagem}
-                    rows_updated = GenericRepository.update_table('linguagens_programacao', update_values=update_values,
+        try:
+            with engine.connect() as connection:
+                with connection.begin() as transaction:  # Inicia a transação
+                    # Passo 1: Atualizar a linguagem
+                    update_values = {'CATEGORIA': nova_categoria}
+                    where_conditions = {'NOME': nome_linguagem}
+                    rows_updated = GenericRepository.update_table('LINGUAGENS_PROGRAMACAO', update_values=update_values,
                                                                   where_conditions=where_conditions,
                                                                   connection=connection)
 
                     if rows_updated == 0:
                         transaction.rollback()
-                        return False, f"Linguagem '{nome_linguagem}' não encontrada para atualização."
+                        raise ValueError(f"Linguagem '{nome_linguagem}' não encontrada para atualização.")
 
-                    log_data = {'timestamp': [datetime.now()], 'login_usuario': [usuario],
-                                'acao': [f"Reclassificou '{nome_linguagem}' para '{nova_categoria}'"]}
+                    # Passo 2: Criar o log
+                    log_data = {'TIMESTAMP': [datetime.now()], 'LOGIN_USUARIO': [usuario],
+                                'ACAO': [f"Reclassificou '{nome_linguagem}' para '{nova_categoria}'"]}
                     df_log = pd.DataFrame(log_data)
-                    GenericRepository.write_dataframe_to_table(df_log, 'log_alteracoes', connection=connection)
+                    GenericRepository.write_dataframe_to_table(df_log, 'LOG_ALTERACOES', connection=connection)
 
-                    logging.info("Transação de reclassificação e log bem-sucedida.")
-                    return True, f"Linguagem '{nome_linguagem}' reclassificada com sucesso!"
+            logging.info("Transação de reclassificação e log bem-sucedida.")
+            return True, f"Linguagem '{nome_linguagem}' reclassificada com sucesso!"
 
-                except Exception as e:
-                    logging.error(f"Erro na transação. Rollback executado. Detalhe: {e}")
-                    return False, f"Ocorreu um erro. A operação foi revertida. Detalhe: {e}"
+        except Exception as e:
+            logging.error(f"Erro na transação de reclassificação. Rollback executado. Detalhe: {e}")
+            return False, f"Ocorreu um erro. A operação foi revertida. Detalhe: {e}"
 
-    # --- NOVO MÉTODO DE TRANSAÇÃO ---
     @staticmethod
     def rename_especie_gato_e_logar(nome_antigo: str, nome_novo: str, usuario: str):
         """
@@ -56,29 +57,28 @@ class DataService:
         if not engine:
             return False, "Não foi possível conectar ao banco de dados."
 
-        with engine.connect() as connection:
-            with connection.begin() as transaction:
-                try:
+        try:
+            with engine.connect() as connection:
+                with connection.begin() as transaction:  # Inicia a transação
                     # Passo 1: Renomear a espécie
-                    update_values = {'nome_especie': nome_novo}
-                    where_conditions = {'nome_especie': nome_antigo}
-                    rows_updated = GenericRepository.update_table('especie_gatos', update_values=update_values,
+                    update_values = {'NOME_ESPECIE': nome_novo}
+                    where_conditions = {'NOME_ESPECIE': nome_antigo}
+                    rows_updated = GenericRepository.update_table('ESPECIE_GATOS', update_values=update_values,
                                                                   where_conditions=where_conditions,
                                                                   connection=connection)
 
                     if rows_updated == 0:
-                        transaction.rollback()
-                        return False, f"Espécie '{nome_antigo}' não encontrada para renomear."
+                        raise ValueError(f"Espécie '{nome_antigo}' não encontrada para renomear.")
 
                     # Passo 2: Registar a alteração no log
-                    log_data = {'timestamp': [datetime.now()], 'login_usuario': [usuario],
-                                'acao': [f"Renomeou a espécie de gato de '{nome_antigo}' para '{nome_novo}'"]}
+                    log_data = {'TIMESTAMP': [datetime.now()], 'LOGIN_USUARIO': [usuario],
+                                'ACAO': [f"Renomeou a espécie de gato de '{nome_antigo}' para '{nome_novo}'"]}
                     df_log = pd.DataFrame(log_data)
-                    GenericRepository.write_dataframe_to_table(df_log, 'log_alteracoes', connection=connection)
+                    GenericRepository.write_dataframe_to_table(df_log, 'LOG_ALTERACOES', connection=connection)
 
-                    logging.info(f"Transação de renomeação da espécie '{nome_antigo}' bem-sucedida.")
-                    return True, "Espécie renomeada e alteração auditada com sucesso!"
+            logging.info(f"Transação de renomeação da espécie '{nome_antigo}' bem-sucedida.")
+            return True, "Espécie renomeada e alteração auditada com sucesso!"
 
-                except Exception as e:
-                    logging.error(f"Erro na transação de renomeação. Rollback executado. Detalhe: {e}")
-                    return False, f"Ocorreu um erro. A operação foi revertida. Detalhe: {e}"
+        except Exception as e:
+            logging.error(f"Erro na transação de renomeação. Rollback executado. Detalhe: {e}")
+            return False, f"Ocorreu um erro. A operação foi revertida. Detalhe: {e}"

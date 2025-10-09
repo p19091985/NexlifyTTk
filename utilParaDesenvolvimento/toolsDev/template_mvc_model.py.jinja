@@ -1,0 +1,53 @@
+# models/{{ class_name | lower | replace('painel', '') }}_model.py
+import pandas as pd
+from sqlalchemy import exc
+from persistencia.repository import GenericRepository
+
+class {{ class_name }}Model:
+    """
+    Modelo para gerenciar os dados de {{ panel_name }}.
+    Encapsula toda a lógica de acesso ao banco de dados.
+    """
+
+    def get_all(self):
+        """Busca todos os registros."""
+        try:
+            return GenericRepository.read_table_to_dataframe("{{ table_name }}")
+        except exc.SQLAlchemyError as e:
+            raise ConnectionError(f"Não foi possível carregar os dados.\nDetalhe: {e}")
+
+    {% for col in columns if col.fk %}
+    def get_{{ col.fk.references_table }}_fk_data(self):
+        """Busca dados para o combobox de {{ col.name }}."""
+        try:
+            return GenericRepository.read_table_to_dataframe("{{ col.fk.references_table }}")
+        except exc.SQLAlchemyError:
+            return pd.DataFrame() # Retorna dataframe vazio em caso de erro
+    {% endfor %}
+
+    def save(self, data: dict, item_id: int = None):
+        """Salva um novo registro ou atualiza um existente."""
+        try:
+            # Validação básica
+            {% for col in columns if not col.is_pk %}
+            if not str(data.get('{{ col.name }}', '')).strip() and not {{ 'True' if col.fk else 'False' }}:
+                 raise ValueError("O campo '{{ col.name.replace('_', ' ').title() }}' é obrigatório.")
+            {% endfor %}
+
+            if item_id is None:
+                GenericRepository.write_dataframe_to_table(pd.DataFrame([data]), "{{ table_name }}")
+            else:
+                GenericRepository.update_table("{{ table_name }}", update_values=data, where_conditions={'{{ primary_key }}': item_id})
+        except exc.IntegrityError:
+            raise ValueError("Não foi possível salvar. Verifique se há dados duplicados ou inválidos.")
+        except exc.SQLAlchemyError as e:
+            raise ConnectionError(f"Ocorreu uma falha de comunicação com o banco de dados.\nDetalhe: {e}")
+
+    def delete(self, item_id: int):
+        """Exclui um registro pelo seu ID."""
+        try:
+            GenericRepository.delete_from_table("{{ table_name }}", where_conditions={'{{ primary_key }}': item_id})
+        except exc.IntegrityError:
+            raise ConnectionError("Não foi possível excluir. Este registro está em uso por outros dados.")
+        except exc.SQLAlchemyError as e:
+            raise ConnectionError(f"Ocorreu uma falha ao excluir os dados.\nDetalhe: {e}")
