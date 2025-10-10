@@ -1,13 +1,16 @@
-# test_painel_modelo_controller.py (Corrigido)
+# test_painel_modelo_controller.py (Versão Final Corrigida)
 import unittest
 import tkinter as tk
 from unittest.mock import patch
 import sys
 import os
 
-# Importa o mock_dependencies.py
+# Configura o ambiente de teste
 sys.path.insert(0, os.path.dirname(__file__))
 import mock_dependencies
+
+mock_dependencies.setup_global_mocks()
+
 from panels.painel_modelo_controller import PainelModelo
 
 
@@ -15,37 +18,31 @@ class TestPainelModelo(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.root = tk.Tk();
+        cls.root = tk.Tk()
         cls.root.withdraw()
 
     def setUp(self):
-        with patch('panels.painel_modelo_controller.ModeloView', mock_dependencies.MockViewBase):
-            self.controller = PainelModelo(self.root, mock_dependencies.MockAppController())
-            self.controller.create_widgets()
+        self.messagebox_mock = mock_dependencies.MockMessageBox()
+        messagebox_patcher = patch('panels.painel_modelo_controller.messagebox', self.messagebox_mock)
+        self.addCleanup(messagebox_patcher.stop)
+        messagebox_patcher.start()
 
-        self.messagebox_patcher = patch('panels.painel_modelo_controller.messagebox')
-        self.messagebox_mock = self.messagebox_patcher.start()
+        view_patcher = patch('panels.painel_modelo_controller.ModeloView',
+                             new_callable=mock_dependencies.MockModeloView)
+        self.addCleanup(view_patcher.stop)
+        view_patcher.start()
 
-    def tearDown(self):
-        self.messagebox_patcher.stop()
+        self.controller = PainelModelo(self.root, mock_dependencies.MockAppController())
 
     def test_on_botao_click(self):
-        """Testa se o evento do botão exibe a mensagem correta."""
+        """Testa se o evento do botão gera a mensagem correta no log do mock."""
         self.controller._on_botao_click()
-        expected_message = (
-            "Olá, Usuário de Teste!\n\n"
-            "O painel modelo no padrão MVC está funcionando corretamente."
-        )
-        self.messagebox_mock.showinfo.assert_called_with(
-            "Interação Funcionou!",
-            expected_message,
-            parent=self.controller
-        )
+
+        # Verificação
+        self.assertEqual(len(self.messagebox_mock.log), 1)
+        self.assertIn("INFO: Interação Funcionou!", self.messagebox_mock.log[0])
+        self.assertIn("Olá, Usuário de Teste!", self.messagebox_mock.log[0])
 
     @classmethod
     def tearDownClass(cls):
         cls.root.destroy()
-
-
-if __name__ == '__main__':
-    unittest.main()

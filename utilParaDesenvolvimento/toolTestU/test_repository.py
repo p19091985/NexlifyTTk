@@ -1,9 +1,9 @@
-# test_repository.py
+# test_repository.py (Reescrito para o DB em Memória)
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import pandas as pd
 
-# Mock apenas da camada de banco, para testar o repositório REAL
+# Configura o ambiente de teste
 import mock_dependencies
 
 mock_dependencies.setup_global_mocks()
@@ -11,47 +11,73 @@ mock_dependencies.setup_global_mocks()
 from persistencia.repository import GenericRepository
 
 
+# --- REESCRITO: Testa o repositório contra um banco de dados real em memória ---
 class TestGenericRepository(unittest.TestCase):
 
-    @patch('persistencia.repository.DatabaseManager')
-    @patch('persistencia.repository.pd.read_sql')
-    def test_read_table_to_dataframe_success(self, mock_read_sql, mock_db_manager):
-        """Verifica se a leitura da tabela retorna colunas em minúsculas."""
-        mock_db_manager.get_engine.return_value = mock_dependencies.MockEngine()
-        mock_read_sql.return_value = mock_dependencies.MOCK_DF_GATOS.copy()
+    def setUp(self):
+        """Prepara o banco de dados em memória para cada teste."""
+        self.engine = mock_dependencies.setup_test_database()
+        self.db_manager_patch = patch('persistencia.repository.DatabaseManager.get_engine', return_value=self.engine)
+        self.db_manager_patch.start()
 
+    def tearDown(self):
+        self.db_manager_patch.stop()
+
+    def test_read_table_to_dataframe_returns_lowercase_columns(self):
+        """Verifica se a leitura da tabela retorna colunas em minúsculas."""
+        # Ação: Lê a tabela 'ESPECIE_GATOS' que foi pré-populada no DB em memória
         df = GenericRepository.read_table_to_dataframe("ESPECIE_GATOS")
 
+        # Verificação
         self.assertFalse(df.empty)
+        # O schema tem colunas maiúsculas, o método deve retornar minúsculas
         self.assertTrue(all(col.islower() for col in df.columns))
-        mock_read_sql.assert_called()
+        self.assertIn('nome_especie', df.columns)
 
-    @patch('persistencia.repository.DatabaseManager')
-    @patch('persistencia.repository.pd.DataFrame.to_sql')
-    def test_write_dataframe_to_table_uppercase_columns(self, mock_to_sql, mock_db_manager):
-        """Verifica se as colunas do DF são convertidas para maiúsculas antes de escrever."""
-        mock_db_manager.get_engine.return_value = mock_dependencies.MockEngine()
-        df_lowercase = pd.DataFrame([{'nome': ['Test'], 'id': [1]}])
+    def test_write_and_read_cycle(self):
+        """Verifica um ciclo completo de escrita e leitura."""
+        # Preparação: Cria um DataFrame de teste
+        df_to_write = pd.DataFrame(
+            [{'nome': 'Nova Linguagem', 'id_tipo': 1, 'ano_criacao': 2025, 'categoria': 'Teste'}])
 
-        GenericRepository.write_dataframe_to_table(df_lowercase, "TEST_TABLE")
+        # Ação 1: Escreve no banco
+        success = GenericRepository.write_dataframe_to_table(df_to_write, "linguagens_programacao")
+        self.assertTrue(success)
 
-        # Acessa os argumentos com que a função mock foi chamada
-        args, kwargs = mock_to_sql.call_args
-        called_df = kwargs['con'].execute.call_args[0][0]  # Pega o dataframe que foi passado para a engine
-        self.assertTrue(all(col.isupper() for col in called_df.columns))
+        # Ação 2: Lê o dado de volta
+        df_read = GenericRepository.read_table_to_dataframe(
+            "linguagens_programacao", where_conditions={'nome': 'Nova Linguagem'}
+        )
 
-    @patch('persistencia.repository.DatabaseManager')
-    def test_delete_from_table_success(self, mock_db_manager):
-        """Verifica se a deleção funciona com WHERE."""
-        mock_engine = mock_dependencies.MockEngine()
-        mock_db_manager.get_engine.return_value = mock_engine
+        # Verificação
+        self.assertEqual(len(df_read), 1)
+        self.assertEqual(df_read.iloc[0]['ano_criacao'], 2025)
 
-        rows = GenericRepository.delete_from_table("ANY_TABLE", where_conditions={'id': 1})
-        self.assertEqual(rows, 1)
-        # Verifica se o 'execute' da engine mockada foi chamado
-        mock_engine.connect().execute.assert_called()
+    def test_update_table(self):
+        """Verifica se a atualização de um registro funciona."""
+        # Ação: Atualiza o temperamento do Siamês (ID 1)
+        rows_affected = GenericRepository.update_table(
+            "especie_gatos",
+            update_values={'temperamento': 'Muito barulhento'},
+            where_conditions={'id': 1}
+        )
+        self.assertEqual(rows_affected, 1)
+
+        # Verificação: Lê o registro e confere a alteração
+        df = GenericRepository.read_table_to_dataframe("especie_gatos", where_conditions={'id': 1})
+        self.assertEqual(df.iloc[0]['temperamento'], 'Muito barulhento')
+
+    def test_delete_from_table(self):
+        """Verifica se a deleção de um registro funciona."""
+        # Ação: Deleta o gato Persa (ID 2)
+        rows_affected = GenericRepository.delete_from_table("especie_gatos", where_conditions={'id': 2})
+        self.assertEqual(rows_affected, 1)
+
+        # Verificação: Tenta ler o registro deletado
+        df = GenericRepository.read_table_to_dataframe("especie_gatos", where_conditions={'id': 2})
+        self.assertTrue(df.empty)
 
     def test_delete_from_table_requires_where(self):
-        """Verifica se a exclusão sem WHERE lança ValueError."""
+        """Verifica se a exclusão sem WHERE lança ValueError (teste inalterado)."""
         with self.assertRaises(ValueError):
             GenericRepository.delete_from_table("ANY_TABLE", where_conditions={})

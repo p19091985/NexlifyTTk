@@ -1,79 +1,84 @@
-# test_painel_auditoria_controller.py (Corrigido)
+# test_painel_auditoria_controller.py (Versão Final Corrigida)
 import unittest
 import tkinter as tk
 from unittest.mock import patch
 import sys
 import os
 
-# Importa o mock_dependencies.py
+# Configura o ambiente de teste
 sys.path.insert(0, os.path.dirname(__file__))
 import mock_dependencies
+
+mock_dependencies.setup_global_mocks()
+
 from panels.painel_auditoria_controller import PainelAuditoria
+from persistencia.repository import GenericRepository
 
 
 class TestPainelAuditoria(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        cls.root = tk.Tk();
-        cls.root.withdraw()
-
     def setUp(self):
-        with patch('panels.painel_auditoria_controller.AuditoriaView', mock_dependencies.MockViewBase):
-            self.controller = PainelAuditoria(self.root, mock_dependencies.MockAppController())
-            self.controller.create_widgets()
+        """Prepara um ambiente limpo com DB em memória e mocks corretos para cada teste."""
+        self.root = tk.Tk()
+        self.root.withdraw()
 
-        #  Patching dos métodos de classe
-        self.read_lang_patcher = patch('panels.painel_auditoria_controller.GenericRepository.read_table_to_dataframe')
-        self.read_log_patcher = patch('panels.painel_auditoria_controller.GenericRepository.read_table_to_dataframe')
-        self.service_patcher = patch('panels.painel_auditoria_controller.DataService.reclassificar_e_logar')
-        self.messagebox_patcher = patch('panels.painel_auditoria_controller.messagebox')
+        # Cria um banco de dados em memória limpo para este teste
+        self.engine = mock_dependencies.setup_test_database()
 
-        self.read_lang_mock = self.read_lang_patcher.start()
-        self.read_log_mock = self.read_log_patcher.start()
-        self.service_mock = self.service_patcher.start()
-        self.messagebox_mock = self.messagebox_patcher.start()
+        # Limpa o log do messagebox mockado entre os testes
+        self.messagebox_mock = mock_dependencies.MockMessageBox()
+        messagebox_patcher = patch('panels.painel_auditoria_controller.messagebox', self.messagebox_mock)
+        self.addCleanup(messagebox_patcher.stop)
+        messagebox_patcher.start()
 
-        # Simula o retorno de dados para as cargas
-        self.read_lang_mock.side_effect = [
-            mock_dependencies.MOCK_DF_LINGUAGENS.copy(),  # 1ª chamada: linguagens
-            mock_dependencies.MOCK_DF_LOG.copy()  # 2ª chamada: log
-        ]
-        self.service_mock.return_value = (True, "Reclassificação OK")
-        self.messagebox_mock.askyesno.return_value = True
+        # Garante que a aplicação use o DB em memória e a View Mockada
+        db_patcher = patch('persistencia.database.DatabaseManager.get_engine', return_value=self.engine)
+        view_patcher = patch('panels.painel_auditoria_controller.AuditoriaView',
+                             new_callable=mock_dependencies.MockAuditoriaView)
+
+        self.addCleanup(db_patcher.stop)
+        self.addCleanup(view_patcher.stop)
+
+        db_patcher.start()
+        MockView = view_patcher.start()
+
+        # Instancia o controller com as dependências mockadas
+        self.controller = PainelAuditoria(self.root, mock_dependencies.MockAppController())
+        self.view = self.controller.view
 
     def tearDown(self):
-        self.read_lang_patcher.stop();
-        self.read_log_patcher.stop()
-        self.service_patcher.stop();
-        self.messagebox_patcher.stop()
+        self.root.destroy()
 
-    def test_carregar_linguagens_e_log(self):
-        """Testa se as linguagens e o log são carregados."""
+    def test_carregar_dados_iniciais(self):
+        """Testa se as linguagens e logs do DB em memória são carregados na view."""
         self.controller._carregar_dados_iniciais()
-        # Não é assert_called_with pois o método é chamado duas vezes pelo side_effect
-        self.assertEqual(self.read_lang_mock.call_count, 2)
-        self.assertIn('Python', self.controller.view.linguagem_combo['values'])
+
+        # Verificação: O schema SQL tem 5 linguagens. A view deve ter tentado inserir 5.
+        self.assertEqual(self.view.linguagens_tree.insert.call_count, 5,
+                         "Deveria ter inserido 5 linguagens na treeview.")
+
+        # Verificação: O combobox de linguagens deve ter sido populado.
+        self.assertIn('Python', self.view.linguagem_combo['values'])
+
+        # Verificação: O schema SQL não tem logs iniciais. A treeview de log não deve inserir nada.
+        self.assertEqual(self.view.log_tree.insert.call_count, 0)
 
     def test_executar_transacao_sucesso(self):
-        """Testa a transação de reclassificar e logar com sucesso."""
+        """Testa a transação e verifica o resultado no banco de dados e no log."""
         self.controller.linguagem_selecionada_var.set("Python")
-        self.controller.nova_categoria_var.set("Compilada e Interpretada")
+        self.controller.nova_categoria_var.set("Linguagem Divina")
+
+        # Ação: Executa a transação através do controller
         self.controller._executar_transacao()
-        self.service_mock.assert_called_with("Python", "Compilada e Interpretada", 'testuser')
 
-    def test_executar_transacao_falha_dados_incompletos(self):
-        """Testa a transação com dados incompletos (sem linguagem)."""
-        self.controller.linguagem_selecionada_var.set("")
-        self.controller.nova_categoria_var.set("Nova")
-        self.controller._executar_transacao()
-        self.messagebox_mock.showwarning.assert_called()
-        self.assertFalse(self.service_mock.called)
+        # Verificação 1: Checa se a categoria foi atualizada no banco de dados
+        df_lang = GenericRepository.read_table_to_dataframe(
+            "linguagens_programacao", where_conditions={'nome': 'Python'}
+        )
+        self.assertEqual(df_lang.iloc[0]['categoria'], "Linguagem Divina")
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.root.destroy()
-
-
-if __name__ == '__main__':
-    unittest.main()
+        # Verificação 2: Checa se a ação foi registrada corretamente na tabela de log
+        df_log = GenericRepository.read_table_to_dataframe("log_alteracoes")
+        self.assertEqual(len(df_log), 1)
+        last_log_action = df_log.iloc[-1]['acao']
+        self.assertIn("Reclassificou 'Python' para 'Linguagem Divina'", last_log_action)

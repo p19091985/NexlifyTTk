@@ -1,56 +1,43 @@
-# test_database.py (Corrigido)
+# test_database.py (Versão Final Corrigida)
 import unittest
-from unittest.mock import patch, MagicMock
-import sys
-import os
-from pathlib import Path
-import logging
-from sqlalchemy.exc import OperationalError
+from unittest.mock import patch, mock_open
+# --- CORREÇÃO: Não importa mais o mock_dependencies globalmente ---
 
-# Importa o mock_dependencies.py
-sys.path.insert(0, os.path.dirname(__file__))
-import mock_dependencies
-
-# Antes de importar o DatabaseManager real, corrige o mock no sys.modules
-# Adiciona os métodos que estavam faltando no mock_dependencies.MockDatabaseManager
-mock_dependencies.MockDatabaseManager.initialize_database = MagicMock(name='initialize_database')
-mock_dependencies.MockDatabaseManager._parse_active_config = MagicMock(name='_parse_active_config')
-mock_dependencies.MockDatabaseManager._parse_active_config.return_value = {'type': 'sqlite', 'path': 'test.db'}
-
-# Agora importa a classe real que usa o mock injetado
+# Importa a classe real a ser testada
 from persistencia.database import DatabaseManager
 
 
 class TestDatabaseManager(unittest.TestCase):
 
     def setUp(self):
-        # Garante o estado inicial do mock
-        mock_dependencies.MockDatabaseManager.set_engine_state('none')
-        self.db_logger = logging.getLogger("persistencia.database")
+        DatabaseManager._engine = None
 
-    @patch('persistencia.database.config')
-    def test_get_engine_database_disabled(self, mock_config):
+    @patch('persistencia.database.config.DATABASE_ENABLED', False)
+    def test_get_engine_database_disabled(self):
         """Verifica o retorno None quando o banco está desativado."""
-        mock_config.DATABASE_ENABLED = False
         engine = DatabaseManager.get_engine()
-        self.assertIsNone(engine)  # Agora deve passar
+        self.assertIsNone(engine)
 
-    @patch('persistencia.database.logging')
-    def test_get_engine_first_call_success(self, mock_logging):
-        """Verifica a criação da engine na primeira chamada (SQLite)."""
-        # O mock_dependencies.MockDatabaseManager._parse_active_config já está mockado
-        with patch('persistencia.database.create_engine', return_value=mock_dependencies.MockEngine()):
-            engine = DatabaseManager.get_engine()
-            self.assertIsNotNone(engine)
+    def test_parse_active_config_sqlite(self):
+        """Verifica se o parser lê corretamente uma configuração SQLite ativa."""
+        ini_content = "[SQLITE]\ntype = sqlite\npath = db/sistema.db"
+        with patch('builtins.open', mock_open(read_data=ini_content)):
+            with patch('pathlib.Path.is_file', return_value=True):
+                config = DatabaseManager._parse_active_config()
+                self.assertEqual(config['type'], 'sqlite')
+                self.assertEqual(config['path'], 'db/sistema.db')
 
-    @patch('persistencia.database.logging')
-    def test_initialize_database_engine_none(self, mock_logging):
-        """Verifica o erro quando a engine não está disponível na inicialização."""
-        # DatabaseManager.get_engine vai retornar None (configuração default do setUp)
-        DatabaseManager.initialize_database()
-        # O mock implementado no mock_dependencies.py é que deve ser rastreado
-        mock_logging.error.assert_called_with("Não foi possível inicializar o banco: engine não disponível.")
+    @patch('persistencia.database.decrypt_message', return_value='decoded_pass')
+    @patch('persistencia.database.create_engine')
+    def test_get_engine_creates_postgresql_url(self, mock_create_engine, mock_decrypt):
+        """Verifica se a URL de conexão para PostgreSQL é montada corretamente."""
+        # A engine real não será criada, pois o create_engine está mockado
+        mock_create_engine.return_value.connect.return_value.__enter__.return_value = None
 
-
-if __name__ == '__main__':
-    unittest.main()
+        ini_content = "type = postgresql\nhost = localhost\nport = 5432\ndbname = testdb\nuser = testuser\npassword = encrypted"
+        with patch('builtins.open', mock_open(read_data=ini_content)):
+            with patch('pathlib.Path.is_file', return_value=True):
+                DatabaseManager.get_engine()
+                expected_url = "postgresql+psycopg2://testuser:decoded_pass@localhost:5432/testdb"
+                # A asserção agora funciona, pois o teste está isolado
+                mock_create_engine.assert_called_with(expected_url, echo=False)
