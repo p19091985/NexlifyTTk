@@ -17,26 +17,20 @@ class TiposLinguagemView(bstrap.Toplevel):
         self.transient(parent)
         self.grab_set()
         self.resizable(False, False)
-        self.controller = None  # Será definido externamente
+        self.controller = None
 
         self._create_widgets()
         self._center_window()
         self.nome_entry.focus_set()
 
     def set_controller(self, controller):
-        """
-        Define o controller para esta view.
-        Este método é a "ponte" que conecta os botões às ações do controller.
-        """
         self.controller = controller
-        # Vincula os eventos (cliques) aos métodos do controller
         self.save_button.config(command=self.controller.save_item)
         self.delete_button.config(command=self.controller.delete_item)
         self.clear_button.config(command=self.controller.clear_form)
         self.tree.bind('<<TreeviewSelect>>', self.controller.on_item_select)
 
     def _create_widgets(self):
-        # ... (código dos widgets inalterado) ...
         main_frame = ttk.Frame(self, padding=15)
         main_frame.pack(fill="both", expand=True)
         form_frame = ttk.LabelFrame(main_frame, text=" Cadastro de Tipo ", padding=15)
@@ -74,24 +68,17 @@ class TiposLinguagemView(bstrap.Toplevel):
         self.tree.pack(side='left', fill='both', expand=True)
         scrollbar.pack(side='right', fill='y')
 
-
     def populate_treeview(self, data):
-        """
-        Método para preencher a tabela. Ele recebe os dados prontos do
-        Controller e apenas os exibe.
-        """
         for item in self.tree.get_children():
             self.tree.delete(item)
         if not data.empty:
             for _, row in data.iterrows():
                 self.tree.insert("", "end", values=list(row))
-    # ... (outros métodos auxiliares da view inalterados) ...
+
     def get_form_data(self):
-        """ Retorna os dados do formulário em um dicionário. """
         return {'nome': self.nome_var.get().strip()}
 
     def get_selected_item_id(self):
-        """ Retorna o ID do item selecionado na treeview, ou None. """
         selected_items = self.tree.selection()
         if not selected_items:
             return None
@@ -99,18 +86,15 @@ class TiposLinguagemView(bstrap.Toplevel):
         return item['values'][0]
 
     def set_form_data(self, data):
-        """ Preenche o formulário com os dados fornecidos. """
         self.nome_var.set(data.get('nome', ''))
 
     def clear_form_fields(self):
-        """ Limpa os campos do formulário e a seleção da treeview. """
         self.nome_var.set("")
         if self.tree.selection():
             self.tree.selection_remove(self.tree.selection()[0])
         self.nome_entry.focus()
 
     def get_selected_item_data(self):
-        """ Retorna os dados do item selecionado na treeview. """
         selected_items = self.tree.selection()
         if not selected_items:
             return None
@@ -133,7 +117,7 @@ class TiposLinguagemView(bstrap.Toplevel):
         self.update_idletasks()
         p_w, p_h = self.parent.winfo_width(), self.parent.winfo_height()
         p_x, p_y = self.parent.winfo_x(), self.parent.winfo_y()
-        w, h = self.winfo_height(), self.winfo_height()
+        w, h = self.winfo_width(), self.winfo_height() # Correction: Use self.winfo_width()
         x = p_x + (p_w // 2) - (w // 2)
         y = p_y + (p_h // 2) - (h // 2)
-        self.geometry(f"+{x}+{y}")
+        self.geometry(f"{w}x{h}+{x}+{y}")
