@@ -1,20 +1,23 @@
-# utilParaDesenvolvimento/toolTest/health_check_gui.py
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 import threading
 import os
 import time
 import traceback
+import sys  # <- LINHA ADICIONADA
 
 try:
     import GPUtil
 except ImportError:
     GPUtil = None
 
-from persistencia.database import DatabaseManager
-
+# Adiciona o diretório raiz ao path para encontrar o módulo de persistencia
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..', '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+from persistencia.database import DatabaseManager
 
 
 class SystemCheckerApp:
@@ -29,6 +32,7 @@ class SystemCheckerApp:
 
     def setup_styles(self):
         style = ttk.Style()
+        style.theme_use('clam')
         style.configure("Title.TLabel", font=('Segoe UI', 14, 'bold'))
         style.configure("Header.TLabel", font=('Segoe UI', 11, 'bold'))
         style.configure("Action.TButton", font=('Segoe UI', 10, 'bold'))
@@ -100,14 +104,12 @@ class SystemCheckerApp:
 
     def log(self, message, level="info"):
         level_upper = level.upper()
-
         def _log_update():
             self.log_text.config(state=tk.NORMAL)
             timestamp = time.strftime("%H:%M:%S")
             self.log_text.insert(tk.END, f"{timestamp} [{level_upper}] {message}\n", (level_upper,))
             self.log_text.config(state=tk.DISABLED)
             self.log_text.see(tk.END)
-
         self.root.after(0, _log_update)
 
     def clear_log(self):
@@ -129,17 +131,14 @@ class SystemCheckerApp:
             self.log(f"Erro ao copiar para a área de transferência: {e}", "fail")
 
     def run_in_thread(self, target_func):
-        thread = threading.Thread(target=target_func)
-        thread.daemon = True
+        thread = threading.Thread(target=target_func, daemon=True)
         thread.start()
 
     def update_ui(self, result):
         status = result['status']
         tags = (status,)
-
         summary_details = result['details'].splitlines()[0]
         self.tree.insert("", "end", values=(result['name'], status, summary_details), tags=tags)
-
         log_message = f"Teste '{result['name']}' concluído com status: {status}"
         if status in ['FAIL', 'WARNING']:
             log_message += f"\n DETALHES \n{result['details']}\n-"
@@ -149,7 +148,6 @@ class SystemCheckerApp:
         self.run_btn.config(state=tk.DISABLED)
         for item in self.tree.get_children():
             self.tree.delete(item)
-
         self.log("--")
         self.log("Iniciando diagnóstico completo do sistema...")
         self.run_in_thread(self._run_all_checks_thread)
@@ -159,14 +157,11 @@ class SystemCheckerApp:
             for result in self._check_project_integrity():
                 self.root.after(0, self.update_ui, result)
                 time.sleep(0.05)
-
             gpu_result = self._check_gpu()
             self.root.after(0, self.update_ui, gpu_result)
             time.sleep(0.05)
-
             db_result = self._check_database()
             self.root.after(0, self.update_ui, db_result)
-
             self.log("Diagnóstico concluído.", "success")
         except Exception as e:
             self.log(f"Ocorreu um erro inesperado durante os testes: {traceback.format_exc()}", "fail")
@@ -175,10 +170,8 @@ class SystemCheckerApp:
 
     def _check_project_integrity(self):
         self.log("Iniciando verificação de integridade do projeto...")
-        yield {'name': 'Diretório Raiz do Projeto', 'status': 'SUCCESS',
-               'details': f'Raiz encontrada em: {project_root}'}
-        essential_paths = ["run.py", "app.py", "banco.ini", "settings.json", "panels/", "persistencia/", "dialogs/",
-                           "persistencia/database.py", "persistencia/repository.py"]
+        yield {'name': 'Diretório Raiz do Projeto', 'status': 'SUCCESS', 'details': f'Raiz encontrada em: {project_root}'}
+        essential_paths = ["run.py", "app.py", "banco.ini", "settings.json", "panels/", "persistencia/", "dialogs/", "persistencia/database.py", "persistencia/repository.py"]
         for path in essential_paths:
             full_path = os.path.join(project_root, path)
             status, details = ('SUCCESS', 'Encontrado') if os.path.exists(full_path) else ('FAIL', 'Não encontrado!')
@@ -187,20 +180,17 @@ class SystemCheckerApp:
     def _check_gpu(self):
         self.log("Iniciando verificação de GPU...")
         if GPUtil is None:
-            return {'name': 'Placa de Vídeo (GPU)', 'status': 'WARNING',
-                    'details': "Biblioteca 'gputil' não instalada. Não foi possível verificar. Instale com: pip install gputil"}
+            return {'name': 'Placa de Vídeo (GPU)', 'status': 'WARNING', 'details': "Biblioteca 'gputil' não instalada. Instale com: pip install gputil"}
         try:
             gpus = GPUtil.getGPUs()
             if not gpus:
-                return {'name': 'Placa de Vídeo (GPU)', 'status': 'WARNING',
-                        'details': 'Nenhuma GPU dedicada detectada.'}
+                return {'name': 'Placa de Vídeo (GPU)', 'status': 'WARNING', 'details': 'Nenhuma GPU dedicada detectada.'}
             else:
                 gpu_info = [f"{gpu.name} (Load: {gpu.load * 100:.1f}%)" for gpu in gpus]
                 return {'name': 'Placa de Vídeo (GPU)', 'status': 'SUCCESS', 'details': ', '.join(gpu_info)}
         except Exception as e:
             detailed_error = traceback.format_exc()
-            return {'name': 'Placa de Vídeo (GPU)', 'status': 'FAIL',
-                    'details': f'Erro ao acessar informações da GPU: {e}\n\n{detailed_error}'}
+            return {'name': 'Placa de Vídeo (GPU)', 'status': 'FAIL', 'details': f'Erro ao acessar informações da GPU: {e}\n\n{detailed_error}'}
 
     def _check_database(self):
         self.log("Iniciando verificação de conexão com o banco de dados...")
@@ -212,38 +202,27 @@ class SystemCheckerApp:
                 result = conn.execute(text("SELECT 1"))
                 if result.scalar() == 1:
                     db_type = engine.url.drivername
-                    return {'name': 'Conexão com Banco de Dados', 'status': 'SUCCESS',
-                            'details': f'Conectado com sucesso ao banco do tipo: {db_type}'}
+                    return {'name': 'Conexão com Banco de Dados', 'status': 'SUCCESS', 'details': f'Conectado com sucesso ao banco do tipo: {db_type}'}
                 else:
                     raise Exception("A consulta de teste não retornou o resultado esperado.")
         except Exception as e:
             detailed_error = traceback.format_exc()
-            return {'name': 'Conexão com Banco de Dados', 'status': 'FAIL',
-                    'details': f'Falha na conexão: {e}\n\n{detailed_error}'}
+            return {'name': 'Conexão com Banco de Dados', 'status': 'FAIL', 'details': f'Falha na conexão: {e}\n\n{detailed_error}'}
 
 
 def main():
     try:
-        import ttkbootstrap as bstrap
-        root = bstrap.Window(themename="superhero")
+        root = tk.Tk()
         app = SystemCheckerApp(root)
         root.mainloop()
-    except ImportError as e:
-        if "ttkbootstrap" in str(e):
-            msg = "Erro: A biblioteca 'ttkbootstrap' não está instalada.\n\nPor favor, instale-a com o comando:\npip install ttkbootstrap"
-        else:
-            msg = f"Erro de Importação: {e}\n\nEste script deve ser executado como um módulo a partir da raiz.\nExemplo: python3 -m utilParaDesenvolvimento.toolTest.health_check_gui"
-        print(msg)
+    except Exception as e:
+        print(f"Erro fatal ao iniciar a aplicação: {e}")
         try:
             root = tk.Tk()
             root.withdraw()
-            messagebox.showerror("Erro de Dependência", msg)
+            messagebox.showerror("Erro Fatal", f"Ocorreu um erro inesperado: {e}")
         except tk.TclError:
             pass
-    except Exception as e:
-        print(f"Erro fatal ao iniciar a aplicação: {e}")
-        messagebox.showerror("Erro Fatal", f"Ocorreu um erro inesperado: {e}")
-
 
 if __name__ == "__main__":
     main()

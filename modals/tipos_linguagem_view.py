@@ -1,14 +1,9 @@
 # modals/tipos_linguagem_view.py
 import tkinter as tk
 from tkinter import ttk, messagebox
-import ttkbootstrap as bstrap
 
-class TiposLinguagemView(bstrap.Toplevel):
-    """
-    View (Janela) para gerenciar Tipos de Linguagem.
-    NÃO contém lógica de banco de dados. Apenas widgets e apresentação.
-    """
 
+class TiposLinguagemView(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
@@ -33,9 +28,11 @@ class TiposLinguagemView(bstrap.Toplevel):
     def _create_widgets(self):
         main_frame = ttk.Frame(self, padding=15)
         main_frame.pack(fill="both", expand=True)
+
         form_frame = ttk.LabelFrame(main_frame, text=" Cadastro de Tipo ", padding=15)
         form_frame.pack(side="left", fill="y", padx=(0, 10))
         self._create_form_widgets(form_frame)
+
         table_frame = ttk.LabelFrame(main_frame, text=" Tipos Cadastrados ", padding=15)
         table_frame.pack(side="right", fill="both", expand=True)
         self._create_table_widgets(table_frame)
@@ -45,26 +42,33 @@ class TiposLinguagemView(bstrap.Toplevel):
         self.nome_var = tk.StringVar()
         self.nome_entry = ttk.Entry(parent, textvariable=self.nome_var, width=30)
         self.nome_entry.pack(anchor="w", pady=(5, 15))
+
         btn_frame = ttk.Frame(parent)
         btn_frame.pack(fill="x")
-        self.save_button = ttk.Button(btn_frame, text="Salvar", style="success.TButton")
+
+        self.save_button = ttk.Button(btn_frame, text="Salvar", style="Success.TButton")
         self.save_button.pack(side="left", expand=True, fill="x", padx=(0, 5))
-        self.delete_button = ttk.Button(btn_frame, text="Excluir", style="danger.TButton")
+
+        self.delete_button = ttk.Button(btn_frame, text="Excluir", style="Danger.TButton")
         self.delete_button.pack(side="left", expand=True, fill="x")
-        self.clear_button = ttk.Button(parent, text="Limpar Formulário", style="secondary.TButton")
+
+        self.clear_button = ttk.Button(parent, text="Limpar Formulário", style="Secondary.TButton")
         self.clear_button.pack(fill="x", pady=(10, 0))
 
     def _create_table_widgets(self, parent):
         inner_frame = ttk.Frame(parent)
         inner_frame.pack(fill="both", expand=True)
+
         columns = ('id', 'nome')
         self.tree = ttk.Treeview(inner_frame, columns=columns, show='headings', selectmode='browse')
         self.tree.heading('id', text='ID')
         self.tree.heading('nome', text='Nome')
         self.tree.column('id', width=50, anchor='center')
         self.tree.column('nome', width=200)
+
         scrollbar = ttk.Scrollbar(inner_frame, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscrollcommand=scrollbar.set)
+
         self.tree.pack(side='left', fill='both', expand=True)
         scrollbar.pack(side='right', fill='y')
 
@@ -117,7 +121,7 @@ class TiposLinguagemView(bstrap.Toplevel):
         self.update_idletasks()
         p_w, p_h = self.parent.winfo_width(), self.parent.winfo_height()
         p_x, p_y = self.parent.winfo_x(), self.parent.winfo_y()
-        w, h = self.winfo_width(), self.winfo_height() # Correction: Use self.winfo_width()
+        w, h = self.winfo_width(), self.winfo_height()
         x = p_x + (p_w // 2) - (w // 2)
         y = p_y + (p_h // 2) - (h // 2)
         self.geometry(f"{w}x{h}+{x}+{y}")

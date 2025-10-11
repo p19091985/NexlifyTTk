@@ -2,11 +2,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+
 class GatosView(ttk.Frame):
-    """
-    A View (Apresentação) para o painel de gestão de espécies.
-    Contém apenas a criação e o layout dos widgets.
-    """
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -44,14 +41,17 @@ class GatosView(ttk.Frame):
 
         btn_frame = ttk.Frame(parent)
         btn_frame.grid(row=3, column=0, columnspan=2, pady=10, sticky="e")
-        ttk.Button(btn_frame, text="Salvar", command=self.controller.salvar_item, style="success.TButton").pack(side="left", padx=5)
-        ttk.Button(btn_frame, text="Excluir", command=self.controller.excluir_item, style="danger.TButton").pack(side="left", padx=5)
-        ttk.Button(btn_frame, text="Limpar", command=self.controller.limpar_formulario, style="secondary.TButton").pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Salvar", command=self.controller.salvar_item, style="Success.TButton").pack(
+            side="left", padx=5)
+        ttk.Button(btn_frame, text="Excluir", command=self.controller.excluir_item, style="Danger.TButton").pack(
+            side="left", padx=5)
+        ttk.Button(btn_frame, text="Limpar", command=self.controller.limpar_formulario, style="Secondary.TButton").pack(
+            side="left", padx=5)
 
     def _create_table_widgets(self, parent):
         inner_frame = ttk.Frame(parent)
         inner_frame.pack(fill="both", expand=True)
-        #Colunas da view definidas em minúsculas 
+
         columns = ('id', 'nome_especie', 'pais_origem', 'temperamento')
         self.tree = ttk.Treeview(inner_frame, columns=columns, show='headings', selectmode='browse')
 
@@ -67,10 +67,12 @@ class GatosView(ttk.Frame):
 
         scrollbar = ttk.Scrollbar(inner_frame, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscrollcommand=scrollbar.set)
+
         self.tree.pack(side='left', fill='both', expand=True)
         scrollbar.pack(side='right', fill='y')
         self.tree.bind('<<TreeviewSelect>>', self.controller.on_item_select)
 
     def _create_action_buttons(self, parent):
         ttk.Button(parent, text="Renomear 'Siamês' para 'Siamês Gato Tailandês'",
-                   command=self.controller.executar_acao_atomica, style="info.Outline.TButton").pack(side="left", padx=5, pady=5)
+                   command=self.controller.executar_acao_atomica, style="Info.TButton").pack(side="left", padx=5,
+                                                                                             pady=5)

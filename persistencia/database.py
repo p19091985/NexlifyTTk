@@ -1,11 +1,9 @@
 # persistencia/database.py
 import logging
-import re
 from pathlib import Path
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import SQLAlchemyError, OperationalError
 
-# Importa as configurações globais
 import config
 from .security import load_key, decrypt_message
 
@@ -13,74 +11,35 @@ project_root = Path(__file__).parent.parent.resolve()
 CONFIG_PATH = project_root / "banco.ini"
 SCHEMA_PATH = project_root / "persistencia/sql_schema_SQLLite.sql"
 
-
 class DatabaseManager:
-    """
-    Gerencia a conexão com múltiplos sistemas de banco de dados,
-    lendo de forma inteligente um arquivo 'banco.ini' para encontrar a configuração ativa.
-    As credenciais são descriptografadas em tempo de execução.
-    """
     _engine = None
-
     @classmethod
     def _parse_active_config(cls):
-        """
-        Lê o 'banco.ini' linha por linha para encontrar o bloco de configuração
-        ativo (descomentado) e extrai seus parâmetros.
-        Ignora linhas de texto puro e comentários.
-        """
         if not CONFIG_PATH.is_file():
             raise FileNotFoundError(f"Arquivo de configuração '{CONFIG_PATH}' não encontrado.")
-
         with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-
         active_config = {}
-        in_active_block = False
-
         for line in lines:
             clean_line = line.strip()
-
-            if not clean_line or (clean_line.startswith('#') or clean_line.startswith(';')):
+            if not clean_line or (clean_line.startswith('#') or clean_line.startswith(';')) or clean_line.startswith('['):
                 continue
-
-            if clean_line.startswith('['):
-                continue
-
             if '=' in clean_line:
                 key, value = clean_line.split('=', 1)
-                key = key.strip()
-                value = value.strip()
-
-                if key == 'type':
-                    active_config[key] = value
-                    in_active_block = True
-                elif in_active_block:
-                    active_config[key] = value
-            elif in_active_block:
-                break
-
+                active_config[key.strip()] = value.strip()
         if not active_config or 'type' not in active_config:
-            raise ValueError(
-                "Nenhuma configuração de banco de dados ativa (descomentada) foi encontrada no 'banco.ini'.")
-
+            raise ValueError("Nenhuma configuração de banco de dados ativa (descomentada) foi encontrada no 'banco.ini'.")
         return active_config
 
     @classmethod
     def get_engine(cls):
-        """
-        Cria e retorna a engine do SQLAlchemy usando a configuração ativa do .ini.
-        """
-        #  Implementa a verificação da flag DATABASE_ENABLED
         if not config.DATABASE_ENABLED:
             logging.warning("Acesso ao banco de dados está desativado em config.py. Nenhuma engine será criada.")
             return None
-
         if cls._engine is None:
             try:
                 db_config = cls._parse_active_config()
                 key = load_key()
-
             except (FileNotFoundError, ValueError, RuntimeError) as e:
                 logging.critical(f"Erro ao ler configuração do banco: {e}")
                 raise
@@ -91,9 +50,7 @@ class DatabaseManager:
             db_type = db_config.get('type', 'sqlite').lower()
             connection_url = None
             engine_options = {'echo': False}
-
             logging.info(f"Configuração ativa detectada: '{db_type}'")
-
             try:
                 if db_type == 'sqlite':
                     db_path = project_root / db_config.get('path', 'sistema.db')
@@ -105,7 +62,6 @@ class DatabaseManager:
                     host = db_config['host']
                     dbname = db_config['dbname']
                     port = db_config.get('port')
-
                     if db_type == 'postgresql':
                         connection_url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}"
                     elif db_type == 'mysql':
@@ -121,15 +77,11 @@ class DatabaseManager:
                         connection_url = f"firebird+fdb://{user}:{password}@{host}:{port}/{dbname}"
                     else:
                         raise ValueError(f"Tipo de banco de dados não suportado: '{db_type}'")
-
                 cls._engine = create_engine(connection_url, **engine_options)
-
                 with cls._engine.connect() as connection:
                     logging.info(f"Conexão com '{db_type}' estabelecida com sucesso.")
-
             except (OperationalError, SQLAlchemyError) as e:
-                logging.error(
-                    f"Erro ao conectar ao banco '{db_type}'. Verifique as credenciais, rede e status do servidor.")
+                logging.error(f"Erro ao conectar ao banco '{db_type}'. Verifique as credenciais, rede e status do servidor.")
                 raise ConnectionError(f"Não foi possível conectar ao banco '{db_type}'.") from e
             except KeyError as e:
                 logging.error(f"Parâmetro de configuração faltando no banco.ini para '{db_type}': {e}")
@@ -137,31 +89,23 @@ class DatabaseManager:
             except Exception as e:
                 logging.error(f"Erro inesperado durante a configuração do banco: {e}")
                 raise
-
         return cls._engine
 
     @classmethod
     def initialize_database(cls):
-        """
-        Executa o script de schema para bancos SQLite, se necessário.
-        """
         engine = cls.get_engine()
         if not engine:
             logging.error("Não foi possível inicializar o banco: engine não disponível.")
             return
-
         if engine.url.drivername != 'sqlite':
             logging.info("Inicialização de schema pulada para banco não-SQLite.")
             return
-
         db_path = Path(engine.url.database)
         if db_path.exists() and db_path.stat().st_size > 0:
             logging.info("Banco de dados SQLite já parece estar inicializado.")
             return
-
         if not SCHEMA_PATH.is_file():
             raise FileNotFoundError(f"Arquivo de schema não encontrado em {SCHEMA_PATH}")
-
         logging.info(f"Inicializando banco de dados SQLite a partir de '{SCHEMA_PATH}'...")
         try:
             schema_sql = SCHEMA_PATH.read_text(encoding='utf-8')

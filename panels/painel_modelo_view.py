@@ -2,7 +2,6 @@
 from tkinter import ttk
 
 class ModeloView(ttk.Frame):
-    """A View para o Painel Modelo."""
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -28,5 +27,5 @@ class ModeloView(ttk.Frame):
         instrucoes_label = ttk.Label(conteudo_frame, text=instrucoes_texto, justify="left")
         instrucoes_label.pack(pady=10)
 
-        botao_exemplo = ttk.Button(conteudo_frame, text="Testar Interação", command=self.controller._on_botao_click, style="success.TButton")
+        botao_exemplo = ttk.Button(conteudo_frame, text="Testar Interação", command=self.controller._on_botao_click, style="Success.TButton")
         botao_exemplo.pack(pady=20)

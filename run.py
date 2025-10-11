@@ -4,10 +4,8 @@ import sys
 import logging
 import os
 
-
 project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, project_root)
-
 
 from persistencia.logger import setup_loggers, StreamToLogger
 setup_loggers()
@@ -24,7 +22,6 @@ def main():
 
     main_logger = logging.getLogger("main_app")
     main_logger.info("=" * 20 + " Aplicação Iniciada " + "=" * 20)
-
 
     if config.INITIALIZE_DATABASE_ON_STARTUP:
         try:

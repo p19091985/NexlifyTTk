@@ -2,12 +2,7 @@
 from .tipos_linguagem_model import TiposLinguagemModel
 from .tipos_linguagem_view import TiposLinguagemView
 
-class TiposLinguagemController:
-    """
-    Controller para a janela de gerenciamento de Tipos de Linguagem.
-    Conecta a View (GUI) com o Model (lógica de dados).
-    """
-
+class TiposLaguagemController:
     def __init__(self, parent, on_close_callback=None):
         self.model = TiposLinguagemModel()
         self.view = TiposLinguagemView(parent)
@@ -36,7 +31,6 @@ class TiposLinguagemController:
             else:
                 self.model.update_tipo(self.selected_item_id, nome)
                 self.view.show_info("Sucesso", "Tipo atualizado!")
-
             self.clear_form()
             self.load_data()
             if self.on_close_callback:
@@ -48,7 +42,6 @@ class TiposLinguagemController:
         if self.selected_item_id is None:
             self.view.show_warning("Atenção", "Selecione um item para excluir.")
             return
-
         confirm_msg = f"Deseja excluir o tipo ID {self.selected_item_id}?\nEsta ação não pode ser desfeita."
         if self.view.ask_yes_no("Confirmar Exclusão", confirm_msg):
             try:

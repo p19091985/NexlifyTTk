@@ -4,7 +4,7 @@ from tkinter import ttk
 
 class CatalogoEspeciesView(ttk.Frame):
     """
-    A View para o painel de catálogo de espécies.
+    A View para o painel de catálogo de espécies (versão MVC).
     Contém toda a criação e layout dos widgets.
     """
     def __init__(self, parent, controller):
@@ -49,14 +49,13 @@ class CatalogoEspeciesView(ttk.Frame):
         parent.rowconfigure([0, 1], weight=1)
         parent.columnconfigure([0, 1], weight=1)
 
-        ttk.Button(parent, text="CREATE (Inserir)", command=self.controller.inserir_item, style="success.TButton").grid(row=0, column=0, sticky="nsew", padx=2, pady=2)
-        ttk.Button(parent, text="READ (Atualizar Lista)", command=self.controller.carregar_dados, style="info.TButton").grid(row=0, column=1, sticky="nsew", padx=2, pady=2)
-        ttk.Button(parent, text="UPDATE (Salvar Edição)", command=self.controller.atualizar_item, style="warning.TButton").grid(row=1, column=0, sticky="nsew", padx=2, pady=2)
-        ttk.Button(parent, text="DELETE (Excluir)", command=self.controller.excluir_item, style="danger.TButton").grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
-        ttk.Button(parent, text="Limpar Formulário", command=self.controller.limpar_form, style="secondary.Outline.TButton").grid(row=2, column=0, columnspan=2, sticky="ew", padx=2, pady=5)
+        ttk.Button(parent, text="CREATE (Inserir)", command=self.controller.inserir_item, style="Success.TButton").grid(row=0, column=0, sticky="nsew", padx=2, pady=2)
+        ttk.Button(parent, text="READ (Atualizar Lista)", command=self.controller.carregar_dados, style="Info.TButton").grid(row=0, column=1, sticky="nsew", padx=2, pady=2)
+        ttk.Button(parent, text="UPDATE (Salvar Edição)", command=self.controller.atualizar_item, style="Warning.TButton").grid(row=1, column=0, sticky="nsew", padx=2, pady=2)
+        ttk.Button(parent, text="DELETE (Excluir)", command=self.controller.excluir_item, style="Danger.TButton").grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
+        ttk.Button(parent, text="Limpar Formulário", command=self.controller.limpar_form, style="Secondary.TButton").grid(row=2, column=0, columnspan=2, sticky="ew", padx=2, pady=5)
 
     def _create_table(self, parent):
-        #Colunas da view definidas em minúsculas 
         columns = ('id', 'nome_especie', 'pais_origem', 'temperamento')
         self.tree = ttk.Treeview(parent, columns=columns, show='headings', selectmode='browse')
         for col in columns: self.tree.heading(col, text=col.replace('_', ' ').title())

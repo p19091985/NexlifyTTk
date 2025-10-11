@@ -5,7 +5,7 @@ import pandas as pd
 from .base_panel import BasePanel
 from persistencia.repository import GenericRepository
 from persistencia.data_service import DataService
-from .painel_auditoria_view import AuditoriaView  # Importa a nova View
+from .painel_auditoria_view import AuditoriaView
 
 class PainelAuditoria(BasePanel):
     PANEL_NAME = "Auditoria de Alterações"
@@ -18,7 +18,6 @@ class PainelAuditoria(BasePanel):
         super().__init__(parent, app_controller, **kwargs)
 
     def create_widgets(self):
-        # O Controller cria a View
         self.view = AuditoriaView(self, controller=self)
         self.view.pack(fill="both", expand=True)
         self._carregar_dados_iniciais()
@@ -56,14 +55,10 @@ class PainelAuditoria(BasePanel):
         if not linguagem or not categoria:
             messagebox.showwarning("Dados Incompletos", "Selecione uma linguagem e informe a nova categoria.", parent=self)
             return
-
         usuario_logado = self.app.get_current_user()['username']
-
         if not messagebox.askyesno("Confirmar Transação", f"Deseja reclassificar '{linguagem}' para '{categoria}'?\n\nEsta ação será auditada.", icon='warning', parent=self):
             return
-
         sucesso, mensagem = DataService.reclassificar_e_logar(linguagem, categoria, usuario_logado)
-
         if sucesso:
             messagebox.showinfo("Sucesso", mensagem, parent=self)
             self._limpar_campos_acao()

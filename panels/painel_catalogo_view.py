@@ -3,7 +3,6 @@ import tkinter as tk
 from tkinter import ttk
 
 class CatalogoView(ttk.Frame):
-    """A View para o painel de Catálogo de Espécies."""
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -42,11 +41,11 @@ class CatalogoView(ttk.Frame):
     def _create_crud_buttons(self, parent):
         parent.rowconfigure([0, 1], weight=1)
         parent.columnconfigure([0, 1], weight=1)
-        ttk.Button(parent, text="CREATE (Inserir)", command=self.controller._inserir_item, style="success.TButton").grid(row=0, column=0, sticky="nsew", padx=2, pady=2)
-        ttk.Button(parent, text="READ (Atualizar Lista)", command=self.controller._carregar_dados, style="info.TButton").grid(row=0, column=1, sticky="nsew", padx=2, pady=2)
-        ttk.Button(parent, text="UPDATE (Salvar Edição)", command=self.controller._atualizar_item, style="warning.TButton").grid(row=1, column=0, sticky="nsew", padx=2, pady=2)
-        ttk.Button(parent, text="DELETE (Excluir)", command=self.controller._excluir_item, style="danger.TButton").grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
-        ttk.Button(parent, text="Limpar Formulário", command=self.controller._limpar_form, style="secondary.Outline.TButton").grid(row=2, column=0, columnspan=2, sticky="ew", padx=2, pady=5)
+        ttk.Button(parent, text="CREATE (Inserir)", command=self.controller._inserir_item, style="Success.TButton").grid(row=0, column=0, sticky="nsew", padx=2, pady=2)
+        ttk.Button(parent, text="READ (Atualizar Lista)", command=self.controller._carregar_dados, style="Info.TButton").grid(row=0, column=1, sticky="nsew", padx=2, pady=2)
+        ttk.Button(parent, text="UPDATE (Salvar Edição)", command=self.controller._atualizar_item, style="Warning.TButton").grid(row=1, column=0, sticky="nsew", padx=2, pady=2)
+        ttk.Button(parent, text="DELETE (Excluir)", command=self.controller._excluir_item, style="Danger.TButton").grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
+        ttk.Button(parent, text="Limpar Formulário", command=self.controller._limpar_form, style="Secondary.TButton").grid(row=2, column=0, columnspan=2, sticky="ew", padx=2, pady=5)
 
     def _create_table(self, parent):
         columns = ('id', 'nome_especie', 'pais_origem', 'temperamento')

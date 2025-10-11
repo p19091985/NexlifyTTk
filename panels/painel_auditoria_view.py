@@ -2,8 +2,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+
 class AuditoriaView(ttk.Frame):
-    """A View para o painel de Auditoria."""
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -29,18 +29,26 @@ class AuditoriaView(ttk.Frame):
     def _create_action_widgets(self, parent):
         parent.columnconfigure(1, weight=1)
         ttk.Label(parent, text="Linguagem a Reclassificar:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        self.linguagem_combo = ttk.Combobox(parent, textvariable=self.controller.linguagem_selecionada_var, state="readonly")
+
+        self.linguagem_combo = ttk.Combobox(parent, textvariable=self.controller.linguagem_selecionada_var,
+                                            state="readonly")
         self.linguagem_combo.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
         self.linguagem_combo.bind("<<ComboboxSelected>>", lambda e: self.exec_button.config(state="normal"))
 
         ttk.Label(parent, text="Nova Categoria:").grid(row=1, column=0, sticky="w", padx=5, pady=5)
-        ttk.Entry(parent, textvariable=self.controller.nova_categoria_var).grid(row=1, column=1, sticky="ew", padx=5, pady=5)
+        ttk.Entry(parent, textvariable=self.controller.nova_categoria_var).grid(row=1, column=1, sticky="ew", padx=5,
+                                                                                pady=5)
 
         btn_frame = ttk.Frame(parent)
         btn_frame.grid(row=0, column=2, rowspan=2, sticky="ns", padx=(20, 0))
-        self.exec_button = ttk.Button(btn_frame, text="Executar\nTransação", command=self.controller._executar_transacao, style="success.TButton", state="disabled")
+
+        self.exec_button = ttk.Button(btn_frame, text="Executar\nTransação",
+                                      command=self.controller._executar_transacao, style="Success.TButton",
+                                      state="disabled")
         self.exec_button.pack(fill="both", expand=True)
-        ttk.Button(btn_frame, text="🔄 Atualizar Dados", command=self.controller._carregar_dados_iniciais, style="info.Outline.TButton").pack(fill="x", pady=(5, 0))
+
+        ttk.Button(btn_frame, text="🔄 Atualizar Dados", command=self.controller._carregar_dados_iniciais,
+                   style="Info.TButton").pack(fill="x", pady=(5, 0))
 
     def _create_linguagens_table(self, parent):
         columns = ('id', 'nome', 'categoria')

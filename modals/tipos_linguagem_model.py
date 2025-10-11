@@ -4,10 +4,6 @@ from sqlalchemy import exc
 from persistencia.repository import GenericRepository
 
 class TiposLinguagemModel:
-    """
-    Modelo para gerenciar os dados de Tipos de Linguagem.
-    """
-
     def get_all_tipos(self):
         try:
             return GenericRepository.read_table_to_dataframe("tipos_linguagem")
@@ -18,9 +14,6 @@ class TiposLinguagemModel:
         if not nome:
             raise ValueError("O campo 'Nome' é obrigatório.")
         try:
-            # --- SOLUÇÃO DEFINITIVA ---
-            # O Model cumpre seu papel criando o DataFrame com a coluna 'NOME'
-            # em maiúsculas, exatamente como o schema do banco de dados espera.
             df = pd.DataFrame([{'NOME': nome}])
             GenericRepository.write_dataframe_to_table(df, "tipos_linguagem")
         except exc.IntegrityError:
@@ -32,7 +25,6 @@ class TiposLinguagemModel:
         if not nome:
             raise ValueError("O campo 'Nome' é obrigatório.")
         try:
-            # A consistência é aplicada aqui também para garantir robustez.
             GenericRepository.update_table("tipos_linguagem", {'NOME': nome}, {'ID': item_id})
         except exc.IntegrityError:
             raise ValueError(f"O nome '{nome}' já existe.")
@@ -41,7 +33,6 @@ class TiposLinguagemModel:
 
     def delete_tipo(self, item_id: int):
         try:
-            # A consistência é aplicada aqui também.
             GenericRepository.delete_from_table("tipos_linguagem", {'ID': item_id})
         except exc.IntegrityError:
             raise ConnectionError("Não foi possível excluir. Este tipo está em uso por uma ou mais linguagens.")

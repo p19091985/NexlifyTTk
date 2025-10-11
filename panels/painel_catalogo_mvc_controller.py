@@ -7,7 +7,7 @@ from persistencia.repository import GenericRepository
 from persistencia.data_service import DataService
 from .painel_catalogo_mvc_view import CatalogoEspeciesView
 
-class PainelCatalogoEspeciesMVC(BasePanel):
+class PainelCatalogoEspeciesMVC(BasePanel): # <- NOME DA CLASSE CORRIGIDO
     """Controller para o painel de catálogo de espécies, seguindo o padrão MVC."""
     PANEL_NAME = "Catálogo de Espécies MVC"
     PANEL_ICON = "⚙️"
@@ -53,9 +53,9 @@ class PainelCatalogoEspeciesMVC(BasePanel):
     def limpar_form(self):
         """Limpa as variáveis de estado."""
         self.selected_item_id = None
-        self.nome_var.set("");
-        self.pais_var.set("");
-        self.temperamento_var.set("");
+        self.nome_var.set("")
+        self.pais_var.set("")
+        self.temperamento_var.set("")
         self.novo_nome_var.set("")
         if self.view.tree.selection():
             self.view.tree.selection_remove(self.view.tree.selection()[0])
@@ -66,7 +66,7 @@ class PainelCatalogoEspeciesMVC(BasePanel):
         if not nome:
             messagebox.showwarning("Validação", "O campo 'Nome da Espécie' é obrigatório.", parent=self)
             return
-        #Chaves do dicionário em minúsculas 
+        #Chaves do dicionário em minúsculas
         data = {'nome_especie': nome, 'pais_origem': self.pais_var.get().strip(),
                 'temperamento': self.temperamento_var.get().strip()}
         try:
@@ -81,13 +81,13 @@ class PainelCatalogoEspeciesMVC(BasePanel):
         if self.selected_item_id is None:
             messagebox.showwarning("Atenção", "Selecione um item da tabela para atualizar.", parent=self)
             return
-        #Chaves do dicionário em minúsculas 
+        #Chaves do dicionário em minúsculas
         update_values = {'nome_especie': self.nome_var.get().strip(), 'pais_origem': self.pais_var.get().strip(),
                          'temperamento': self.temperamento_var.get().strip()}
         try:
-            #Chave da condição em minúsculas 
+            #Chave da condição em minúsculas
             GenericRepository.update_table("especie_gatos", update_values=update_values,
-                                           where_conditions={'id': self.selected_item_id})
+                                       where_conditions={'id': self.selected_item_id})
             messagebox.showinfo("Sucesso", "Espécie atualizada com sucesso!", parent=self)
             self.carregar_dados()
         except Exception as e:
@@ -102,7 +102,7 @@ class PainelCatalogoEspeciesMVC(BasePanel):
                                    icon='warning', parent=self):
             return
         try:
-            #Chave da condição em minúsculas 
+            #Chave da condição em minúsculas
             GenericRepository.delete_from_table("especie_gatos", where_conditions={'id': self.selected_item_id})
             messagebox.showinfo("Sucesso", "Espécie excluída com sucesso!", parent=self)
             self.carregar_dados()

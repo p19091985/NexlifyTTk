@@ -3,18 +3,12 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import logging
 import time
-import ttkbootstrap as bstrap
 
 import config
 from persistencia import auth
 
 
-class LoginDialog(bstrap.Toplevel):
-    """
-    Janela de diálogo de login com funcionalidades de UX aprimoradas,
-    agora integrada com o tema do ttkbootstrap.
-    """
-
+class LoginDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
@@ -28,7 +22,7 @@ class LoginDialog(bstrap.Toplevel):
         self.grab_set()
         self.resizable(False, False)
 
-        self.password_visible = bstrap.BooleanVar(value=False)
+        self.password_visible = tk.BooleanVar(value=False)
 
         self._setup_widgets()
         self._center_window()
@@ -40,28 +34,36 @@ class LoginDialog(bstrap.Toplevel):
     def _setup_widgets(self):
         main_frame = ttk.Frame(self, padding="20 15 20 20")
         main_frame.pack(fill="both", expand=True)
+
         credentials_frame = ttk.LabelFrame(main_frame, text=" Credenciais de Acesso ", padding=15)
         credentials_frame.pack(fill="x")
+
         ttk.Label(credentials_frame, text="Usuário:").grid(row=0, column=0, sticky="w", pady=5, padx=5)
         self.user_entry = ttk.Entry(credentials_frame, width=30)
         self.user_entry.grid(row=0, column=1, pady=5, padx=5, sticky="ew")
+
         ttk.Label(credentials_frame, text="Senha:").grid(row=1, column=0, sticky="w", pady=5, padx=5)
         self.pass_entry = ttk.Entry(credentials_frame, show="*", width=30)
         self.pass_entry.grid(row=1, column=1, pady=5, padx=5, sticky="ew")
+
         credentials_frame.columnconfigure(1, weight=1)
-        show_pass_check = ttk.Checkbutton(main_frame, text="Mostrar senha",
-                                          variable=self.password_visible,
+
+        show_pass_check = ttk.Checkbutton(main_frame, text="Mostrar senha", variable=self.password_visible,
                                           command=self._toggle_password_visibility)
         show_pass_check.pack(anchor="w", pady=(5, 10), padx=5)
+
         self.user_entry.bind("<Return>", lambda e: self.pass_entry.focus_set())
         self.pass_entry.bind("<Return>", lambda e: self._on_login())
+
         btn_frame = ttk.Frame(main_frame)
         btn_frame.pack(fill="x", pady=(10, 0))
-        btn_frame.columnconfigure(0, weight=1);
+        btn_frame.columnconfigure(0, weight=1)
         btn_frame.columnconfigure(1, weight=1)
-        login_btn = ttk.Button(btn_frame, text="Entrar", command=self._on_login, style='success.TButton')
+
+        login_btn = ttk.Button(btn_frame, text="Entrar", command=self._on_login, style='Success.TButton')
         login_btn.grid(row=0, column=0, sticky="ew", padx=(0, 5))
-        cancel_btn = ttk.Button(btn_frame, text="Cancelar", command=self._on_cancel, style='secondary.TButton')
+
+        cancel_btn = ttk.Button(btn_frame, text="Cancelar", command=self._on_cancel, style='Secondary.TButton')
         cancel_btn.grid(row=0, column=1, sticky="ew", padx=(5, 0))
 
     def _toggle_password_visibility(self):
@@ -77,21 +79,17 @@ class LoginDialog(bstrap.Toplevel):
 
         user_data = auth.verify_user_credentials(username, password)
 
-        #Verifica o novo sinalizador de erro de conexão 
         if user_data == "connection_error":
             messagebox.showerror("Problema de Conexão",
-                                 "Não foi possível conectar ao banco de dados.\n\n"
-                                 "Verifique sua rede, o servidor do banco e tente novamente mais tarde.",
+                                 "Não foi possível conectar ao banco de dados.\n\nVerifique sua rede, o servidor do banco e tente novamente mais tarde.",
                                  parent=self)
             self.user_info = "connection_error"
             self.destroy()
-
-        elif user_data:  # Se user_data não for None nem a string de erro, o login foi um sucesso.
+        elif user_data:
             self.login_logger.info(f"SUCESSO - Login para: '{username}'")
             self.user_info = user_data
             self.destroy()
-
-        else:  # Se for None, é um erro de credenciais inválidas.
+        else:
             self.attempts += 1
             remaining = self.max_attempts - self.attempts
             self.login_logger.warning(f"FALHA - Tentativa {self.attempts}/{self.max_attempts} para: '{username}'")
@@ -116,34 +114,20 @@ class LoginDialog(bstrap.Toplevel):
         self.lift()
         x, y = self.winfo_x(), self.winfo_y()
         for _ in range(2):
-            self.geometry(f"+{x + 5}+{y}");
-            self.update_idletasks();
+            self.geometry(f"+{x + 5}+{y}")
+            self.update_idletasks()
             time.sleep(0.04)
-            self.geometry(f"+{x - 5}+{y}");
-            self.update_idletasks();
+            self.geometry(f"+{x - 5}+{y}")
+            self.update_idletasks()
             time.sleep(0.04)
         self.geometry(f"+{x}+{y}")
 
     def _center_window(self):
-        """
-        Centraliza a janela no meio do monitor principal.
-        Este método garante que, mesmo em setups com múltiplos monitores, a janela
-        apareça no centro da tela onde a aplicação principal foi iniciada.
-        """
-        self.update_idletasks()  # Garante que as dimensões da janela foram calculadas
-
-        # Obtém as dimensões da própria janela de login
+        self.update_idletasks()
         window_width = self.winfo_width()
         window_height = self.winfo_height()
-
-        # Obtém as dimensões da tela principal (o monitor onde a janela 'pai' está).
-        # Na maioria dos sistemas, winfo_screenwidth/height refere-se ao monitor primário.
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-
-        # Calcula a posição (coordenadas x e y) para o centro da tela
         center_x = (screen_width // 2) - (window_width // 2)
         center_y = (screen_height // 2) - (window_height // 2)
-
-        # Define a geometria da janela para a posição calculada
         self.geometry(f"+{center_x}+{center_y}")

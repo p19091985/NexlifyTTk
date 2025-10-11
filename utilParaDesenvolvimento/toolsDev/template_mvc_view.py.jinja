@@ -1,9 +1,8 @@
-# modals/{{ class_name | lower | replace('painel', '') }}_view.py
+{# modals/{{ class_name | lower | replace('painel', '') }}_view.py #}
 import tkinter as tk
 from tkinter import ttk, messagebox
-import ttkbootstrap as bstrap
 
-class {{ class_name }}View(bstrap.Toplevel):
+class {{ class_name }}View(tk.Toplevel):
     """View (Janela Modal) para {{ panel_name }}."""
 
     def __init__(self, parent):
@@ -20,6 +19,7 @@ class {{ class_name }}View(bstrap.Toplevel):
 
     def set_controller(self, controller):
         self.controller = controller
+        # Adicionar aqui os bindings de command após o controller ser setado, se necessário
 
     def _create_widgets(self):
         main_frame = ttk.Frame(self, padding=15)
@@ -33,12 +33,7 @@ class {{ class_name }}View(bstrap.Toplevel):
         table_frame.pack(side="right", fill="both", expand=True)
         self._create_table(table_frame)
 
-    #  Os métodos _create_form, _create_table e os métodos auxiliares
-    #  são praticamente idênticos ao template_mvc_view.py.jinja,
-    #  com a diferença de que não herdam de BasePanel e são um Toplevel.
-
     def _create_form(self, parent):
-        # (Lógica idêntica à View de Painel)
         parent.columnconfigure(1, weight=1)
         {% for col in columns %}
         self.{{ col.name }}_var = tk.StringVar()
@@ -56,12 +51,11 @@ class {{ class_name }}View(bstrap.Toplevel):
         {% endfor %}
         btn_frame = ttk.Frame(parent)
         btn_frame.grid(row=row_idx, column=0, columnspan=2, pady=15, sticky="ew")
-        ttk.Button(btn_frame, text="Salvar", command=lambda: self.controller.save_item(), style="success.TButton").pack(side="left", expand=True, fill="x", padx=(0,5))
-        ttk.Button(btn_frame, text="Excluir", command=lambda: self.controller.delete_item(), style="danger.TButton").pack(side="left", expand=True, fill="x")
-        ttk.Button(parent, text="Limpar", command=lambda: self.controller.clear_form(), style="secondary.TButton").grid(row=row_idx+1, column=0, columnspan=2, sticky="ew")
+        ttk.Button(btn_frame, text="Salvar", command=lambda: self.controller.save_item(), style="Success.TButton").pack(side="left", expand=True, fill="x", padx=(0,5))
+        ttk.Button(btn_frame, text="Excluir", command=lambda: self.controller.delete_item(), style="Danger.TButton").pack(side="left", expand=True, fill="x")
+        ttk.Button(parent, text="Limpar", command=lambda: self.controller.clear_form(), style="Secondary.TButton").grid(row=row_idx+1, column=0, columnspan=2, sticky="ew")
 
     def _create_table(self, parent):
-        # (Lógica idêntica à View de Painel)
         parent.rowconfigure(0, weight=1); parent.columnconfigure(0, weight=1)
         columns = ({%- for col in columns %}'{{ col.name }}'{% if not loop.last %}, {% endif %}{% endfor %})
         self.tree = ttk.Treeview(parent, columns=columns, show='headings', selectmode='browse')
@@ -75,12 +69,57 @@ class {{ class_name }}View(bstrap.Toplevel):
         self.tree.configure(yscrollcommand=scrollbar.set)
         scrollbar.grid(row=0, column=1, sticky="ns")
 
-    # (Todos os métodos auxiliares como populate_treeview, get_form_data, etc. são idênticos)
+    def populate_treeview(self, data):
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+        if not data.empty:
+            for _, row in data.iterrows():
+                self.tree.insert("", "end", values=list(row))
+
+    def get_form_data(self):
+        return {
+            {%- for col in columns if not col.is_pk %}
+            '{{ col.name }}': self.{{ col.name }}_var.get().strip(){% if not loop.last %},{% endif %}
+            {%- endfor %}
+        }
+
+    def get_selected_item_data(self):
+        selected_items = self.tree.selection()
+        if not selected_items:
+            return None
+        item_values = self.tree.item(selected_items[0], "values")
+        return { {% for col in columns %}'{{ col.name }}': item_values[{{ loop.index0 }}]{% if not loop.last %}, {% endif %}{% endfor %} }
+
+    def set_form_data(self, data: dict):
+        if not data: return
+        {% for col in columns if not col.is_pk %}
+        self.{{ col.name }}_var.set(data.get('{{ col.name }}', ''))
+        {%- endfor %}
+
+    def clear_form_fields(self):
+        {% for col in columns if not col.is_pk %}
+        self.{{ col.name }}_var.set('')
+        {%- endfor %}
+        if self.tree.selection():
+            self.tree.selection_remove(self.tree.selection()[0])
+
+    def show_error(self, title, message):
+        messagebox.showerror(title, message, parent=self)
+
+    def show_info(self, title, message):
+        messagebox.showinfo(title, message, parent=self)
+
+    def show_warning(self, title, message):
+        messagebox.showwarning(title, message, parent=self)
+
+    def ask_yes_no(self, title, message):
+        return messagebox.askyesno(title, message, icon='warning', parent=self)
 
     def _center_window(self):
         self.update_idletasks()
-        p_x, p_y = self.winfo_toplevel().winfo_rootx(), self.winfo_toplevel().winfo_rooty()
-        p_w, p_h = self.winfo_toplevel().winfo_width(), self.winfo_toplevel().winfo_height()
+        parent_window = self.winfo_toplevel()
+        p_x, p_y = parent_window.winfo_rootx(), parent_window.winfo_rooty()
+        p_w, p_h = parent_window.winfo_width(), parent_window.winfo_height()
         w, h = self.winfo_width(), self.winfo_height()
         x = p_x + (p_w // 2) - (w // 2)
         y = p_y + (p_h // 2) - (h // 2)
