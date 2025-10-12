@@ -1,4 +1,3 @@
-        
 import tkinter as tk
 from tkinter import ttk, messagebox
 import logging
@@ -9,9 +8,9 @@ from panels.base_panel import BasePanel
 from panels import ALL_PANELS
 from settings_manager import SettingsManager
 from dialogs.login_ui import LoginDialog
-                                                      
 from modals.tipos_vegetais_controller import TiposVegetaisController
 from modals.about_dialog import AboutDialog
+from dialogs.advanced_theme_dialog import AdvancedThemeDialog
 
 
 class AplicacaoPrincipal(tk.Tk):
@@ -23,7 +22,7 @@ class AplicacaoPrincipal(tk.Tk):
 
         self._configure_styles()
         current_settings = self.settings_manager.load_settings()
-        self._apply_font_settings(current_settings)
+        self._apply_theme_settings(self.style, current_settings)
 
         self.logger = logging.getLogger("main_app")
         self.project_root = project_root
@@ -42,36 +41,37 @@ class AplicacaoPrincipal(tk.Tk):
         self.style = ttk.Style(self)
         self.style.theme_use('clam')
 
-        self.style.configure('TButton', padding=6, relief="flat", background="#ccc")
-        self.style.map('TButton', background=[('active', '#e0e0e0')])
-
-        self.style.configure('Danger.TButton', foreground='white', background='#dc3545')
-        self.style.map('Danger.TButton', background=[('active', '#c82333')])
-
-        self.style.configure('Success.TButton', foreground='white', background='#28a745')
-        self.style.map('Success.TButton', background=[('active', '#218838')])
-
-        self.style.configure('Warning.TButton', foreground='black', background='#ffc107')
-        self.style.map('Warning.TButton', background=[('active', '#e0a800')])
-
-        self.style.configure('Info.TButton', foreground='white', background='#17a2b8')
-        self.style.map('Info.TButton', background=[('active', '#138496')])
-
-        self.style.configure('Secondary.TButton', foreground='white', background='#6c757d')
-        self.style.map('Secondary.TButton', background=[('active', '#5a6268')])
-
-        self.style.configure('Sidebar.TFrame', background='#f0f0f0')
-        self.style.configure('Sidebar.TLabel', background='#f0f0f0')
-        self.style.configure('Sidebar.TButton', background='#f0f0f0', borderwidth=0, anchor='w')
-        self.style.map('Sidebar.TButton', background=[('active', '#dcdcdc')])
-
-    def _apply_font_settings(self, settings: Dict[str, Any]):
+    def _apply_theme_settings(self, style_obj: ttk.Style, settings: Dict[str, Any]):
+        """Aplica as configurações de fonte e cor ao objeto de estilo fornecido."""
         font_family = settings.get('font_family', 'Segoe UI')
         font_size = settings.get('font_size', 10)
         default_font = (font_family, font_size)
-        self.style.configure('.', font=default_font)
-        self.style.configure('Treeview', font=default_font)
-        self.style.configure('Treeview.Heading', font=(font_family, font_size, 'bold'))
+        style_obj.configure('.', font=default_font)
+        style_obj.configure('Treeview', font=default_font)
+        style_obj.configure('Treeview.Heading', font=(font_family, font_size, 'bold'))
+
+        custom_colors = settings.get('custom_colors', {})
+        button_styles = {
+            'Danger.TButton': {'background': custom_colors.get('danger') or '#dc3545', 'active': '#c82333'},
+            'Success.TButton': {'background': custom_colors.get('success') or '#28a745', 'active': '#218838'},
+            'Warning.TButton': {'background': custom_colors.get('warning') or '#ffc107', 'active': '#e0a800',
+                                'foreground': 'black'},
+            'Info.TButton': {'background': custom_colors.get('info') or '#17a2b8', 'active': '#138496'},
+            'Secondary.TButton': {'background': custom_colors.get('secondary') or '#6c757d', 'active': '#5a6268'},
+        }
+
+        for style_name, colors in button_styles.items():
+            foreground_color = colors.get('foreground', 'white')
+            style_obj.configure(style_name, foreground=foreground_color, background=colors['background'])
+            style_obj.map(style_name, background=[('active', colors['active'])])
+
+        style_obj.configure('TButton', padding=6, relief="flat", background="#ccc")
+        style_obj.map('TButton', background=[('active', '#e0e0e0')])
+
+        style_obj.configure('Sidebar.TFrame', background='#f0f0f0')
+        style_obj.configure('Sidebar.TLabel', background='#f0f0f0')
+        style_obj.configure('Sidebar.TButton', background='#f0f0f0', borderwidth=0, anchor='w')
+        style_obj.map('Sidebar.TButton', background=[('active', '#dcdcdc')])
 
     def _initialize_session_for_user(self, user_info: Dict[str, Any]):
         for widget in self.winfo_children():
@@ -131,6 +131,7 @@ class AplicacaoPrincipal(tk.Tk):
 
     def _load_and_create_panels(self):
         user_access_level = self.current_user.get('access_level', 'Desenvolvedor')
+
         for PanelClass in ALL_PANELS:
             try:
                 if not PanelClass.ALLOWED_ACCESS or user_access_level in PanelClass.ALLOWED_ACCESS:
@@ -156,17 +157,21 @@ class AplicacaoPrincipal(tk.Tk):
     def _create_menubar(self) -> tk.Menu:
         menubar = tk.Menu(self)
 
-        cadastros_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Cadastros", menu=cadastros_menu)
+        paineis_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Painéis", menu=paineis_menu)
         for name in self.sidebar_buttons.keys():
-            if "gestão" in name.lower() or "catálogo" in name.lower():
-                cadastros_menu.add_command(label=name, command=lambda n=name: self.switch_panel_by_name(n))
-        cadastros_menu.add_separator()
-                                                               
+            paineis_menu.add_command(label=name, command=lambda n=name: self.switch_panel_by_name(n))
+
+        cadastros_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Cadastros Auxiliares", menu=cadastros_menu)
         cadastros_menu.add_command(label="Tipos de Vegetais...", command=self._open_tipos_vegetais_modal)
 
         config_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Configurações", menu=config_menu)
+
+        # AQUI: A exibição do menu de tema agora depende da flag em config.py
+        if hasattr(config, 'ENABLE_THEME_MENU') and config.ENABLE_THEME_MENU:
+            config_menu.add_command(label="Personalizar Tema...", command=self._open_theme_dialog)
 
         help_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Ajuda", menu=help_menu)
@@ -186,20 +191,27 @@ class AplicacaoPrincipal(tk.Tk):
             self.logger.warning("Troca de usuário falhou ou foi cancelada. Fechando a aplicação.")
             self.destroy()
 
-                                                                           
     def _open_tipos_vegetais_modal(self):
         try:
             callback = None
             current_panel = self.panels.get(self.current_panel_name)
-                                                               
+
             if current_panel and hasattr(current_panel, '_carregar_tipos_vegetais'):
                 callback = current_panel._carregar_tipos_vegetais
 
-                                            
             controller = TiposVegetaisController(self, on_close_callback=callback)
             controller.show()
         except Exception as e:
             messagebox.showerror("Erro Crítico", f"Não foi possível abrir a janela de gestão: {e}")
+
+    def _open_theme_dialog(self):
+        """Abre a janela de diálogo de personalização avançada do tema."""
+        try:
+            dialog = AdvancedThemeDialog(self, self.settings_manager)
+            self.wait_window(dialog)
+        except Exception as e:
+            messagebox.showerror("Erro ao Abrir Personalização",
+                                 f"Não foi possível abrir o painel de personalização:\n\n{e}", parent=self)
 
     def _show_about_dialog(self):
         AboutDialog(self)

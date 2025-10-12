@@ -1,33 +1,11 @@
--- Etapa 1: Criar o usuário (role) se ele não existir
-DO
-$do$
-BEGIN
-   IF NOT EXISTS (
-      SELECT FROM pg_catalog.pg_roles
-      WHERE  rolname = 'gato') THEN
-
-      CREATE ROLE gato WITH LOGIN PASSWORD '-Vladmir!5Anos-';
-   END IF;
-END
-$do$;
-
--- Etapa 2: Criar o banco de dados se ele não existir e atribuir o dono
--- (Conecte-se a um banco de dados existente como 'postgres' para executar este comando)
--- SELECT 'CREATE DATABASE "NexlifyTTk" OWNER "gato"'
--- WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'NexlifyTTk')\gexec
-
--- NOTA: A criação do banco de dados não pode ser feita em um bloco de transação.
--- Execute o comando acima separadamente ou crie o banco manualmente.
--- Ex: CREATE DATABASE "NexlifyTTk" WITH OWNER = 'gato';
-
 -- Conecte-se ao banco NexlifyTTk antes de continuar: \c NexlifyTTk
 
 -- Etapa 3: Limpeza e criação das tabelas
 DROP TABLE IF EXISTS LOG_ALTERACOES;
-DROP TABLE IF EXISTS LINGUAGENS_PROGRAMACAO;
-DROP TABLE IF EXISTS ESPECIE_GATOS;
-DROP TABLE IF EXISTS TIPOS_LINGUAGEM;
+DROP TABLE IF EXISTS VEGETAIS;
+DROP TABLE IF EXISTS TIPOS_VEGETAIS;
 DROP TABLE IF EXISTS USUARIOS;
+DROP TABLE IF EXISTS ESPECIE_GATOS;
 
 -- Tabela de Usuários
 CREATE TABLE USUARIOS (
@@ -40,20 +18,18 @@ CREATE TABLE USUARIOS (
     ))
 );
 
--- Tabela de Tipos de Linguagem
-CREATE TABLE TIPOS_LINGUAGEM (
+-- Tabela de Tipos de Vegetais
+CREATE TABLE TIPOS_VEGETAIS (
     ID SERIAL PRIMARY KEY,
     NOME VARCHAR(100) NOT NULL UNIQUE
 );
 
--- Tabela de Linguagens com Chave Estrangeira
-CREATE TABLE LINGUAGENS_PROGRAMACAO (
+-- Tabela de Vegetais com Chave Estrangeira
+CREATE TABLE VEGETAIS (
     ID SERIAL PRIMARY KEY,
     NOME VARCHAR(100) NOT NULL,
     ID_TIPO INTEGER,
-    ANO_CRIACAO INTEGER,
-    CATEGORIA VARCHAR(100),
-    FOREIGN KEY (ID_TIPO) REFERENCES TIPOS_LINGUAGEM(ID) ON DELETE SET NULL ON UPDATE CASCADE
+    FOREIGN KEY (ID_TIPO) REFERENCES TIPOS_VEGETAIS(ID) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- Tabela de Log de Alterações
@@ -73,6 +49,7 @@ CREATE TABLE ESPECIE_GATOS (
     TEMPERAMENTO VARCHAR(255)
 );
 
+-- Dados de inserção (o restante do arquivo permanece o mesmo)
 INSERT INTO USUARIOS (LOGIN_USUARIO, SENHA_CRIPTOGRAFADA, NOME_COMPLETO, TIPO_ACESSO) VALUES
 ('admin', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Usuário Administrador', 'Administrador Global'),
 ('diretor.op', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Carlos Diretor', 'Diretor de Operações'),
@@ -90,15 +67,14 @@ INSERT INTO USUARIOS (LOGIN_USUARIO, SENHA_CRIPTOGRAFADA, NOME_COMPLETO, TIPO_AC
 ('lara.admin', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Lara Administradora', 'Administrador Global'),
 ('mateus.auditor', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Mateus Auditor', 'Auditor Externo');
 
+INSERT INTO TIPOS_VEGETAIS (NOME) VALUES ('Raízes e Tubérculos'), ('Folhas'), ('Flores e Inflorescências'), ('Frutos'), ('Legumes');
 
-INSERT INTO TIPOS_LINGUAGEM (NOME) VALUES ('Estática'), ('Dinâmica'), ('Mista'), ('Funcional'), ('Lógica');
-
-INSERT INTO LINGUAGENS_PROGRAMACAO (NOME, ID_TIPO, ANO_CRIACAO, CATEGORIA) VALUES
-('C++', 1, 1985, 'Linguagens Compiladas'),
-('Java', 1, 1995, 'Linguagens Compiladas'),
-('Rust', 1, 2010, 'Linguagens Compiladas'),
-('Python', 2, 1991, 'Linguagens Interpretadas'),
-('JavaScript', 2, 1995, 'Linguagens Interpretadas');
+INSERT INTO VEGETAIS (NOME, ID_TIPO) VALUES
+('Abóbora', 4), ('Abobrinha', 4), ('Agrião', 2), ('Aipim', 1), ('Alface', 2), ('Alho', 1), ('Almeirão', 2),
+('Batata-doce', 1), ('Batata', 1), ('Berinjela', 4), ('Beterraba', 1), ('Brócolis', 3), ('Cebola', 1),
+('Cenoura', 1), ('Chuchu', 4), ('Coentro', 2), ('Couve', 2), ('Couve-flor', 3), ('Ervilha', 5), ('Espinafre', 2),
+('Feijão-vagem', 5), ('Inhame', 1), ('Jiló', 4), ('Maxixe', 4), ('Milho', 4), ('Pepino', 4), ('Pimentão', 4),
+('Quiabo', 4), ('Rabanete', 1), ('Repolho', 2);
 
 INSERT INTO ESPECIE_GATOS (NOME_ESPECIE, PAIS_ORIGEM, TEMPERAMENTO) VALUES
 ('Siamês', 'Tailândia', 'Inteligente e Afetuoso'),

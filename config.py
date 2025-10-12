@@ -9,7 +9,7 @@ REDIRECT_CONSOLE_TO_LOG = True
 
 MAX_LOGIN_ATTEMPTS = 3
 
-ENABLE_THEME_MENU = False
+ENABLE_THEME_MENU = True
 
 FONT_FAMILY = "Segoe UI"
 FONTS: Dict[str, Tuple[str, int, str]] = {

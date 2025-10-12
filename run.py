@@ -1,12 +1,16 @@
-        
 from tkinter import messagebox
 import sys
 import logging
 import os
 
+# 1. Adiciona a pasta raiz do projeto ao path do Python.
+#    Isso permite que o script encontre os pacotes como 'persistencia', 'app', etc.
 project_root = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, project_root)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
+# 2. Agora, com o path configurado, as importações são feitas de forma "absoluta"
+#    a partir da raiz do projeto, o que funciona corretamente.
 from persistencia.logger import setup_loggers, StreamToLogger
 setup_loggers()
 
@@ -25,6 +29,8 @@ def main():
 
     if config.INITIALIZE_DATABASE_ON_STARTUP:
         try:
+            # 3. A chamada ao DatabaseManager permanece. É AQUI DENTRO que a
+            #    descriptografia acontece, de forma encapsulada e segura.
             DatabaseManager.initialize_database()
             main_logger.info("Banco de dados pronto.")
         except Exception as e:
@@ -36,7 +42,7 @@ def main():
     try:
         app = AplicacaoPrincipal(project_root=project_root)
         app.mainloop()
-        main_logger.info("Aplicação finalizaadda normalmente.")
+        main_logger.info("Aplicação finalizada normalmente.")
     except Exception as e:
         main_logger.critical(f"Erro fatal na aplicação principal: {e}", exc_info=True)
         messagebox.showerror("Erro Crítico", f"A aplicação encontrou um erro fatal e precisa ser fechada: {e}")

@@ -1,7 +1,7 @@
-                          
 import logging
 from pathlib import Path
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, event
+from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError, OperationalError
 
 import config
@@ -11,8 +11,18 @@ project_root = Path(__file__).parent.parent.resolve()
 CONFIG_PATH = project_root / "banco.ini"
 SCHEMA_PATH = project_root / "persistencia/sql_schema_SQLLite.sql"
 
+
+# A função agora é mais simples, pois só será chamada para o engine SQLite.
+def _set_sqlite_pragma(dbapi_connection, connection_record):
+    """Executa o PRAGMA para ativar o suporte a chaves estrangeiras no SQLite."""
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
+
 class DatabaseManager:
     _engine = None
+
     @classmethod
     def _parse_active_config(cls):
         if not CONFIG_PATH.is_file():
@@ -22,13 +32,15 @@ class DatabaseManager:
         active_config = {}
         for line in lines:
             clean_line = line.strip()
-            if not clean_line or (clean_line.startswith('#') or clean_line.startswith(';')) or clean_line.startswith('['):
+            if not clean_line or (clean_line.startswith('#') or clean_line.startswith(';')) or clean_line.startswith(
+                    '['):
                 continue
             if '=' in clean_line:
                 key, value = clean_line.split('=', 1)
                 active_config[key.strip()] = value.strip()
         if not active_config or 'type' not in active_config:
-            raise ValueError("Nenhuma configuração de banco de dados ativa (descomentada) foi encontrada no 'banco.ini'.")
+            raise ValueError(
+                "Nenhuma configuração de banco de dados ativa (descomentada) foi encontrada no 'banco.ini'.")
         return active_config
 
     @classmethod
@@ -56,12 +68,21 @@ class DatabaseManager:
                     db_path = project_root / db_config.get('path', 'sistema.db')
                     connection_url = f"sqlite:///{db_path}"
                     engine_options['connect_args'] = {'timeout': 15}
+
+                    # Cria o engine aqui para poder registrar o evento nele
+                    engine = create_engine(connection_url, **engine_options)
+
+                    # REGISTRO DO EVENTO: Anexa a função _set_sqlite_pragma
+                    # APENAS a este engine específico do SQLite.
+                    event.listen(engine, "connect", _set_sqlite_pragma)
+                    cls._engine = engine
                 else:
                     user = decrypt_message(db_config['user'], key)
                     password = decrypt_message(db_config['password'], key)
                     host = db_config['host']
                     dbname = db_config['dbname']
                     port = db_config.get('port')
+
                     if db_type == 'postgresql':
                         connection_url = f"postgresql+psycopg2://{user}:{password}@{host}:{port}/{dbname}"
                     elif db_type == 'mysql':
@@ -77,11 +98,16 @@ class DatabaseManager:
                         connection_url = f"firebird+fdb://{user}:{password}@{host}:{port}/{dbname}"
                     else:
                         raise ValueError(f"Tipo de banco de dados não suportado: '{db_type}'")
-                cls._engine = create_engine(connection_url, **engine_options)
+
+                    # Cria o engine para os outros bancos de dados
+                    cls._engine = create_engine(connection_url, **engine_options)
+
+                # O teste de conexão agora é feito fora do 'if' para valer para todos
                 with cls._engine.connect() as connection:
                     logging.info(f"Conexão com '{db_type}' estabelecida com sucesso.")
             except (OperationalError, SQLAlchemyError) as e:
-                logging.error(f"Erro ao conectar ao banco '{db_type}'. Verifique as credenciais, rede e status do servidor.")
+                logging.error(
+                    f"Erro ao conectar ao banco '{db_type}'. Verifique as credenciais, rede e status do servidor.")
                 raise ConnectionError(f"Não foi possível conectar ao banco '{db_type}'.") from e
             except KeyError as e:
                 logging.error(f"Parâmetro de configuração faltando no banco.ini para '{db_type}': {e}")

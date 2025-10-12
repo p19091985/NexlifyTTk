@@ -1,16 +1,14 @@
 {
-    "theme": "lumen",
     "font_family": "Segoe UI",
     "font_size": 10,
     "custom_colors": {
-        "primary": null,
-        "secondary": null,
-        "success": null,
-        "info": null,
-        "warning": null,
-        "danger": null
+        "primary": "#004006",
+        "secondary": "#6c757d",
+        "success": "#280045",
+        "info": "#1700b8",
+        "warning": "#ffc107",
+        "danger": "#dc3545"
     },
     "border_width": 1,
-    "border_radius": 8,
-    "focus_ring": true
+    "border_radius": 8
 }
