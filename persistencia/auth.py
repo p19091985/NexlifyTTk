@@ -1,4 +1,4 @@
-# persistencia/auth.py
+                      
 import logging
 import bcrypt
 from sqlalchemy import text

@@ -1,4 +1,4 @@
-# panels/painel_cadastro_vegetais_view.py
+                                         
 import tkinter as tk
 from tkinter import ttk
 
@@ -18,12 +18,12 @@ class CadastroVegetaisView(ttk.Frame):
         main_frame.rowconfigure(1, weight=1)
         main_frame.columnconfigure(0, weight=1)
 
-        # --- Container Superior (Formulário e CRUD) ---
+                                                        
         form_frame = ttk.LabelFrame(main_frame, text=" 🥕 Cadastro de Vegetal ", padding=15)
         form_frame.grid(row=0, column=0, sticky="nsew", pady=(0, 15))
         self._create_form_widgets(form_frame)
 
-        # --- Tabela de Vegetais ---
+                                    
         table_frame = ttk.LabelFrame(main_frame, text=" 🍽️ Vegetais Cadastrados ", padding=15)
         table_frame.grid(row=1, column=0, sticky="nsew")
         self._create_table_widgets(table_frame)
@@ -31,12 +31,12 @@ class CadastroVegetaisView(ttk.Frame):
     def _create_form_widgets(self, parent):
         parent.columnconfigure(1, weight=1)
 
-        # --- Campo Nome do Vegetal ---
+                                       
         ttk.Label(parent, text="Nome do Vegetal:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         self.nome_entry = ttk.Entry(parent, textvariable=self.controller.nome_var)
         self.nome_entry.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 
-        # --- Campo Tipo de Vegetal (com botão para modal) ---
+                                                              
         ttk.Label(parent, text="Tipo:").grid(row=1, column=0, sticky="w", padx=5, pady=5)
 
         tipo_frame = ttk.Frame(parent)
@@ -45,11 +45,11 @@ class CadastroVegetaisView(ttk.Frame):
         self.tipo_combobox = ttk.Combobox(tipo_frame, textvariable=self.controller.tipo_var, state="readonly")
         self.tipo_combobox.pack(side="left", fill="x", expand=True)
 
-        # Botão que abre a janela modal para gerenciar os tipos
+                                                               
         ttk.Button(tipo_frame, text="Gerenciar Tipos...", command=self.controller.open_tipos_modal, width=15).pack(
             side="left", padx=(5, 0))
 
-        # --- Botões de Ação CRUD ---
+                                     
         btn_frame = ttk.Frame(parent)
         btn_frame.grid(row=2, column=1, pady=(10, 0), sticky="e")
 

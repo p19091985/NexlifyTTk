@@ -1,4 +1,4 @@
-# panels/painel_vegetais_auditoria_controller.py
+                                                
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
@@ -49,7 +49,7 @@ class PainelVegetaisAuditoria(BasePanel):
     def _carregar_tipos_vegetais(self):
         try:
             df_tipos = GenericRepository.read_table_to_dataframe("tipos_vegetais")
-            # CORRIGIDO: Acessa a coluna 'nome' em minúsculas, conforme padronizado pelo repositório.
+                                                                                                     
             tipos_lista = sorted(df_tipos['nome'].tolist()) if not df_tipos.empty else []
             self.view.tipo_combobox['values'] = tipos_lista
             self.view.trans_tipo_combo['values'] = tipos_lista
@@ -62,7 +62,7 @@ class PainelVegetaisAuditoria(BasePanel):
             for item in self.view.tree_log.get_children(): self.view.tree_log.delete(item)
             df = GenericRepository.read_table_to_dataframe("log_alteracoes")
             if not df.empty:
-                # CORRIGIDO: Acessa a coluna 'timestamp' em minúsculas.
+                                                                       
                 df['timestamp'] = pd.to_datetime(df['timestamp'])
                 df_sorted = df.sort_values(by='timestamp', ascending=False)
                 for _, row in df_sorted.iterrows():
@@ -86,16 +86,16 @@ class PainelVegetaisAuditoria(BasePanel):
             messagebox.showerror("Erro de Validação", "Os campos 'Nome' e 'Tipo' são obrigatórios.", parent=self)
             return
         try:
-            # Para a condição WHERE, usamos a chave MAIÚSCULA que corresponde ao schema do banco.
+                                                                                                 
             df_tipo = GenericRepository.read_table_to_dataframe("tipos_vegetais", where_conditions={'NOME': tipo_nome})
             if df_tipo.empty:
                 messagebox.showerror("Erro de Dados", f"O tipo '{tipo_nome}' não foi encontrado.", parent=self)
                 return
 
-            # CORRIGIDO: Ao ler o resultado (df_tipo), acessamos a coluna 'id' em minúsculas.
+                                                                                             
             id_tipo = int(df_tipo.iloc[0]['id'])
 
-            # Para a escrita, usamos chaves MAIÚSCULAS para corresponder ao schema do banco.
+                                                                                            
             data = {'NOME': nome, 'ID_TIPO': id_tipo}
 
             if self.selected_item_id is None:
@@ -116,7 +116,7 @@ class PainelVegetaisAuditoria(BasePanel):
         if messagebox.askyesno("Confirmar Exclusão", "Deseja realmente excluir este vegetal?", icon='warning',
                                parent=self):
             try:
-                # Para a condição WHERE, usamos a chave MAIÚSCULA que corresponde ao schema.
+                                                                                            
                 GenericRepository.delete_from_table("vegetais", {'ID': self.selected_item_id})
                 messagebox.showinfo("Sucesso", "Vegetal excluído!", parent=self)
                 self.carregar_dados()

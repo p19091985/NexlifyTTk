@@ -1,4 +1,4 @@
-# utilParaDesenvolvimento/toolTestU/test_data_service.py
+                                                        
 import unittest
 from unittest.mock import patch, MagicMock
 from sqlalchemy.exc import SQLAlchemyError
@@ -44,12 +44,12 @@ class TestDataService(unittest.TestCase):
 
     @patch('sqlalchemy.engine.base.Connection.execute')
     def test_rename_especie_gato_e_logar_executa_rollback_se_log_falhar(self, mock_execute):
-        # CORREÇÃO: A simulação agora considera a primeira chamada (SELECT) retornando None,
-        # a segunda (UPDATE) tendo sucesso, e a terceira (INSERT no log) falhando.
+                                                                                            
+                                                                                  
         mock_execute.side_effect = [
-            MagicMock(first=lambda: None),  # Simula que o novo nome NÃO existe
-            MagicMock(rowcount=1),          # Simula sucesso no UPDATE
-            SQLAlchemyError("Simulação de falha no disco de log")  # Simula falha no INSERT
+            MagicMock(first=lambda: None),                                     
+            MagicMock(rowcount=1),                                    
+            SQLAlchemyError("Simulação de falha no disco de log")                          
         ]
 
         sucesso, mensagem = DataService.rename_especie_gato_e_logar("Siamês", "Siamês Novo", "testuser")

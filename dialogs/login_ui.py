@@ -1,4 +1,4 @@
-# dialogs/login_ui.py
+                     
 import tkinter as tk
 from tkinter import ttk, messagebox
 import logging
@@ -25,7 +25,7 @@ class LoginDialog(tk.Toplevel):
         self.password_visible = tk.BooleanVar(value=False)
 
         self._setup_widgets()
-        self._center_window()  # Esta chamada agora usará o método correto
+        self._center_window()                                             
 
         self.protocol("WM_DELETE_WINDOW", self._on_cancel)
         self.user_entry.focus_set()
@@ -122,20 +122,20 @@ class LoginDialog(tk.Toplevel):
             time.sleep(0.04)
         self.geometry(f"+{x}+{y}")
 
-    # ===== MÉTODO CORRIGIDO PARA CENTRALIZAR NA TELA =====
+                                                           
     def _center_window(self):
         """Centraliza a janela de login na tela principal do sistema operacional."""
         self.update_idletasks()
 
-        # Pega as dimensões da própria janela de login
+                                                      
         window_width = self.winfo_width()
         window_height = self.winfo_height()
 
-        # Pega as dimensões da tela do computador
+                                                 
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
 
-        # Calcula a posição para centralizar na tela
+                                                    
         center_x = (screen_width // 2) - (window_width // 2)
         center_y = (screen_height // 2) - (window_height // 2)
 

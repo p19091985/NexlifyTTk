@@ -1,4 +1,4 @@
-# utilParaDesenvolvimento/toolTestU/test_logger.py
+                                                  
 import unittest
 from unittest.mock import patch, MagicMock, call
 import logging
@@ -34,7 +34,7 @@ class TestStreamToLogger(unittest.TestCase):
 @patch('config.LOG_LEVEL', "INFO")
 class TestSetupLoggers(unittest.TestCase):
 
-    # ✅ CORREÇÃO APLICADA AQUI: Adicionados os argumentos que faltavam na assinatura do método.
+                                                                                               
     def test_setup_loggers_configura_handlers_corretamente(self, mock_log_level, mock_log_format,
                                                            mock_rotating_handler, mock_logging, mock_path, mock_sys):
 

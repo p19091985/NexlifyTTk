@@ -1,4 +1,4 @@
-# suites/suite_ultimate.py
+                          
 import queue
 import pandas as pd
 
@@ -53,7 +53,7 @@ class UltimateTestSuite(BaseTestSuite):
     def test_repository_crud(self):
         repo = self.GenericRepository
         repo._data = {}
-        # CORRIGIDO: Usa a tabela 'tipos_vegetais' e a coluna 'NOME' em maiúsculas
+                                                                                  
         table = "tipos_vegetais"
         repo.write_dataframe_to_table(pd.DataFrame([{'NOME': 'Legume'}]), table)
         df = repo.read_table_to_dataframe(table, where_conditions={'NOME': 'Legume'})

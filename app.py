@@ -1,4 +1,4 @@
-# app.py
+        
 import tkinter as tk
 from tkinter import ttk, messagebox
 import logging
@@ -9,7 +9,7 @@ from panels.base_panel import BasePanel
 from panels import ALL_PANELS
 from settings_manager import SettingsManager
 from dialogs.login_ui import LoginDialog
-# MODIFICADO: Importa o controller correto de vegetais
+                                                      
 from modals.tipos_vegetais_controller import TiposVegetaisController
 from modals.about_dialog import AboutDialog
 
@@ -162,7 +162,7 @@ class AplicacaoPrincipal(tk.Tk):
             if "gestão" in name.lower() or "catálogo" in name.lower():
                 cadastros_menu.add_command(label=name, command=lambda n=name: self.switch_panel_by_name(n))
         cadastros_menu.add_separator()
-        # MODIFICADO: Label e comando atualizados para vegetais
+                                                               
         cadastros_menu.add_command(label="Tipos de Vegetais...", command=self._open_tipos_vegetais_modal)
 
         config_menu = tk.Menu(menubar, tearoff=0)
@@ -186,16 +186,16 @@ class AplicacaoPrincipal(tk.Tk):
             self.logger.warning("Troca de usuário falhou ou foi cancelada. Fechando a aplicação.")
             self.destroy()
 
-    # MODIFICADO: Nome do método e lógica interna atualizados para vegetais
+                                                                           
     def _open_tipos_vegetais_modal(self):
         try:
             callback = None
             current_panel = self.panels.get(self.current_panel_name)
-            # Procura pelo método correto no painel de vegetais
+                                                               
             if current_panel and hasattr(current_panel, '_carregar_tipos_vegetais'):
                 callback = current_panel._carregar_tipos_vegetais
 
-            # Instancia o controller correto
+                                            
             controller = TiposVegetaisController(self, on_close_callback=callback)
             controller.show()
         except Exception as e:

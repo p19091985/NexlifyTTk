@@ -1,12 +1,12 @@
-# persistencia/repository.py
+                            
 import pandas as pd
 from sqlalchemy import text, exc
 import logging
 
-# Importa o DatabaseManager para ser a única fonte de conexão
+                                                             
 from .database import DatabaseManager
 
-# Configuração básica de logging
+                                
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
@@ -35,7 +35,7 @@ class GenericRepository:
             with engine.connect() as connection:
                 df = pd.read_sql_query(text(query), connection, params=params)
 
-                # Converte todas as colunas para minúsculas, tornando o código indiferente ao schema do BD.
+                                                                                                           
                 df.columns = [col.lower() for col in df.columns]
 
                 return df
@@ -101,8 +101,8 @@ class GenericRepository:
             with engine.connect() as connection:
                 with connection.begin() as transaction:
                     connection.execute(text(query), params)
-                    # CORREÇÃO: A linha transaction.commit() foi removida daqui.
-                    # O bloco 'with' já gerencia o commit e rollback automaticamente.
+                                                                                
+                                                                                     
             logging.info(f"Tabela '{table_name.upper()}' atualizada com sucesso.")
         except exc.SQLAlchemyError as e:
             logging.error(f"Erro ao atualizar a tabela '{table_name.upper()}': {e}")
@@ -119,8 +119,8 @@ class GenericRepository:
             with engine.connect() as connection:
                 with connection.begin() as transaction:
                     connection.execute(text(query), params)
-                    # CORREÇÃO: A linha transaction.commit() foi removida daqui.
-                    # O bloco 'with' já gerencia o commit e rollback automaticamente.
+                                                                                
+                                                                                     
             logging.info(f"Registros da tabela '{table_name.upper()}' deletados com sucesso.")
         except exc.SQLAlchemyError as e:
             logging.error(f"Erro ao deletar da tabela '{table_name.upper()}': {e}")

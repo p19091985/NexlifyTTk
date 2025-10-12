@@ -1,4 +1,4 @@
-# persistencia/database.py
+                          
 import logging
 from pathlib import Path
 from sqlalchemy import create_engine, text

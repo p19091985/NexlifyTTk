@@ -1,4 +1,4 @@
-# panels/painel_vegetais_auditoria_view.py
+                                          
 import tkinter as tk
 from tkinter import ttk
 
@@ -12,13 +12,13 @@ class VegetaisAuditoriaView(ttk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        # --- Layout Principal ---
+                                  
         main_frame = ttk.Frame(self, padding=15)
         main_frame.pack(fill="both", expand=True)
-        main_frame.rowconfigure(1, weight=1)  # Permite que a área de tabelas cresça
+        main_frame.rowconfigure(1, weight=1)                                        
         main_frame.columnconfigure(0, weight=1)
 
-        # --- Container Superior (Formulário e CRUD) ---
+                                                        
         top_container = ttk.Frame(main_frame)
         top_container.grid(row=0, column=0, sticky="nsew", pady=(0, 15))
         top_container.columnconfigure(0, weight=1)
@@ -32,7 +32,7 @@ class VegetaisAuditoriaView(ttk.Frame):
         crud_buttons_frame.grid(row=0, column=1, sticky="nsew")
         self._create_crud_buttons(crud_buttons_frame)
 
-        # --- Container Inferior (Tabelas de Vegetais e Log) ---
+                                                                
         bottom_pane = ttk.PanedWindow(main_frame, orient=tk.HORIZONTAL)
         bottom_pane.grid(row=1, column=0, sticky="nsew")
 
@@ -44,7 +44,7 @@ class VegetaisAuditoriaView(ttk.Frame):
         bottom_pane.add(log_frame, weight=2)
         self._create_table_log(log_frame)
 
-        # --- Container de Transação ---
+                                        
         trans_frame = ttk.LabelFrame(main_frame, text=" 🔄 Operação Atômica (Transação) ", padding=15)
         trans_frame.grid(row=2, column=0, sticky="nsew", pady=(10, 0))
         self._create_transaction_widgets(trans_frame)
@@ -61,7 +61,7 @@ class VegetaisAuditoriaView(ttk.Frame):
         tipo_frame.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
         self.tipo_combobox = ttk.Combobox(tipo_frame, textvariable=self.controller.tipo_var, state="readonly")
         self.tipo_combobox.pack(side="left", fill="x", expand=True)
-        # O botão abre o modal de gestão de tipos
+                                                 
         ttk.Button(tipo_frame, text="Gerenciar Tipos...", command=self.controller.open_tipos_modal, width=15).pack(
             side="left", padx=(5, 0))
 
@@ -125,7 +125,7 @@ class VegetaisAuditoriaView(ttk.Frame):
         ttk.Label(parent, text="Reclassificar vegetal selecionado para o tipo:").grid(row=0, column=0, sticky="w",
                                                                                       padx=5)
 
-        # Este combobox será populado com os tipos de vegetais disponíveis
+                                                                          
         self.trans_tipo_combo = ttk.Combobox(parent, textvariable=self.controller.novo_tipo_trans_var, state="readonly")
         self.trans_tipo_combo.grid(row=0, column=1, sticky="ew", padx=5)
 

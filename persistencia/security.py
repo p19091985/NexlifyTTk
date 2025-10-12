@@ -1,4 +1,4 @@
-# persistencia/security.py
+                          
 import os
 from pathlib import Path
 from cryptography.fernet import Fernet, InvalidToken

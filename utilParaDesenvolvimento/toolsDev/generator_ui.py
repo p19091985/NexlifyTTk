@@ -1,4 +1,4 @@
-# toolsDev/generator_ui.py
+                          
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 import threading

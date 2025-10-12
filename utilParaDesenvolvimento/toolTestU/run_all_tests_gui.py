@@ -1,4 +1,4 @@
-# utilParaDesenvolvimento/toolTestU/run_all_tests_gui.py
+                                                        
 import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 import unittest
@@ -27,7 +27,7 @@ class TestRunnerApp:
         self.test_item_map = {}
         self.failed_tests_info = set()
 
-        # NOVO: Atributos para o arquivo de log
+                                               
         self.log_file_handler = None
         self.log_filename = ""
 
@@ -160,7 +160,7 @@ class TestRunnerApp:
         details_container.rowconfigure(1, weight=1)
         details_container.columnconfigure(0, weight=1)
 
-        # NOVO: Frame para o botão de copiar
+                                            
         details_actions_frame = ttk.Frame(details_container)
         details_actions_frame.grid(row=0, column=0, sticky="ew", pady=(0, 5))
         self.copy_details_btn = ttk.Button(details_actions_frame, text="Copiar Detalhes para Área de Transferência",
@@ -176,7 +176,7 @@ class TestRunnerApp:
 
         return pane
 
-    # NOVO: Método para copiar detalhes
+                                       
     def _copy_details_to_clipboard(self):
         content = self.details_text.get("1.0", tk.END).strip()
         if content:
@@ -235,9 +235,9 @@ class TestRunnerApp:
     def _start_test_run(self, modules_to_run=None, test_ids_to_run=None):
         self._toggle_controls(is_running=True)
 
-        if not test_ids_to_run:  # Apenas limpa tudo e cria novo log para uma nova execução completa
+        if not test_ids_to_run:                                                                     
             self._clear_results()
-            # NOVO: Inicia o arquivo de log
+                                           
             try:
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 self.log_filename = f"test_results_{timestamp}.log"
@@ -273,7 +273,7 @@ class TestRunnerApp:
         self.details_text.config(state="normal")
         self.details_text.delete("1.0", tk.END)
         self.details_text.config(state="disabled")
-        self.copy_details_btn.config(state="disabled")  # Desabilita o botão ao limpar
+        self.copy_details_btn.config(state="disabled")                                
 
         self.passed_label.config(text="Passou: 0")
         self.failed_label.config(text="Falhou: 0")
@@ -311,11 +311,11 @@ class TestRunnerApp:
             else:
                 self._finalize_test_run()
 
-    # NOVO: Lógica de finalização separada
+                                          
     def _finalize_test_run(self):
         self._toggle_controls(is_running=False)
         final_status = f"Execução finalizada. {self.total_label.cget('text')}."
-        # NOVO: Finaliza e fecha o arquivo de log
+                                                 
         if self.log_file_handler:
             try:
                 summary = (f"\n{'=' * 80}\n"
@@ -336,7 +336,7 @@ class TestRunnerApp:
         status = data['status']
         values = (status, data['short_name'], data['class_name'], f"{data['duration']:.4f}")
 
-        # NOVO: Escreve no arquivo de log
+                                         
         if self.log_file_handler:
             try:
                 log_entry = f"[{status:<7}] | {data['duration']:.4f}s | {data['id']}\n"
@@ -345,7 +345,7 @@ class TestRunnerApp:
                     self.log_file_handler.write("-" * 80 + "\n")
                     self.log_file_handler.write(data['output'] + "\n")
                     self.log_file_handler.write("-" * 80 + "\n\n")
-            except IOError:  # Lida com o caso do arquivo ser fechado inesperadamente
+            except IOError:                                                          
                 self.log_file_handler = None
                 self.status_label.config(text="ERRO: Perda do handle do arquivo de log. Logging interrompido.")
 
@@ -392,7 +392,7 @@ class TestRunnerApp:
         self.details_text.insert("1.0", output_to_show)
         self.details_text.config(state="disabled")
 
-        # NOVO: Habilita o botão de copiar se houver conteúdo
+                                                             
         self.copy_details_btn.config(state="normal" if output_to_show else "disabled")
 
     @staticmethod
@@ -401,7 +401,7 @@ class TestRunnerApp:
         loader = unittest.TestLoader()
 
         if test_ids_to_run:
-            suite.addTests(loader.loadTestsFromNames(list(test_ids_to_run)))  # Convert set to list if needed
+            suite.addTests(loader.loadTestsFromNames(list(test_ids_to_run)))                                 
         elif modules_to_run:
             for module_name in modules_to_run:
                 try:
@@ -419,7 +419,7 @@ class TestRunnerApp:
 
         total_tests = suite.countTestCases()
         if total_tests > 0:
-            # Garante que 'start' é enviado mesmo ao re-executar falhas
+                                                                       
             if not test_ids_to_run or len(test_ids_to_run) == total_tests:
                 q.put({'type': 'start', 'total': total_tests})
 
@@ -465,7 +465,7 @@ class CustomTestResult(unittest.TestResult):
         class_name = test.__class__.__name__
         short_name = test.shortDescription() or test._testMethodName
 
-        # O output completo já está na variável 'output'
+                                                        
         full_output = f"{status}: {test_id}\n\n{output}" if output else f"{status}: {test_id}"
 
         data = {

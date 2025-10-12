@@ -1,18 +1,18 @@
-# utilParaDesenvolvimento/toolTestU/mock_dependencies.py
+                                                        
 import sys
 import tkinter as tk
 from unittest.mock import MagicMock, create_autospec
 from pathlib import Path
 from sqlalchemy import create_engine, text
 
-# Importa as classes de View corretas e atuais do projeto.
+                                                          
 from panels.painel_vegetais_auditoria_view import VegetaisAuditoriaView
 from modals.tipos_vegetais_view import TiposVegetaisView
 from panels.painel_gestao_gatos_view import GestaoGatosView
 from panels.painel_modelo_view import ModeloView
 
 
-# --- MOCKS DE INFRAESTRUTURA ---
+                                 
 
 class MockLogger(MagicMock):
     def __init__(self, *args, **kwargs):
@@ -32,7 +32,7 @@ class MockConfig:
     LOG_FORMAT = '%(message)s'
 
 
-# --- MOCKS DE INTERFACE GRÁFICA (GUI) ---
+                                          
 
 class MockMessageBox:
     def __init__(self):
@@ -52,7 +52,7 @@ class MockMessageBox:
         return True
 
 
-# CORREÇÃO: Removido 'instance=True' para que os mocks sejam classes que podem ser instanciadas.
+                                                                                                
 MockVegetaisAuditoriaView = create_autospec(VegetaisAuditoriaView)
 MockTiposVegetaisView = create_autospec(TiposVegetaisView)
 MockGestaoGatosView = create_autospec(GestaoGatosView)
@@ -64,11 +64,11 @@ class MockAppController:
         return {'username': 'testuser', 'name': 'Usuário de Teste', 'access_level': 'Administrador Global'}
 
 
-# --- LÓGICA DO BANCO DE DADOS EM MEMÓRIA ---
+                                             
 
 def setup_test_database():
     engine = create_engine("sqlite:///:memory:")
-    # CORREÇÃO: Adicionado o bloco 'except' para corrigir a sintaxe.
+                                                                    
     try:
         project_root = Path(__file__).parent.parent.parent.resolve()
         schema_path = project_root / "persistencia/sql_schema_SQLLite.sql"
@@ -85,7 +85,7 @@ def setup_test_database():
     return engine
 
 
-# --- FUNÇÃO DE SETUP GLOBAL ---
+                                
 
 def setup_global_mocks():
     sys.modules['config'] = MockConfig()

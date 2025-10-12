@@ -1,4 +1,4 @@
-# modals/tipos_vegetais_controller.py
+                                     
 from .tipos_vegetais_model import TiposVegetaisModel
 from .tipos_vegetais_view import TiposVegetaisView
 

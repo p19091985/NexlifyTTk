@@ -1,4 +1,4 @@
-# panels/painel_modelo_controller.py
+                                    
 from tkinter import messagebox
 from panels.base_panel import BasePanel
 from .painel_modelo_view import ModeloView

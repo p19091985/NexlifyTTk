@@ -1,4 +1,4 @@
-# modals/about_dialog.py
+                        
 import tkinter as tk
 from tkinter import ttk
 

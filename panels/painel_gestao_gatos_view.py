@@ -1,4 +1,4 @@
-# panels/painel_gestao_gatos_view.py
+                                    
 import tkinter as tk
 from tkinter import ttk
 
@@ -15,7 +15,7 @@ class GestaoGatosView(ttk.Frame):
         main_frame.rowconfigure(1, weight=1)
         main_frame.columnconfigure(0, weight=1)
 
-        # Container para o formulário e botões CRUD
+                                                   
         top_container = ttk.Frame(main_frame)
         top_container.grid(row=0, column=0, sticky="nsew", pady=(0, 15))
         top_container.columnconfigure(0, weight=1)

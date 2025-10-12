@@ -1,4 +1,4 @@
-# suites/suite_database_stress.py
+                                 
 import queue
 import time
 import random
@@ -22,12 +22,12 @@ class DatabaseStressTestSuite(BaseTestSuite):
         super().__init__(q)
         self.repo = GenericRepository
         self.service = DataService
-        # CORRIGIDO: Renomeado o método de leitura
+                                                  
         self.actions = [self._action_read_tipos_vegetais, self._action_read_join, self._action_insert_delete_gato,
                         self._action_transaction_success, self._action_transaction_rollback]
         self.repo._data = {}
 
-    # CORRIGIDO: Método renomeado e atualizado
+                                              
     def _action_read_tipos_vegetais(self):
         """Lê a tabela de tipos de vegetais."""
         try:

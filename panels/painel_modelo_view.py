@@ -1,4 +1,4 @@
-# panels/painel_modelo_view.py
+                              
 from tkinter import ttk
 
 class ModeloView(ttk.Frame):

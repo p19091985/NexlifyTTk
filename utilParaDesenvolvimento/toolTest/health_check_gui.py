@@ -4,14 +4,14 @@ import threading
 import os
 import time
 import traceback
-import sys  # <- LINHA ADICIONADA
+import sys                       
 
 try:
     import GPUtil
 except ImportError:
     GPUtil = None
 
-# Adiciona o diretório raiz ao path para encontrar o módulo de persistencia
+                                                                           
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, '..', '..'))
 if project_root not in sys.path:

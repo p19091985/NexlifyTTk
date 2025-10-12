@@ -1,4 +1,4 @@
-# teste_tkinter.py
+                  
 import tkinter as tk
 
 try:

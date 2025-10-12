@@ -1,4 +1,4 @@
-# utilParaDesenvolvimento/toolsDev/run_generator.py
+                                                   
 from generator_ui import GeneratorApp
 
 if __name__ == "__main__":

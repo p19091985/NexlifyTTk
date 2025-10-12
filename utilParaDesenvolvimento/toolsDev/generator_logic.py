@@ -1,4 +1,4 @@
-# utilParaDesenvolvimento/toolsDev/generator_logic.py
+                                                     
 import os
 import sys
 import re
@@ -78,32 +78,32 @@ class CodeGenerator:
             generated_files.append(self._render_template(template, context, output_dir, filename))
             if not is_modal:
                 self._register_panel(class_name, f"painel_{base_name}")
-        else:  # MVC CRUD 3 Camadas
+        else:                      
             self.log(f"Gerando {context['component_type']} MVC para '{context['table_name'].upper()}'...")
 
-            # 1. Gerar o Model (comum a ambos)
+                                              
             model_filename = f"{base_name}_model.py"
             generated_files.append(
                 self._render_template("template_mvc_model.py.jinja", context, self.models_dir, model_filename))
 
             if is_modal:
-                # 2. Gerar a View do Modal
+                                          
                 view_filename = f"{base_name}_view.py"
                 generated_files.append(
                     self._render_template("template_mvc_modal_view.py.jinja", context, self.modals_dir, view_filename))
 
-                # 3. Gerar o Controller do Modal
+                                                
                 controller_filename = f"{base_name}_controller.py"
                 generated_files.append(
                     self._render_template("template_mvc_modal_controller.py.jinja", context, self.modals_dir,
                                           controller_filename))
-            else:  # Painel MVC
-                # 2. Gerar a View do Painel
+            else:              
+                                           
                 view_filename = f"painel_{base_name}_view.py"
                 generated_files.append(
                     self._render_template("template_mvc_view.py.jinja", context, self.panels_dir, view_filename))
 
-                # 3. Gerar o Controller do Painel
+                                                 
                 controller_filename = f"painel_{base_name}_controller.py"
                 generated_files.append(
                     self._render_template("template_mvc_controller.py.jinja", context, self.panels_dir,
@@ -124,7 +124,7 @@ class CodeGenerator:
     def _register_panel(self, class_name, file_name_no_ext):
         init_path = os.path.join(self.panels_dir, "__init__.py")
         import_line = f"from .{file_name_no_ext} import {class_name}\n"
-        # (Lógica de registro inalterada)
+                                         
 
     def _format_code(self, filepaths):
         try:

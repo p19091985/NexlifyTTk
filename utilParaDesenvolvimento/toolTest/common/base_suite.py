@@ -1,4 +1,4 @@
-# common/base_suite.py
+                      
 import queue
 import time
 import traceback
@@ -27,7 +27,7 @@ class BaseTestSuite(ABC):
         Executa um único toolTest com retentativas, monitoramento de performance,
         tratamento de exceções e envio de relatório para a fila.
         """
-        #  Extrai metadados ou usa valores padrão 
+                                                  
         scenario_name = kwargs.pop('scenario_name', '')
         severity = kwargs.pop('severity', TestSeverity.MEDIUM)
         retries = kwargs.pop('retries', 0)
@@ -47,7 +47,7 @@ class BaseTestSuite(ABC):
                 result_value = method(*args, **kwargs)
                 duration = time.perf_counter() - start_time
 
-                # Lógica de Status Especiais
+                                            
                 if isinstance(result_value, TestStatus):
                     status = result_value
                 elif result_value is True:
@@ -55,7 +55,7 @@ class BaseTestSuite(ABC):
                 elif duration < 0.001:
                     status = TestStatus.GODLIKE
 
-                # Se o teste foi bem-sucedido, interrompe o loop de retentativas
+                                                                                
                 break
 
             except AssertionError as e:
@@ -65,12 +65,12 @@ class BaseTestSuite(ABC):
                 status, last_exception = TestStatus.ERROR, e
                 details = f"Tentativa {attempt + 1}/{retries + 1}: Exceção: {e}\n\n{traceback.format_exc()}"
 
-            # Se falhou e ainda há tentativas, espera antes da próxima (exponential backoff)
+                                                                                            
             if attempt < retries:
                 wait_time = 0.1 * (2 ** attempt)
                 time.sleep(wait_time)
 
-        #  Finaliza, calcula métricas e reporta o resultado 
+                                                            
         duration = time.perf_counter() - start_time
         cpu_end = psutil.cpu_percent(interval=None)
         mem_end = psutil.virtual_memory().percent

@@ -1,4 +1,4 @@
-# suites/mocks.py
+                 
 import pandas as pd
 import time
 import threading
@@ -19,7 +19,7 @@ class MockDataService:
             raise ValueError("Simulação de falha de integridade no log")
         return True, "Sucesso no Mock"
 
-    # BOA PRÁTICA: Adicionado mock para o novo método de serviço
+                                                                
     @staticmethod
     def reclassificar_vegetal_e_logar(nome_vegetal, novo_tipo_nome, usuario):
         """Mock para a transação de reclassificação de vegetais."""
@@ -38,7 +38,7 @@ class MockRepository:
         with MockRepository._lock:
             if table not in MockRepository._data:
                 MockRepository._data[table] = pd.DataFrame()
-            # Garante que as colunas do df correspondam ao que o mock espera (minúsculas)
+                                                                                         
             df.columns = [col.lower() for col in df.columns]
             MockRepository._data[table] = pd.concat([MockRepository._data[table], df], ignore_index=True)
             return True
@@ -53,7 +53,7 @@ class MockRepository:
         if not where_conditions:
             return df_copy
 
-        # Converte as chaves de condição para minúsculas para corresponder ao mock
+                                                                                  
         where_lower = {k.lower(): v for k, v in where_conditions.items()}
         q = ' & '.join([f'`{k}` == "{v}"' for k, v in where_lower.items()])
         try:

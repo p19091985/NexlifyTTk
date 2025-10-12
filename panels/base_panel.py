@@ -1,4 +1,4 @@
-# panels/base_panel.py
+                      
 from tkinter import ttk
 
 class BasePanel(ttk.Frame):

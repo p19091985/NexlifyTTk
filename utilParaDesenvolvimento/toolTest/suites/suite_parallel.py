@@ -1,4 +1,4 @@
-# suites/suite_parallel.py
+                          
 import queue
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -53,8 +53,8 @@ class ParallelDivineSuite(BaseTestSuite):
     def test_repository_crud_completo(self):
         """Testa um ciclo CRUD simples no mock do repositório."""
         repo = self.GenericRepository
-        repo._data = {}  # Isola os dados para este teste
-        # CORRIGIDO: Usa a tabela 'tipos_vegetais' e a coluna 'NOME' em maiúsculas
+        repo._data = {}                                  
+                                                                                  
         table = "tipos_vegetais"
         repo.write_dataframe_to_table(pd.DataFrame([{'NOME': 'Fruto'}]), table)
         df_read = repo.read_table_to_dataframe(table, where_conditions={'NOME': 'Fruto'})

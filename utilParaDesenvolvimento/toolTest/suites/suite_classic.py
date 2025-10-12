@@ -1,4 +1,4 @@
-# suites/suite_classic.py
+                         
 import queue
 import pandas as pd
 
@@ -14,7 +14,7 @@ class ClassicTestSuite(BaseTestSuite):
 
     def __init__(self, q: queue.Queue):
         super().__init__(q)
-        # Simula as dependências para esta suíte
+                                                
         self.verify_user_credentials = MockAuth.verify_user_credentials
         self.DataService = MockDataService
         self.GenericRepository = MockRepository
@@ -54,8 +54,8 @@ class ClassicTestSuite(BaseTestSuite):
 
     def test_repository_crud_completo(self):
         repo = self.GenericRepository
-        repo._data = {}  # Reset mock data
-        # CORRIGIDO: Usa a tabela 'tipos_vegetais' e a coluna 'NOME' em maiúsculas
+        repo._data = {}                   
+                                                                                  
         table = "tipos_vegetais"
         repo.write_dataframe_to_table(pd.DataFrame([{'NOME': 'Raiz'}]), table)
         df_read = repo.read_table_to_dataframe(table, where_conditions={'NOME': 'Raiz'})
@@ -78,4 +78,4 @@ class ClassicTestSuite(BaseTestSuite):
             self.DataService.rename_especie_gato_e_logar('Persa', 'Gato Persa com falha', 'test_runner')
             assert False, "A transação deveria ter lançado uma exceção."
         except ValueError:
-            pass  # Sucesso, exceção esperada
+            pass                             

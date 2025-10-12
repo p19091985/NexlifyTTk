@@ -36,7 +36,7 @@ class TestDatabaseManager(unittest.TestCase):
 
         DatabaseManager.get_engine()
 
-        # CORREÇÃO: A URL esperada agora usa o valor retornado pelo mock de decriptografia
-        # para o nome de usuário, assim como para a senha.
+                                                                                          
+                                                          
         expected_url = "postgresql+psycopg2://senha_decifrada:senha_decifrada@localhost:5432/NexlifyTTk"
         mock_create_engine.assert_called_with(expected_url, echo=False)

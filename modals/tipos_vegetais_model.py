@@ -1,4 +1,4 @@
-# modals/tipos_vegetais_model.py
+                                
 import pandas as pd
 from sqlalchemy import exc
 from persistencia.repository import GenericRepository

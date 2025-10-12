@@ -1,4 +1,4 @@
-# panels/painel_cadastro_vegetais_controller.py
+                                               
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
@@ -44,7 +44,7 @@ class PainelCadastroVegetais(BasePanel):
         """Carrega ou recarrega os tipos de vegetais no Combobox."""
         try:
             df_tipos = GenericRepository.read_table_to_dataframe("tipos_vegetais")
-            # Acessa a coluna 'nome' em minúsculas, conforme padronizado pelo repositório.
+                                                                                          
             tipos_lista = sorted(df_tipos['nome'].tolist()) if not df_tipos.empty else []
             self.view.tipo_combobox['values'] = tipos_lista
         except Exception as e:
@@ -69,16 +69,16 @@ class PainelCadastroVegetais(BasePanel):
             return
 
         try:
-            # Busca o ID do tipo selecionado usando o nome. A condição WHERE usa MAIÚSCULAS.
+                                                                                            
             df_tipo = GenericRepository.read_table_to_dataframe("tipos_vegetais", where_conditions={'NOME': tipo_nome})
             if df_tipo.empty:
                 messagebox.showerror("Erro de Dados", f"O tipo '{tipo_nome}' não foi encontrado.", parent=self)
                 return
 
-            # Ao ler o resultado, acessamos a coluna 'id' em minúsculas.
+                                                                        
             id_tipo = int(df_tipo.iloc[0]['id'])
 
-            # Para a escrita no banco, usamos os nomes de coluna em MAIÚSCULAS.
+                                                                               
             data = {'NOME': nome, 'ID_TIPO': id_tipo}
 
             if self.selected_item_id is None:

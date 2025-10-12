@@ -1,4 +1,4 @@
-# suites/suite_supreme.py
+                         
 import queue
 import pandas as pd
 from common.base_suite import BaseTestSuite
@@ -35,7 +35,7 @@ class SupremeTestSuite(BaseTestSuite):
         result = self.verify_user_credentials(username, password)
         assert (result is not None) == should_succeed
         if should_succeed:
-            return True  # Retorna True para o motor interpretar como DIVINE
+            return True                                                     
 
     def test_crud_universal(self):
         repo = self.GenericRepository; repo._data = {}

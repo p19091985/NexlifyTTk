@@ -21,7 +21,7 @@ class TestTiposVegetaisController(unittest.TestCase):
         self.repo_patcher.start()
         self.addCleanup(self.repo_patcher.stop)
 
-        # CORREÇÃO: O patch agora usa autospec=True.
+                                                    
         view_patcher = patch('modals.tipos_vegetais_controller.TiposVegetaisView', autospec=True)
         self.mock_view_class = view_patcher.start()
         self.addCleanup(view_patcher.stop)

@@ -1,4 +1,4 @@
-# panels/painel_gestao_gatos_controller.py
+                                          
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
@@ -44,11 +44,11 @@ class PainelGestaoGatos(BasePanel):
         selected_items = self.view.tree.selection()
         if not selected_items: return
         item = self.view.tree.item(selected_items[0], "values")
-        # Os dados lidos vêm com colunas minúsculas do repositório
-        self.selected_item_id = item[0] # id
-        self.nome_var.set(item[1])      # nome_especie
-        self.pais_var.set(item[2])      # pais_origem
-        self.temperamento_var.set(item[3]) # temperamento
+                                                                  
+        self.selected_item_id = item[0]     
+        self.nome_var.set(item[1])                    
+        self.pais_var.set(item[2])                   
+        self.temperamento_var.set(item[3])               
 
     def limpar_form(self):
         """Limpa as variáveis de estado e a seleção na Treeview."""
@@ -67,7 +67,7 @@ class PainelGestaoGatos(BasePanel):
         if not nome:
             messagebox.showwarning("Validação", "O campo 'Nome da Espécie' é obrigatório.", parent=self)
             return
-        # CORRIGIDO: Chaves em MAIÚSCULAS para corresponder ao schema do banco de dados.
+                                                                                        
         data = {'NOME_ESPECIE': nome, 'PAIS_ORIGEM': self.pais_var.get().strip(), 'TEMPERAMENTO': self.temperamento_var.get().strip()}
         try:
             GenericRepository.write_dataframe_to_table(pd.DataFrame([data]), "ESPECIE_GATOS")
@@ -81,7 +81,7 @@ class PainelGestaoGatos(BasePanel):
         if self.selected_item_id is None:
             messagebox.showwarning("Atenção", "Selecione um item da tabela para atualizar.", parent=self)
             return
-        # CORRIGIDO: Chaves em MAIÚSCULAS para corresponder ao schema.
+                                                                      
         update_values = {'NOME_ESPECIE': self.nome_var.get().strip(), 'PAIS_ORIGEM': self.pais_var.get().strip(), 'TEMPERAMENTO': self.temperamento_var.get().strip()}
         try:
             GenericRepository.update_table("ESPECIE_GATOS", update_values=update_values, where_conditions={'ID': self.selected_item_id})
@@ -98,7 +98,7 @@ class PainelGestaoGatos(BasePanel):
         if not messagebox.askyesno("Confirmar Exclusão", "Tem certeza que deseja excluir a espécie selecionada?", icon='warning', parent=self):
             return
         try:
-            # CORRIGIDO: Chave 'ID' em MAIÚSCULAS.
+                                                  
             GenericRepository.delete_from_table("ESPECIE_GATOS", where_conditions={'ID': self.selected_item_id})
             messagebox.showinfo("Sucesso", "Espécie excluída com sucesso!", parent=self)
             self.carregar_dados()
