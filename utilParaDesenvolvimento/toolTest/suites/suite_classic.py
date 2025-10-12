@@ -42,11 +42,8 @@ class ClassicTestSuite(BaseTestSuite):
 
         self.q.put({"type": "total_tests", "count": len(tests_to_run)})
 
-        #  A lógica de execução foi movida para a classe base.
         for method, args, scenario_name in tests_to_run:
             self._execute_and_report(method, *args, scenario_name=scenario_name)
-
-    # REMOVIDO: O método _run_test_method foi removido pois sua lógica agora está na BaseTestSuite.
 
     def test_autenticacao_parametrizado(self, username, password, should_succeed):
         user_data = self.verify_user_credentials(username, password)
@@ -58,15 +55,18 @@ class ClassicTestSuite(BaseTestSuite):
     def test_repository_crud_completo(self):
         repo = self.GenericRepository
         repo._data = {}  # Reset mock data
-        table = "tipos_linguagem"
-        repo.write_dataframe_to_table(pd.DataFrame([{'nome': 'Visual'}]), table)
-        df_read = repo.read_table_to_dataframe(table, where_conditions={'nome': 'Visual'})
+        # CORRIGIDO: Usa a tabela 'tipos_vegetais' e a coluna 'NOME' em maiúsculas
+        table = "tipos_vegetais"
+        repo.write_dataframe_to_table(pd.DataFrame([{'NOME': 'Raiz'}]), table)
+        df_read = repo.read_table_to_dataframe(table, where_conditions={'NOME': 'Raiz'})
         assert not df_read.empty, "CREATE/READ falhou."
-        repo.update_table(table, {'nome': 'Visualização'}, {'nome': 'Visual'})
-        df_updated = repo.read_table_to_dataframe(table, where_conditions={'nome': 'Visualização'})
+
+        repo.update_table(table, {'NOME': 'Tubérculo'}, {'NOME': 'Raiz'})
+        df_updated = repo.read_table_to_dataframe(table, where_conditions={'NOME': 'Tubérculo'})
         assert not df_updated.empty, "UPDATE falhou."
-        repo.delete_from_table(table, where_conditions={'nome': 'Visualização'})
-        df_deleted = repo.read_table_to_dataframe(table, where_conditions={'nome': 'Visualização'})
+
+        repo.delete_from_table(table, where_conditions={'NOME': 'Tubérculo'})
+        df_deleted = repo.read_table_to_dataframe(table, where_conditions={'NOME': 'Tubérculo'})
         assert df_deleted.empty, "DELETE falhou."
 
     def test_data_service_transacao_sucesso(self):

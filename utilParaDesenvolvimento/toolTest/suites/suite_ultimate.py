@@ -41,7 +41,6 @@ class UltimateTestSuite(BaseTestSuite):
         self.q.put({"type": "total_tests", "count": len(tests)})
 
         for method, args, name, severity in tests:
-            #: Chamando o método correto da classe base 
             self._execute_and_report(method, *args, scenario_name=name, severity=severity, retries=2)
 
     def test_autenticacao(self, username, password, should_succeed):
@@ -54,11 +53,12 @@ class UltimateTestSuite(BaseTestSuite):
     def test_repository_crud(self):
         repo = self.GenericRepository
         repo._data = {}
-        table = "tipos_linguagem"
-        repo.write_dataframe_to_table(pd.DataFrame([{'nome': 'Visual'}]), table)
-        df = repo.read_table_to_dataframe(table, where_conditions={'nome': 'Visual'})
+        # CORRIGIDO: Usa a tabela 'tipos_vegetais' e a coluna 'NOME' em maiúsculas
+        table = "tipos_vegetais"
+        repo.write_dataframe_to_table(pd.DataFrame([{'NOME': 'Legume'}]), table)
+        df = repo.read_table_to_dataframe(table, where_conditions={'NOME': 'Legume'})
         assert not df.empty, "CREATE/READ falhou"
 
     def test_repository_edge_cases(self):
-        rows_updated = self.GenericRepository.update_table('gatos', {'temperamento': 'Fantasma'}, {'nome': 'Inexistente'})
+        rows_updated = self.GenericRepository.update_table('ESPECIE_GATOS', {'TEMPERAMENTO': 'Fantasma'}, {'NOME_ESPECIE': 'Inexistente'})
         assert rows_updated == 0, "UPDATE não deveria afetar linhas"

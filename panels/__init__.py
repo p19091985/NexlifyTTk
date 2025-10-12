@@ -1,18 +1,15 @@
 # panels/__init__.py
-from .painelGestaoLinguagens import PainelGestaoLinguagens
-from .painel_auditoria_controller import PainelAuditoria
-from .painel_catalogo_controller import PainelCatalogoEspecies
-from .painel_especies_controller import PainelGestaoEspecies
-from .painel_catalogo_mvc_controller import PainelCatalogoEspeciesMVC
-from .painel_componentes_ui_controller import PainelComponentesUI
+
+# Importa os painéis existentes e o novo painel de cadastro
+from .painel_gestao_gatos_controller import PainelGestaoGatos
+from .painel_vegetais_auditoria_controller import PainelVegetaisAuditoria
+from .painel_cadastro_vegetais_controller import PainelCadastroVegetais  # <-- ADICIONE ESTA LINHA
 from .painel_modelo_controller import PainelModelo
 
+# Lista final de painéis que serão carregados pela aplicação.
 ALL_PANELS = [
-    PainelGestaoLinguagens,
-    PainelCatalogoEspecies,
-    PainelCatalogoEspeciesMVC,
-    PainelGestaoEspecies,
-    PainelAuditoria,
-    PainelComponentesUI,
+    PainelGestaoGatos,
+    PainelVegetaisAuditoria,
+    PainelCadastroVegetais,  # <-- ADICIONE ESTA LINHA
     PainelModelo,
 ]

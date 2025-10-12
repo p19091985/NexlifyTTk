@@ -19,6 +19,15 @@ class MockDataService:
             raise ValueError("Simulação de falha de integridade no log")
         return True, "Sucesso no Mock"
 
+    # BOA PRÁTICA: Adicionado mock para o novo método de serviço
+    @staticmethod
+    def reclassificar_vegetal_e_logar(nome_vegetal, novo_tipo_nome, usuario):
+        """Mock para a transação de reclassificação de vegetais."""
+        time.sleep(0.1)
+        if "falha" in novo_tipo_nome.lower():
+            raise ValueError("Simulação de falha de integridade na reclassificação")
+        return True, "Vegetal reclassificado com sucesso no mock."
+
 
 class MockRepository:
     _data = {}
@@ -29,6 +38,8 @@ class MockRepository:
         with MockRepository._lock:
             if table not in MockRepository._data:
                 MockRepository._data[table] = pd.DataFrame()
+            # Garante que as colunas do df correspondam ao que o mock espera (minúsculas)
+            df.columns = [col.lower() for col in df.columns]
             MockRepository._data[table] = pd.concat([MockRepository._data[table], df], ignore_index=True)
             return True
 
@@ -38,9 +49,13 @@ class MockRepository:
             if table not in MockRepository._data:
                 return pd.DataFrame()
             df_copy = MockRepository._data[table].copy()
+
         if not where_conditions:
             return df_copy
-        q = ' & '.join([f'`{k}` == "{v}"' for k, v in where_conditions.items()])
+
+        # Converte as chaves de condição para minúsculas para corresponder ao mock
+        where_lower = {k.lower(): v for k, v in where_conditions.items()}
+        q = ' & '.join([f'`{k}` == "{v}"' for k, v in where_lower.items()])
         try:
             return df_copy.query(q)
         except:
@@ -52,21 +67,23 @@ class MockRepository:
             if table not in MockRepository._data: return 0
             df = MockRepository._data[table]
             if df.empty: return 0
+
             idx = pd.Series([True] * len(df), index=df.index)
-            for k, v in where_conditions.items():
-                idx &= (df[k] == v)
+            where_lower = {k.lower(): v for k, v in where_conditions.items()}
+            for k, v in where_lower.items():
+                if k in df.columns:
+                    idx &= (df[k] == v)
+
             if not any(idx): return 0
-            for k, v in updates.items():
-                df.loc[idx, k] = v
+
+            updates_lower = {k.lower(): v for k, v in updates.items()}
+            for k, v in updates_lower.items():
+                if k in df.columns:
+                    df.loc[idx, k] = v
             return len(df[idx])
 
-    # --- FUNÇÃO CORRIGIDA E ROBUSTA ---
     @staticmethod
     def delete_from_table(table, where_conditions):
-        """
-        Exclui linhas de um DataFrame de forma segura para concorrência,
-        resetando o índice para manter a integridade dos dados.
-        """
         with MockRepository._lock:
             if table not in MockRepository._data:
                 return 0
@@ -77,13 +94,12 @@ class MockRepository:
             initial_len = len(df)
             keep_mask = pd.Series([True] * len(df), index=df.index)
 
-            for k, v in where_conditions.items():
-                keep_mask &= (df[k] != v)
+            where_lower = {k.lower(): v for k, v in where_conditions.items()}
+            for k, v in where_lower.items():
+                if k in df.columns:
+                    keep_mask &= (df[k] != v)
 
             new_df = df[keep_mask]
 
-            # Linha crucial: Reseta o índice para [0, 1, 2, ...],
-            # prevenindo erros em operações concorrentes futuras.
             MockRepository._data[table] = new_df.reset_index(drop=True)
-
             return initial_len - len(MockRepository._data[table])

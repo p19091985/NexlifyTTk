@@ -1,13 +1,12 @@
-# modals/tipos_linguagem_view.py
+# modals/tipos_vegetais_view.py
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-
-class TiposLinguagemView(tk.Toplevel):
+class TiposVegetaisView(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
-        self.title("Gerenciar Tipos de Linguagem")
+        self.title("Gerenciar Tipos de Vegetais")
         self.geometry("600x450")
         self.transient(parent)
         self.grab_set()
@@ -29,7 +28,7 @@ class TiposLinguagemView(tk.Toplevel):
         main_frame = ttk.Frame(self, padding=15)
         main_frame.pack(fill="both", expand=True)
 
-        form_frame = ttk.LabelFrame(main_frame, text=" Cadastro de Tipo ", padding=15)
+        form_frame = ttk.LabelFrame(main_frame, text=" Cadastro de Tipo de Vegetal ", padding=15)
         form_frame.pack(side="left", fill="y", padx=(0, 10))
         self._create_form_widgets(form_frame)
 

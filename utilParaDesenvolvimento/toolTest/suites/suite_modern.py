@@ -39,11 +39,15 @@ class ModernTestSuite(BaseTestSuite):
         assert (user_data is not None) == should_succeed
 
     def test_repository_crud_completo(self):
-        repo = self.GenericRepository; repo._data = {}
-        repo.write_dataframe_to_table(pd.DataFrame([{'nome': 'Visual'}]), "tipos_linguagem")
-        df_read = repo.read_table_to_dataframe("tipos_linguagem", where_conditions={'nome': 'Visual'})
+        repo = self.GenericRepository
+        repo._data = {}
+        # CORRIGIDO: Usa a tabela 'tipos_vegetais' e a coluna 'NOME' em maiúsculas
+        table = "tipos_vegetais"
+        repo.write_dataframe_to_table(pd.DataFrame([{'NOME': 'Folha'}]), table)
+        df_read = repo.read_table_to_dataframe(table, where_conditions={'NOME': 'Folha'})
         assert not df_read.empty
 
     def test_repository_casos_limite(self):
-        rows_updated = self.GenericRepository.update_table('gatos', {}, {'nome': 'Inexistente'})
+        # Este teste usa 'gatos' (que não mudou) e está correto.
+        rows_updated = self.GenericRepository.update_table('ESPECIE_GATOS', {}, {'NOME_ESPECIE': 'Inexistente'})
         assert rows_updated == 0

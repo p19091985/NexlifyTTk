@@ -1,14 +1,15 @@
-# panels/painel_catalogo_controller.py
+# panels/painel_gestao_gatos_controller.py
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
-from .base_panel import BasePanel
+from panels.base_panel import BasePanel
 from persistencia.repository import GenericRepository
 from persistencia.data_service import DataService
-from .painel_catalogo_view import CatalogoView
+from .painel_gestao_gatos_view import GestaoGatosView
 
-class PainelCatalogoEspecies(BasePanel):
-    PANEL_NAME = "Catálogo de Espécies"
+class PainelGestaoGatos(BasePanel):
+    """Controller consolidado para todas as operações da tabela especie_gatos."""
+    PANEL_NAME = "Gestão de Espécies (Gatos)"
     PANEL_ICON = "🐈"
     ALLOWED_ACCESS = []
 
@@ -21,75 +22,91 @@ class PainelCatalogoEspecies(BasePanel):
         super().__init__(parent, app_controller, **kwargs)
 
     def create_widgets(self):
-        self.view = CatalogoView(self, controller=self)
+        self.view = GestaoGatosView(self, controller=self)
         self.view.pack(fill="both", expand=True)
-        self._carregar_dados()
+        self.carregar_dados()
 
-    def _carregar_dados(self):
+    def carregar_dados(self):
+        """(READ) Busca os dados e instrui a View a exibi-los."""
         try:
-            for item in self.view.tree.get_children(): self.view.tree.delete(item)
+            for item in self.view.tree.get_children():
+                self.view.tree.delete(item)
             df = GenericRepository.read_table_to_dataframe("especie_gatos")
-            for _, row in df.iterrows(): self.view.tree.insert("", "end", values=list(row))
-            self._limpar_form()
+            if not df.empty:
+                for _, row in df.iterrows():
+                    self.view.tree.insert("", "end", values=list(row))
+            self.limpar_form()
         except Exception as e:
             messagebox.showerror("Erro de Leitura", f"Não foi possível ler os dados: {e}", parent=self)
 
-    def _on_item_select(self, event=None):
+    def on_item_select(self, event=None):
+        """Atualiza o estado do Controller quando um item é selecionado na View."""
         selected_items = self.view.tree.selection()
         if not selected_items: return
         item = self.view.tree.item(selected_items[0], "values")
-        self.selected_item_id = item[0]
-        self.nome_var.set(item[1])
-        self.pais_var.set(item[2])
-        self.temperamento_var.set(item[3])
+        # Os dados lidos vêm com colunas minúsculas do repositório
+        self.selected_item_id = item[0] # id
+        self.nome_var.set(item[1])      # nome_especie
+        self.pais_var.set(item[2])      # pais_origem
+        self.temperamento_var.set(item[3]) # temperamento
 
-    def _limpar_form(self):
+    def limpar_form(self):
+        """Limpa as variáveis de estado e a seleção na Treeview."""
         self.selected_item_id = None
         self.nome_var.set("")
         self.pais_var.set("")
         self.temperamento_var.set("")
         self.novo_nome_var.set("")
-        if self.view.tree.selection(): self.view.tree.selection_remove(self.view.tree.selection()[0])
+        if self.view.tree.selection():
+            self.view.tree.selection_remove(self.view.tree.selection()[0])
+        self.view.nome_entry.focus()
 
-    def _inserir_item(self):
+    def inserir_item(self):
+        """(CREATE) Valida os dados e insere um novo registro."""
         nome = self.nome_var.get().strip()
         if not nome:
             messagebox.showwarning("Validação", "O campo 'Nome da Espécie' é obrigatório.", parent=self)
             return
-        data = {'nome_especie': nome, 'pais_origem': self.pais_var.get().strip(), 'temperamento': self.temperamento_var.get().strip()}
+        # CORRIGIDO: Chaves em MAIÚSCULAS para corresponder ao schema do banco de dados.
+        data = {'NOME_ESPECIE': nome, 'PAIS_ORIGEM': self.pais_var.get().strip(), 'TEMPERAMENTO': self.temperamento_var.get().strip()}
         try:
-            GenericRepository.write_dataframe_to_table(pd.DataFrame([data]), "especie_gatos")
+            GenericRepository.write_dataframe_to_table(pd.DataFrame([data]), "ESPECIE_GATOS")
             messagebox.showinfo("Sucesso", "Nova espécie inserida com sucesso!", parent=self)
-            self._carregar_dados()
+            self.carregar_dados()
         except Exception as e:
             messagebox.showerror("Erro de Inserção", f"Não foi possível inserir o registro: {e}", parent=self)
 
-    def _atualizar_item(self):
+    def atualizar_item(self):
+        """(UPDATE) Valida os dados e atualiza um registro existente."""
         if self.selected_item_id is None:
             messagebox.showwarning("Atenção", "Selecione um item da tabela para atualizar.", parent=self)
             return
-        update_values = {'nome_especie': self.nome_var.get().strip(), 'pais_origem': self.pais_var.get().strip(), 'temperamento': self.temperamento_var.get().strip()}
+        # CORRIGIDO: Chaves em MAIÚSCULAS para corresponder ao schema.
+        update_values = {'NOME_ESPECIE': self.nome_var.get().strip(), 'PAIS_ORIGEM': self.pais_var.get().strip(), 'TEMPERAMENTO': self.temperamento_var.get().strip()}
         try:
-            GenericRepository.update_table("especie_gatos", update_values=update_values, where_conditions={'id': self.selected_item_id})
+            GenericRepository.update_table("ESPECIE_GATOS", update_values=update_values, where_conditions={'ID': self.selected_item_id})
             messagebox.showinfo("Sucesso", "Espécie atualizada com sucesso!", parent=self)
-            self._carregar_dados()
+            self.carregar_dados()
         except Exception as e:
             messagebox.showerror("Erro de Atualização", f"Não foi possível atualizar o registro: {e}", parent=self)
 
-    def _excluir_item(self):
+    def excluir_item(self):
+        """(DELETE) Exclui o registro selecionado."""
         if self.selected_item_id is None:
             messagebox.showwarning("Atenção", "Selecione um item da tabela para excluir.", parent=self)
             return
         if not messagebox.askyesno("Confirmar Exclusão", "Tem certeza que deseja excluir a espécie selecionada?", icon='warning', parent=self):
             return
         try:
-            GenericRepository.delete_from_table("especie_gatos", where_conditions={'id': self.selected_item_id})
+            # CORRIGIDO: Chave 'ID' em MAIÚSCULAS.
+            GenericRepository.delete_from_table("ESPECIE_GATOS", where_conditions={'ID': self.selected_item_id})
             messagebox.showinfo("Sucesso", "Espécie excluída com sucesso!", parent=self)
-            self._carregar_dados()
+            self.carregar_dados()
         except Exception as e:
             messagebox.showerror("Erro de Exclusão", f"Não foi possível excluir o registro: {e}", parent=self)
 
-    def _executar_transacao(self):
+    def executar_transacao_rename(self):
+        """Chama a camada de serviço para a operação atômica de renomear e auditar."""
         if self.selected_item_id is None:
             messagebox.showwarning("Atenção", "Selecione um item da tabela para renomear.", parent=self)
             return
@@ -102,6 +119,6 @@ class PainelCatalogoEspecies(BasePanel):
         sucesso, mensagem = DataService.rename_especie_gato_e_logar(nome_antigo, nome_novo, usuario)
         if sucesso:
             messagebox.showinfo("Transação Concluída", mensagem, parent=self)
-            self._carregar_dados()
+            self.carregar_dados()
         else:
             messagebox.showerror("Falha na Transação", mensagem, parent=self)

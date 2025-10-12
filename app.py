@@ -9,7 +9,8 @@ from panels.base_panel import BasePanel
 from panels import ALL_PANELS
 from settings_manager import SettingsManager
 from dialogs.login_ui import LoginDialog
-from modals.tipos_linguagem_controller import TiposLaguagemController
+# MODIFICADO: Importa o controller correto de vegetais
+from modals.tipos_vegetais_controller import TiposVegetaisController
 from modals.about_dialog import AboutDialog
 
 
@@ -161,7 +162,8 @@ class AplicacaoPrincipal(tk.Tk):
             if "gestão" in name.lower() or "catálogo" in name.lower():
                 cadastros_menu.add_command(label=name, command=lambda n=name: self.switch_panel_by_name(n))
         cadastros_menu.add_separator()
-        cadastros_menu.add_command(label="Tipos de Linguagem...", command=self._open_tipos_linguagem_modal)
+        # MODIFICADO: Label e comando atualizados para vegetais
+        cadastros_menu.add_command(label="Tipos de Vegetais...", command=self._open_tipos_vegetais_modal)
 
         config_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Configurações", menu=config_menu)
@@ -184,13 +186,17 @@ class AplicacaoPrincipal(tk.Tk):
             self.logger.warning("Troca de usuário falhou ou foi cancelada. Fechando a aplicação.")
             self.destroy()
 
-    def _open_tipos_linguagem_modal(self):
+    # MODIFICADO: Nome do método e lógica interna atualizados para vegetais
+    def _open_tipos_vegetais_modal(self):
         try:
             callback = None
             current_panel = self.panels.get(self.current_panel_name)
-            if current_panel and hasattr(current_panel, '_carregar_tipos_linguagem'):
-                callback = current_panel._carregar_tipos_linguagem
-            controller = TiposLaguagemController(self, on_close_callback=callback)
+            # Procura pelo método correto no painel de vegetais
+            if current_panel and hasattr(current_panel, '_carregar_tipos_vegetais'):
+                callback = current_panel._carregar_tipos_vegetais
+
+            # Instancia o controller correto
+            controller = TiposVegetaisController(self, on_close_callback=callback)
             controller.show()
         except Exception as e:
             messagebox.showerror("Erro Crítico", f"Não foi possível abrir a janela de gestão: {e}")

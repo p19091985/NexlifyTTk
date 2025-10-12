@@ -36,7 +36,7 @@ def main():
     try:
         app = AplicacaoPrincipal(project_root=project_root)
         app.mainloop()
-        main_logger.info("Aplicação finalizada normalmente.")
+        main_logger.info("Aplicação finalizaadda normalmente.")
     except Exception as e:
         main_logger.critical(f"Erro fatal na aplicação principal: {e}", exc_info=True)
         messagebox.showerror("Erro Crítico", f"A aplicação encontrou um erro fatal e precisa ser fechada: {e}")

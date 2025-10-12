@@ -1,11 +1,11 @@
-# modals/tipos_linguagem_controller.py
-from .tipos_linguagem_model import TiposLinguagemModel
-from .tipos_linguagem_view import TiposLinguagemView
+# modals/tipos_vegetais_controller.py
+from .tipos_vegetais_model import TiposVegetaisModel
+from .tipos_vegetais_view import TiposVegetaisView
 
-class TiposLaguagemController:
+class TiposVegetaisController:
     def __init__(self, parent, on_close_callback=None):
-        self.model = TiposLinguagemModel()
-        self.view = TiposLinguagemView(parent)
+        self.model = TiposVegetaisModel()
+        self.view = TiposVegetaisView(parent)
         self.view.set_controller(self)
         self.on_close_callback = on_close_callback
         self.selected_item_id = None

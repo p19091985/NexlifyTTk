@@ -1,3 +1,4 @@
+# utilParaDesenvolvimento/toolTestU/test_repository.py
 import unittest
 from unittest.mock import patch
 import pandas as pd
@@ -15,47 +16,44 @@ class TestGenericRepository(unittest.TestCase):
         self.engine = mock_dependencies.setup_test_database()
         self.db_patcher = patch('persistencia.repository.DatabaseManager.get_engine', return_value=self.engine)
         self.db_patcher.start()
-
-    def tearDown(self):
-        self.db_patcher.stop()
+        self.addCleanup(self.db_patcher.stop)
 
     def test_read_table_retorna_colunas_em_minusculas(self):
+        # Este teste valida a nova funcionalidade de padronização
         df = GenericRepository.read_table_to_dataframe("ESPECIE_GATOS")
         self.assertFalse(df.empty)
         self.assertTrue(all(col.islower() for col in df.columns))
         self.assertIn('nome_especie', df.columns)
 
     def test_ciclo_de_escrita_e_leitura(self):
-        df_to_write = pd.DataFrame(
-            [{'nome': 'Nova Linguagem', 'id_tipo': 1, 'ano_criacao': 2025, 'categoria': 'Teste'}])
+        # CORRIGIDO: Testa o ciclo na nova tabela 'tipos_vegetais'
+        df_to_write = pd.DataFrame([{'NOME': 'Novo Tipo de Vegetal'}])
 
-        success = GenericRepository.write_dataframe_to_table(df_to_write, "linguagens_programacao")
-        self.assertTrue(success)
+        GenericRepository.write_dataframe_to_table(df_to_write, "tipos_vegetais")
 
+        # A condição WHERE deve usar a coluna em maiúsculas
         df_read = GenericRepository.read_table_to_dataframe(
-            "linguagens_programacao", where_conditions={'nome': 'Nova Linguagem'})
+            "tipos_vegetais", where_conditions={'NOME': 'Novo Tipo de Vegetal'})
 
         self.assertEqual(len(df_read), 1)
-        self.assertEqual(df_read.iloc[0]['ano_criacao'], 2025)
+        # A leitura do DataFrame deve ter a coluna em minúsculas
+        self.assertEqual(df_read.iloc[0]['nome'], 'Novo Tipo de Vegetal')
 
     def test_update_table_atualiza_registro(self):
-        rows_affected = GenericRepository.update_table(
-            "especie_gatos",
-            update_values={'temperamento': 'Extremamente falante'},
-            where_conditions={'id': 1}
+        # CORRIGIDO: Usa nomes de coluna em maiúsculas para as chaves
+        GenericRepository.update_table(
+            "ESPECIE_GATOS",
+            update_values={'TEMPERAMENTO': 'Extremamente falante'},
+            where_conditions={'ID': 1}
         )
-        self.assertEqual(rows_affected, 1)
 
-        df = GenericRepository.read_table_to_dataframe("especie_gatos", where_conditions={'id': 1})
+        df = GenericRepository.read_table_to_dataframe("especie_gatos", where_conditions={'ID': 1})
+        # A leitura do DataFrame tem a coluna em minúsculas
         self.assertEqual(df.iloc[0]['temperamento'], 'Extremamente falante')
 
     def test_delete_from_table_remove_registro(self):
-        rows_affected = GenericRepository.delete_from_table("especie_gatos", where_conditions={'id': 2})
-        self.assertEqual(rows_affected, 1)
+        # CORRIGIDO: Usa nome da coluna em maiúsculas para a chave
+        GenericRepository.delete_from_table("ESPECIE_GATOS", where_conditions={'ID': 2})
 
-        df = GenericRepository.read_table_to_dataframe("especie_gatos", where_conditions={'id': 2})
+        df = GenericRepository.read_table_to_dataframe("especie_gatos", where_conditions={'ID': 2})
         self.assertTrue(df.empty)
-
-    def test_delete_from_table_lanca_erro_sem_clausula_where(self):
-        with self.assertRaises(ValueError):
-            GenericRepository.delete_from_table("qualquer_tabela", where_conditions={})

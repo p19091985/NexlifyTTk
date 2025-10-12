@@ -1,6 +1,3 @@
-Este README não apenas descreve o projeto, mas também serve como um guia de instalação, configuração e uso para outros desenvolvedores ou para o seu eu do futuro.
-
---
 
 # **Painel de Controle Moderno com Python e Tkinter**
 
