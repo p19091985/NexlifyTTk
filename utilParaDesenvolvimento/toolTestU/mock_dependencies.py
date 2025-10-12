@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, create_autospec
 from pathlib import Path
 from sqlalchemy import create_engine, text
 
-# CORRIGIDO: Importa as classes de View corretas e atuais do projeto.
+# Importa as classes de View corretas e atuais do projeto.
 from panels.painel_vegetais_auditoria_view import VegetaisAuditoriaView
 from modals.tipos_vegetais_view import TiposVegetaisView
 from panels.painel_gestao_gatos_view import GestaoGatosView
@@ -52,11 +52,11 @@ class MockMessageBox:
         return True
 
 
-# CORRIGIDO: Mocks de View atualizados para os nomes corretos e mais claros.
-MockVegetaisAuditoriaView = create_autospec(VegetaisAuditoriaView, instance=True)
-MockTiposVegetaisView = create_autospec(TiposVegetaisView, instance=True)
-MockGestaoGatosView = create_autospec(GestaoGatosView, instance=True)
-MockModeloView = create_autospec(ModeloView, instance=True)
+# CORREÇÃO: Removido 'instance=True' para que os mocks sejam classes que podem ser instanciadas.
+MockVegetaisAuditoriaView = create_autospec(VegetaisAuditoriaView)
+MockTiposVegetaisView = create_autospec(TiposVegetaisView)
+MockGestaoGatosView = create_autospec(GestaoGatosView)
+MockModeloView = create_autospec(ModeloView)
 
 
 class MockAppController:
@@ -68,8 +68,8 @@ class MockAppController:
 
 def setup_test_database():
     engine = create_engine("sqlite:///:memory:")
+    # CORREÇÃO: Adicionado o bloco 'except' para corrigir a sintaxe.
     try:
-        # Aponta para o diretório correto do projeto para encontrar o schema
         project_root = Path(__file__).parent.parent.parent.resolve()
         schema_path = project_root / "persistencia/sql_schema_SQLLite.sql"
 
@@ -93,13 +93,3 @@ def setup_global_mocks():
     if 'logging' not in sys.modules:
         sys.modules['logging'] = MagicMock()
     sys.modules['logging'].getLogger.return_value = MockLogger("mock_logger")
-
-    mock_db_manager = MagicMock()
-    # Garante que todas as chamadas para get_engine() usem o mesmo banco em memória
-    mock_db_manager.get_engine.return_value = setup_test_database()
-
-    # Aplica o patch em todos os lugares onde DatabaseManager pode ser importado
-    sys.modules['persistencia.database'] = MagicMock(DatabaseManager=mock_db_manager)
-    sys.modules['persistencia.repository'] = MagicMock(DatabaseManager=mock_db_manager)
-    sys.modules['persistencia.data_service'] = MagicMock(DatabaseManager=mock_db_manager)
-    sys.modules['persistencia.auth'] = MagicMock(DatabaseManager=mock_db_manager)

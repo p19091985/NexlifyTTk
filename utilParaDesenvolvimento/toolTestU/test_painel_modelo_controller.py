@@ -20,9 +20,10 @@ class TestPainelModelo(unittest.TestCase):
         self.addCleanup(messagebox_patcher.stop)
         messagebox_patcher.start()
 
-        view_patcher = patch('panels.painel_modelo_controller.ModeloView', new_callable=mock_dependencies.MockModeloView)
+        # CORREÇÃO: O patch agora usa autospec=True, a forma padrão e mais robusta.
+        view_patcher = patch('panels.painel_modelo_controller.ModeloView', autospec=True)
         self.addCleanup(view_patcher.stop)
-        view_patcher.start()
+        self.mock_view_class = view_patcher.start()
 
         self.controller = PainelModelo(self.root, mock_dependencies.MockAppController())
 

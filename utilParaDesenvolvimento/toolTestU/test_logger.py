@@ -1,3 +1,4 @@
+# utilParaDesenvolvimento/toolTestU/test_logger.py
 import unittest
 from unittest.mock import patch, MagicMock, call
 import logging
@@ -25,21 +26,17 @@ class TestStreamToLogger(unittest.TestCase):
         self.assertEqual(self.mock_logger.log.call_count, 2)
 
 
-# --- DECORADORES CORRIGIDOS E FINAIS ---
 @patch('persistencia.logger.sys')
 @patch('persistencia.logger.Path')
 @patch('persistencia.logger.logging')
 @patch('persistencia.logger.RotatingFileHandler')
-# A solução é aplicar o patch diretamente nos atributos do módulo 'config'
 @patch('config.LOG_FORMAT', "%(message)s")
 @patch('config.LOG_LEVEL', "INFO")
 class TestSetupLoggers(unittest.TestCase):
 
-    # Os mocks para LOG_LEVEL e LOG_FORMAT são passados como argumentos
-    def test_setup_loggers_configura_handlers_corretamente(self, mock_log_level, mock_log_format, mock_rotating_handler,
-                                                           mock_logging, mock_path,
-                                                           mock_sys):
-        # Não precisamos mais configurar um 'mock_config', pois os valores já foram substituídos
+    # ✅ CORREÇÃO APLICADA AQUI: Adicionados os argumentos que faltavam na assinatura do método.
+    def test_setup_loggers_configura_handlers_corretamente(self, mock_log_level, mock_log_format,
+                                                           mock_rotating_handler, mock_logging, mock_path, mock_sys):
 
         mock_log_dir = MagicMock(spec=Path)
         mock_path.return_value.parent.parent.resolve.return_value.__truediv__.return_value = mock_log_dir

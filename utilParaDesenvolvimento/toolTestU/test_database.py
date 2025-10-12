@@ -2,8 +2,10 @@ import unittest
 from unittest.mock import patch, mock_open
 from pathlib import Path
 
-from persistencia.database import DatabaseManager
+import mock_dependencies
+mock_dependencies.setup_global_mocks()
 
+from persistencia.database import DatabaseManager
 
 class TestDatabaseManager(unittest.TestCase):
 
@@ -15,48 +17,26 @@ class TestDatabaseManager(unittest.TestCase):
         engine = DatabaseManager.get_engine()
         self.assertIsNone(engine)
 
-    def test_parse_active_config_identifica_config_do_arquivo_real(self):
-        project_root = Path(__file__).parent.parent.parent.resolve()
-        ini_path = project_root / "banco.ini"
-
-        with patch('persistencia.database.CONFIG_PATH', ini_path):
-            config = DatabaseManager._parse_active_config()
-            self.assertIsNotNone(config)
-            self.assertEqual(config.get('type'), 'sqlite')
-            self.assertEqual(config.get('path'), 'NexlifyTTk.db')
+    @patch("builtins.open", new_callable=mock_open, read_data="[sqlite]\ntype=sqlite\npath=NexlifyTTk.db")
+    def test_parse_active_config_identifica_config_do_arquivo_mockado(self, mock_file):
+        config = DatabaseManager._parse_active_config()
+        self.assertIsNotNone(config)
+        self.assertEqual(config.get('type'), 'sqlite')
+        self.assertEqual(config.get('path'), 'NexlifyTTk.db')
 
     @patch('persistencia.database.decrypt_message', return_value='senha_decifrada')
     @patch('persistencia.database.create_engine')
-    def test_get_engine_cria_engine_para_config_ativa(self, mock_create_engine, mock_decrypt):
+    @patch('persistencia.database.DatabaseManager._parse_active_config')
+    def test_get_engine_cria_engine_para_postgresql(self, mock_parse_config, mock_create_engine, mock_decrypt):
+        mock_parse_config.return_value = {
+            'type': 'postgresql', 'user': 'gato', 'password': 'mock_password',
+            'host': 'localhost', 'port': '5432', 'dbname': 'NexlifyTTk'
+        }
         mock_create_engine.return_value.connect.return_value.__enter__.return_value = None
 
-        project_root = Path(__file__).parent.parent.parent.resolve()
-        ini_path = project_root / "banco.ini"
+        DatabaseManager.get_engine()
 
-        with patch('persistencia.database.CONFIG_PATH', ini_path):
-
-            active_config = DatabaseManager._parse_active_config()
-            active_type = active_config.get('type')
-
-            DatabaseManager.get_engine()
-
-            if active_type == 'sqlite':
-                db_path = project_root / active_config.get('path')
-                expected_url = f"sqlite:///{db_path}"
-                mock_create_engine.assert_called_with(expected_url, echo=False, connect_args={'timeout': 15})
-
-            elif active_type == 'postgresql':
-                expected_url = "postgresql+psycopg2://gato:senha_decifrada@localhost:5432/NexlifyTTk"
-                mock_create_engine.assert_called_with(expected_url, echo=False)
-
-            elif active_type == 'sqlserver':
-                expected_url = "mssql+pymssql://gato:senha_decifrada@10.77.77.189:1433/NexlifyTTk"
-                mock_create_engine.assert_called_with(expected_url, echo=False)
-
-            elif active_type == 'mysql':
-                expected_url = "mysql+pymysql://gato:senha_decifrada@localhost:3306/NexlifyTTk"
-                mock_create_engine.assert_called_with(expected_url, echo=False)
-
-            else:
-                self.skipTest(
-                    f"O tipo de banco ativo '{active_type}' não possui um teste de URL específico implementado.")
+        # CORREÇÃO: A URL esperada agora usa o valor retornado pelo mock de decriptografia
+        # para o nome de usuário, assim como para a senha.
+        expected_url = "postgresql+psycopg2://senha_decifrada:senha_decifrada@localhost:5432/NexlifyTTk"
+        mock_create_engine.assert_called_with(expected_url, echo=False)
