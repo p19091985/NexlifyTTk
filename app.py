@@ -169,7 +169,7 @@ class AplicacaoPrincipal(tk.Tk):
         config_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Configurações", menu=config_menu)
 
-        # AQUI: A exibição do menu de tema agora depende da flag em config.py
+                                                                             
         if hasattr(config, 'ENABLE_THEME_MENU') and config.ENABLE_THEME_MENU:
             config_menu.add_command(label="Personalizar Tema...", command=self._open_theme_dialog)
 

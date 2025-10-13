@@ -21,16 +21,16 @@ class ScrolledFrame(ttk.Frame):
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
-        # Adiciona suporte à roda do mouse
-        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)  # Windows e macOS
-        self.canvas.bind_all("<Button-4>", self._on_mousewheel)  # Linux (scroll up)
-        self.canvas.bind_all("<Button-5>", self._on_mousewheel)  # Linux (scroll down)
+                                          
+        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel)                   
+        self.canvas.bind_all("<Button-4>", self._on_mousewheel)                     
+        self.canvas.bind_all("<Button-5>", self._on_mousewheel)                       
 
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
     def _on_mousewheel(self, event):
-        # Lógica de rolagem para diferentes sistemas operacionais
+                                                                 
         if event.num == 5 or event.delta < 0:
             self.canvas.yview_scroll(1, "units")
         elif event.num == 4 or event.delta > 0:
@@ -55,7 +55,7 @@ class AdvancedThemeDialog(tk.Toplevel):
 
         self.font_family_var = tk.StringVar(value=self.current_settings.get('font_family', 'Segoe UI'))
         self.font_size_var = tk.IntVar(value=self.current_settings.get('font_size', 10))
-        # Adicionadas variáveis para a aba de Ajustes
+                                                     
         self.border_width_var = tk.IntVar(value=self.current_settings.get('border_width', 1))
         self.border_radius_var = tk.IntVar(value=self.current_settings.get('border_radius', 0))
 
@@ -70,7 +70,7 @@ class AdvancedThemeDialog(tk.Toplevel):
 
         saved_colors = self.current_settings.get('custom_colors', {})
         for name, color in default_colors.items():
-            # Lógica aprimorada para usar o default caso o valor salvo seja nulo ou vazio
+                                                                                         
             self.color_vars[name] = tk.StringVar(value=saved_colors.get(name) or color)
 
         self._create_widgets()
@@ -101,7 +101,7 @@ class AdvancedThemeDialog(tk.Toplevel):
 
         self._create_colors_tab(notebook)
         self._create_typography_tab(notebook)
-        # Adiciona a aba de ajustes que estava faltando
+                                                       
         self._create_fine_tuning_tab(notebook)
 
         preview_container = ttk.LabelFrame(paned, text=" Pré-visualização em Tempo Real ", padding=15)
@@ -187,8 +187,8 @@ class AdvancedThemeDialog(tk.Toplevel):
         ttk.Scale(tab, from_=0, to=5, variable=self.border_width_var, command=self._update_preview).pack(
             fill='x', pady=5)
 
-        # Nota: O arredondamento de cantos (border_radius) não é suportado nativamente pelo ttk no tema 'clam'.
-        # Esta opção é mantida para compatibilidade futura ou temas que o suportem.
+                                                                                                               
+                                                                                   
         ttk.Label(tab, text=f"Arredondamento dos Cantos (Radius): {self.border_radius_var.get()}px").pack(anchor='w',
                                                                                                           pady=(10, 0))
         ttk.Scale(tab, from_=0, to=20, variable=self.border_radius_var, command=self._update_preview).pack(
@@ -217,15 +217,15 @@ class AdvancedThemeDialog(tk.Toplevel):
         self.app._apply_theme_settings(self.app.style, preview_settings)
 
         try:
-            # Atualiza dinamicamente as labels dos sliders de ajuste
+                                                                    
             for child in self.winfo_children():
                 if isinstance(child, ttk.PanedWindow):
-                    # Navega pela árvore de widgets para encontrar as labels
-                    pass  # Uma lógica mais complexa seria necessária para atualizar a label em tempo real
+                                                                            
+                    pass                                                                                  
         except Exception:
             pass
 
-        # Aplica espessura da borda aos widgets de preview
+                                                          
         self.app.style.configure('TButton', borderwidth=self.border_width_var.get())
         self.app.style.configure('TEntry', borderwidth=self.border_width_var.get())
 
@@ -245,7 +245,7 @@ class AdvancedThemeDialog(tk.Toplevel):
             "border_radius": self.border_radius_var.get(),
         }
         self.settings_manager.save_settings(new_settings)
-        # Aplica a configuração final
+                                     
         self.app._apply_theme_settings(self.app.style, new_settings)
         messagebox.showinfo("Configurações Salvas", "O novo tema e as personalizações foram aplicados.", parent=self)
         self.destroy()

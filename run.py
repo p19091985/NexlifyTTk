@@ -3,14 +3,14 @@ import sys
 import logging
 import os
 
-# 1. Adiciona a pasta raiz do projeto ao path do Python.
-#    Isso permite que o script encontre os pacotes como 'persistencia', 'app', etc.
+                                                        
+                                                                                   
 project_root = os.path.dirname(os.path.abspath(__file__))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-# 2. Agora, com o path configurado, as importações são feitas de forma "absoluta"
-#    a partir da raiz do projeto, o que funciona corretamente.
+                                                                                 
+                                                              
 from persistencia.logger import setup_loggers, StreamToLogger
 setup_loggers()
 
@@ -29,8 +29,8 @@ def main():
 
     if config.INITIALIZE_DATABASE_ON_STARTUP:
         try:
-            # 3. A chamada ao DatabaseManager permanece. É AQUI DENTRO que a
-            #    descriptografia acontece, de forma encapsulada e segura.
+                                                                            
+                                                                         
             DatabaseManager.initialize_database()
             main_logger.info("Banco de dados pronto.")
         except Exception as e:

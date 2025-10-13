@@ -12,7 +12,7 @@ CONFIG_PATH = project_root / "banco.ini"
 SCHEMA_PATH = project_root / "persistencia/sql_schema_SQLLite.sql"
 
 
-# A função agora é mais simples, pois só será chamada para o engine SQLite.
+                                                                           
 def _set_sqlite_pragma(dbapi_connection, connection_record):
     """Executa o PRAGMA para ativar o suporte a chaves estrangeiras no SQLite."""
     cursor = dbapi_connection.cursor()
@@ -69,11 +69,11 @@ class DatabaseManager:
                     connection_url = f"sqlite:///{db_path}"
                     engine_options['connect_args'] = {'timeout': 15}
 
-                    # Cria o engine aqui para poder registrar o evento nele
+                                                                           
                     engine = create_engine(connection_url, **engine_options)
 
-                    # REGISTRO DO EVENTO: Anexa a função _set_sqlite_pragma
-                    # APENAS a este engine específico do SQLite.
+                                                                           
+                                                                
                     event.listen(engine, "connect", _set_sqlite_pragma)
                     cls._engine = engine
                 else:
@@ -99,10 +99,10 @@ class DatabaseManager:
                     else:
                         raise ValueError(f"Tipo de banco de dados não suportado: '{db_type}'")
 
-                    # Cria o engine para os outros bancos de dados
+                                                                  
                     cls._engine = create_engine(connection_url, **engine_options)
 
-                # O teste de conexão agora é feito fora do 'if' para valer para todos
+                                                                                     
                 with cls._engine.connect() as connection:
                     logging.info(f"Conexão com '{db_type}' estabelecida com sucesso.")
             except (OperationalError, SQLAlchemyError) as e:

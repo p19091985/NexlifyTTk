@@ -414,10 +414,10 @@ class UltimateTestDashboard(tk.Tk):
             ts_formatted = result.timestamp.strftime('%d/%m/%Y %H:%M:%S')
             self.details_text.insert('end', "--- DETALHES DO TESTE ---\n", "header")
             self.details_text.insert('end',
-                                     f"Suíte:       {result.suite_name}\n"  f"Classe:      {result.class_name}\n"  f"Método:      {result.method_name}\n"  f"Status:      {result.status.value}\n"  f"Severidade:  {result.severity.value}\n"  f"Duração:     {result.duration:.6f}s\n"  f"Timestamp:   {ts_formatted}\n\n")
+                                     f"Suíte:       {result.suite_name}\n"   f"Classe:      {result.class_name}\n"   f"Método:      {result.method_name}\n"   f"Status:      {result.status.value}\n"   f"Severidade:  {result.severity.value}\n"   f"Duração:     {result.duration:.6f}s\n"   f"Timestamp:   {ts_formatted}\n\n")
             self.details_text.insert('end', "--- METADADOS E PERFORMANCE ---\n", "header")
             self.details_text.insert('end',
-                                     f"Retentativas:{result.retry_count}\n"  f"Metadados:   {result.metadata}\n\n")
+                                     f"Retentativas:{result.retry_count}\n"   f"Metadados:   {result.metadata}\n\n")
             self.details_text.insert('end', "--- LOG E STACKTRACE ---\n", "header")
             self.details_text.insert('end', f"{result.details}\n")
             self.details_text.config(state="disabled")
