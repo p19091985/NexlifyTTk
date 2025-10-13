@@ -3,7 +3,7 @@
 *.log
 *.logs
 *.db
-*.txt
+
 __pycache__/
 *.py[codz]
 *$py.class
