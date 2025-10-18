@@ -1,127 +1,167 @@
-                            
 import pandas as pd
 from sqlalchemy import text, exc
 import logging
-
-                                                             
+import config
 from .database import DatabaseManager
 
-                                
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class GenericRepository:
     """
-    Uma classe genérica para interagir com o banco de dados usando SQLAlchemy e Pandas.
-    Fornece métodos básicos de CRUD (Create, Read, Update, Delete).
+    Classe genérica para interagir com o banco de dados.
+    Verifica se o banco está habilitado antes de cada operação.
     """
 
     @staticmethod
     def get_engine():
-        """
-        Retorna a instância do motor diretamente do DatabaseManager.
-        Isso garante que toda a aplicação use a mesma e única conexão.
-        """
+        """Retorna a instância do motor do DatabaseManager."""
         return DatabaseManager.get_engine()
 
     @staticmethod
     def execute_query_to_dataframe(query: str, params: dict = None):
-        """
-        Executa uma query SQL e retorna o resultado como um DataFrame Pandas,
-        com todas as colunas convertidas para minúsculas para padronização.
-        """
+        """Executa uma query e retorna um DataFrame com colunas minúsculas."""
+        if not config.DATABASE_ENABLED:
+            logging.warning("Banco de dados desabilitado. A query não será executada.")
+            return pd.DataFrame()
+
         engine = GenericRepository.get_engine()
+        if not engine:
+            logging.error("Acesso ao banco falhou: engine não disponível.")
+            return pd.DataFrame()
+
         try:
             with engine.connect() as connection:
                 df = pd.read_sql_query(text(query), connection, params=params)
-
-                                                                                                           
-                df.columns = [col.lower() for col in df.columns]
-
+                                                     
+                df.columns = [str(col).lower() for col in df.columns]
                 return df
         except exc.SQLAlchemyError as e:
             logging.error(f"Erro ao executar a query: {query}\nErro: {e}")
             raise
 
     @staticmethod
-    def read_table_to_dataframe(table_name: str, columns: list = None, where_conditions: dict = None):
-        """Lê dados de uma tabela e retorna como DataFrame, com filtros opcionais."""
-        cols = ", ".join(columns) if columns else "*"
-        query = f"SELECT {cols} FROM {table_name.upper()}"
-        if where_conditions:
-            conditions = " AND ".join([f"{key} = :{key.lower()}" for key in where_conditions.keys()])
-            query += f" WHERE {conditions}"
-
-            params_lower = {k.lower(): v for k, v in where_conditions.items()}
-            return GenericRepository.execute_query_to_dataframe(query, params=params_lower)
-
-        return GenericRepository.execute_query_to_dataframe(query, params=where_conditions)
-
-    @staticmethod
-    def read_vegetais_com_tipo():
-        """
-        Busca todos os vegetais e faz o JOIN com a tabela de tipos para obter o nome do tipo.
-        Específico para o Painel de Vegetais.
-        """
-        query = """
-                SELECT v.ID, v.NOME, tv.NOME as TIPO
-                FROM VEGETAIS v
-                         LEFT JOIN TIPOS_VEGETAIS tv ON v.ID_TIPO = tv.ID
-                ORDER BY v.NOME;
-                """
-        return GenericRepository.execute_query_to_dataframe(query)
-
-    @staticmethod
     def write_dataframe_to_table(df: pd.DataFrame, table_name: str):
-        """Escreve um DataFrame inteiro em uma tabela do banco de dados."""
+        """Escreve um DataFrame em uma tabela (espera nome da tabela minúsculo)."""
+        if not config.DATABASE_ENABLED:
+            logging.warning(f"Banco de dados desabilitado. Nenhum dado será escrito em '{table_name}'.")
+            return
+
         engine = GenericRepository.get_engine()
+        if not engine:
+            logging.error(f"Escrita em '{table_name}' falhou: engine não disponível.")
+            return
+
         try:
-            df.to_sql(table_name.upper(), con=engine, if_exists='append', index=False)
-            logging.info(f"{len(df)} registros inseridos com sucesso na tabela '{table_name.upper()}'.")
+                                                                                
+            df_to_write = df.copy()
+            df_to_write.columns = [str(col).lower() for col in df_to_write.columns]
+                                                                      
+            df_to_write.to_sql(table_name, con=engine, if_exists='append', index=False)
+            logging.info(f"{len(df)} registros inseridos com sucesso na tabela '{table_name}'.")
         except exc.SQLAlchemyError as e:
-            logging.error(f"Erro ao escrever na tabela '{table_name.upper()}': {e}")
+                                                   
+            logging.error(f"Erro ao escrever na tabela '{table_name}'. Colunas do DF: {list(df.columns)}. Erro: {e}")
             raise
 
     @staticmethod
     def update_table(table_name: str, update_values: dict, where_conditions: dict):
-        """Atualiza registros em uma tabela com base em condições."""
+        """Atualiza registros em uma tabela (espera nome da tabela e chaves minúsculas)."""
+        if not config.DATABASE_ENABLED:
+            logging.warning(f"Banco de dados desabilitado. Nenhum dado será atualizado em '{table_name}'.")
+            return
+
         engine = GenericRepository.get_engine()
-        set_clause = ", ".join([f"{key} = :{key.lower()}_val" for key in update_values.keys()])
-        where_clause = " AND ".join([f"{key} = :wh_{key.lower()}" for key in where_conditions.keys()])
+        if not engine:
+            logging.error(f"Update em '{table_name}' falhou: engine não disponível.")
+            return
 
-        params = {}
-        for key, value in update_values.items():
-            params[f'{key.lower()}_val'] = value
-        for key, value in where_conditions.items():
-            params[f'wh_{key.lower()}'] = value
+                                                                
+        update_values_lower = {k.lower(): v for k, v in update_values.items()}
+        where_conditions_lower = {k.lower(): v for k, v in where_conditions.items()}
 
-        query = f"UPDATE {table_name.upper()} SET {set_clause} WHERE {where_clause}"
+        set_clause = ", ".join([f"{key} = :{key}_val" for key in update_values_lower.keys()])
+        where_clause = " AND ".join([f"{key} = :wh_{key}" for key in where_conditions_lower.keys()])
+
+        params = {f'{k}_val': v for k, v in update_values_lower.items()}
+        params.update({f'wh_{k}': v for k, v in where_conditions_lower.items()})
+
+                                                                  
+        query = f"UPDATE {table_name} SET {set_clause} WHERE {where_clause}"
 
         try:
             with engine.connect() as connection:
-                with connection.begin() as transaction:
+                with connection.begin():
                     connection.execute(text(query), params)
-                                                                                
-                                                                                     
-            logging.info(f"Tabela '{table_name.upper()}' atualizada com sucesso.")
+            logging.info(f"Tabela '{table_name}' atualizada com sucesso.")
         except exc.SQLAlchemyError as e:
-            logging.error(f"Erro ao atualizar a tabela '{table_name.upper()}': {e}")
+            logging.error(f"Erro ao atualizar a tabela '{table_name}': {e}")
             raise
 
     @staticmethod
     def delete_from_table(table_name: str, where_conditions: dict):
-        """Deleta registros de uma tabela com base em condições."""
+        """Deleta registros de uma tabela (espera nome da tabela e chaves minúsculas)."""
+        if not config.DATABASE_ENABLED:
+            logging.warning(f"Banco de dados desabilitado. Nenhum dado será deletado de '{table_name}'.")
+            return
+
         engine = GenericRepository.get_engine()
-        where_clause = " AND ".join([f"{key} = :{key.lower()}" for key in where_conditions.keys()])
-        params = {k.lower(): v for k, v in where_conditions.items()}
-        query = f"DELETE FROM {table_name.upper()} WHERE {where_clause}"
+        if not engine:
+            logging.error(f"Delete em '{table_name}' falhou: engine não disponível.")
+            return
+
+                                                              
+        where_conditions_lower = {k.lower(): v for k, v in where_conditions.items()}
+
+        where_clause = " AND ".join([f"{key} = :{key}" for key in where_conditions_lower.keys()])
+        params = where_conditions_lower                                           
+
+                                                                  
+        query = f"DELETE FROM {table_name} WHERE {where_clause}"
+
         try:
             with engine.connect() as connection:
-                with connection.begin() as transaction:
+                with connection.begin():
                     connection.execute(text(query), params)
-                                                                                
-                                                                                     
-            logging.info(f"Registros da tabela '{table_name.upper()}' deletados com sucesso.")
+            logging.info(f"Registros da tabela '{table_name}' deletados com sucesso.")
         except exc.SQLAlchemyError as e:
-            logging.error(f"Erro ao deletar da tabela '{table_name.upper()}': {e}")
+            logging.error(f"Erro ao deletar da tabela '{table_name}': {e}")
             raise
+
+    @staticmethod
+    def read_vegetais_com_tipo():
+        """Busca todos os vegetais com o nome do tipo (usa nomes minúsculos)."""
+                                                 
+        query = """
+                SELECT v.id, v.nome, tv.nome as tipo
+                FROM vegetais v
+                         LEFT JOIN tipos_vegetais tv ON v.id_tipo = tv.id
+                ORDER BY v.nome;
+                """
+        return GenericRepository.execute_query_to_dataframe(query)
+
+    @staticmethod
+    def read_table_to_dataframe(table_name: str, columns: list = None, where_conditions: dict = None):
+        """Lê dados de uma tabela (espera nome da tabela minúsculo) e retorna DataFrame."""
+        if not config.DATABASE_ENABLED:
+            return pd.DataFrame()
+
+                                                                             
+        cols_str = "*"
+        if columns:
+             cols_lower = [col.lower() for col in columns]
+             cols_str = ", ".join(cols_lower)
+
+
+                                                                  
+        query = f"SELECT {cols_str} FROM {table_name}"
+
+        params_lower = None
+        if where_conditions:
+                                                                              
+            where_conditions_lower = {k.lower(): v for k, v in where_conditions.items()}
+            conditions = " AND ".join([f"{key} = :{key}" for key in where_conditions_lower.keys()])
+            query += f" WHERE {conditions}"
+            params_lower = where_conditions_lower                                         
+
+        return GenericRepository.execute_query_to_dataframe(query, params=params_lower)

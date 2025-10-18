@@ -1,59 +1,60 @@
 -- Remove tabelas existentes para garantir um estado limpo, respeitando a ordem das dependências
-DROP TABLE IF EXISTS LOG_ALTERACOES;
-DROP TABLE IF EXISTS VEGETAIS;
-DROP TABLE IF EXISTS TIPOS_VEGETAIS;
-DROP TABLE IF EXISTS USUARIOS;
-DROP TABLE IF EXISTS ESPECIE_GATOS;
+DROP TABLE IF EXISTS log_alteracoes;
+DROP TABLE IF EXISTS vegetais;
+DROP TABLE IF EXISTS tipos_vegetais;
+DROP TABLE IF EXISTS usuarios;
+DROP TABLE IF EXISTS especie_gatos;
 
--- Tabela de Usuários
-CREATE TABLE USUARIOS (
-    LOGIN_USUARIO TEXT PRIMARY KEY NOT NULL,
-    SENHA_CRIPTOGRAFADA TEXT NOT NULL,
-    NOME_COMPLETO TEXT NOT NULL,
-    TIPO_ACESSO TEXT NOT NULL CHECK (TIPO_ACESSO IN (
+-- Tabela de Usuários (minúsculas)
+CREATE TABLE usuarios (
+    login_usuario TEXT PRIMARY KEY NOT NULL,
+    senha_criptografada TEXT NOT NULL,
+    nome_completo TEXT NOT NULL,
+    tipo_acesso TEXT NOT NULL CHECK (tipo_acesso IN (
         'Administrador Global', 'Diretor de Operações', 'Gerente de TI',
         'Supervisor de Produção', 'Operador de Linha', 'Analista de Dados', 'Auditor Externo'
     ))
 );
 
--- Tabela de Tipos de Vegetais
-CREATE TABLE TIPOS_VEGETAIS (
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    NOME TEXT NOT NULL UNIQUE
+-- Tabela de Tipos de Vegetais (minúsculas)
+CREATE TABLE tipos_vegetais (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL UNIQUE
 );
 
--- Tabela de Vegetais com Chave Estrangeira
-CREATE TABLE VEGETAIS (
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    NOME TEXT NOT NULL,
-    ID_TIPO INTEGER,
-    FOREIGN KEY (ID_TIPO) REFERENCES TIPOS_VEGETAIS (ID)
-        ON DELETE RESTRICT -- ALTERADO: Impede a exclusão de um tipo se estiver em uso
+-- Tabela de Vegetais com Chave Estrangeira (minúsculas)
+CREATE TABLE vegetais (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    id_tipo INTEGER,
+    FOREIGN KEY (id_tipo) REFERENCES tipos_vegetais (id)
+        ON DELETE RESTRICT
         ON UPDATE CASCADE
 );
 
--- Tabela de Log de Alterações
-CREATE TABLE LOG_ALTERACOES (
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    TIMESTAMP DATETIME NOT NULL,
-    LOGIN_USUARIO TEXT,
-    ACAO TEXT,
-    FOREIGN KEY (LOGIN_USUARIO) REFERENCES USUARIOS (LOGIN_USUARIO)
+-- Tabela de Log de Alterações (minúsculas)
+CREATE TABLE log_alteracoes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp DATETIME NOT NULL,
+    login_usuario TEXT,
+    acao TEXT,
+    FOREIGN KEY (login_usuario) REFERENCES usuarios (login_usuario)
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
 
--- Tabela para a demonstração de CRUD
-CREATE TABLE ESPECIE_GATOS (
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    NOME_ESPECIE TEXT NOT NULL UNIQUE,
-    PAIS_ORIGEM TEXT,
-    TEMPERAMENTO TEXT
+-- Tabela para a demonstração de CRUD (minúsculas)
+CREATE TABLE especie_gatos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_especie TEXT NOT NULL UNIQUE,
+    pais_origem TEXT,
+    temperamento TEXT
 );
 
--- Inserções de dados (permanecem as mesmas)
-INSERT INTO USUARIOS (LOGIN_USUARIO, SENHA_CRIPTOGRAFADA, NOME_COMPLETO, TIPO_ACESSO) VALUES
+-- Inserções de dados (usando nomes de tabela/coluna minúsculos)
+INSERT INTO usuarios (login_usuario, senha_criptografada, nome_completo, tipo_acesso) VALUES
 ('admin', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Usuário Administrador', 'Administrador Global'),
+('dev_user', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Usuário de Desenvolvimento', 'Administrador Global'),
 ('diretor.op', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Carlos Diretor', 'Diretor de Operações'),
 ('gerente.ti', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Beatriz Gerente', 'Gerente de TI'),
 ('ana.supervisor', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Ana Supervisora', 'Supervisor de Produção'),
@@ -69,16 +70,16 @@ INSERT INTO USUARIOS (LOGIN_USUARIO, SENHA_CRIPTOGRAFADA, NOME_COMPLETO, TIPO_AC
 ('lara.admin', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Lara Administradora', 'Administrador Global'),
 ('mateus.auditor', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Mateus Auditor', 'Auditor Externo');
 
-INSERT INTO TIPOS_VEGETAIS (NOME) VALUES ('Raízes e Tubérculos'), ('Folhas'), ('Flores e Inflorescências'), ('Frutos'), ('Legumes');
+INSERT INTO tipos_vegetais (nome) VALUES ('Raízes e Tubérculos'), ('Folhas'), ('Flores e Inflorescências'), ('Frutos'), ('Legumes');
 
-INSERT INTO VEGETAIS (NOME, ID_TIPO) VALUES
+INSERT INTO vegetais (nome, id_tipo) VALUES
 ('Abóbora', 4), ('Abobrinha', 4), ('Agrião', 2), ('Aipim', 1), ('Alface', 2), ('Alho', 1), ('Almeirão', 2),
 ('Batata-doce', 1), ('Batata', 1), ('Berinjela', 4), ('Beterraba', 1), ('Brócolis', 3), ('Cebola', 1),
 ('Cenoura', 1), ('Chuchu', 4), ('Coentro', 2), ('Couve', 2), ('Couve-flor', 3), ('Ervilha', 5), ('Espinafre', 2),
 ('Feijão-vagem', 5), ('Inhame', 1), ('Jiló', 4), ('Maxixe', 4), ('Milho', 4), ('Pepino', 4), ('Pimentão', 4),
 ('Quiabo', 4), ('Rabanete', 1), ('Repolho', 2);
 
-INSERT INTO ESPECIE_GATOS (NOME_ESPECIE, PAIS_ORIGEM, TEMPERAMENTO) VALUES
+INSERT INTO especie_gatos (nome_especie, pais_origem, temperamento) VALUES
 ('Siamês', 'Tailândia', 'Inteligente e Afetuoso'),
 ('Persa', 'Irã (Pérsia)', 'Calmo e Dócil'),
 ('Maine Coon', 'Estados Unidos', 'Gentil e Brincalhão'),

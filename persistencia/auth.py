@@ -1,4 +1,3 @@
-                      
 import logging
 import bcrypt
 from sqlalchemy import text
@@ -10,29 +9,32 @@ def verify_user_credentials(username, password):
         engine = DatabaseManager.get_engine()
         if not engine:
             logger.error("Falha na autenticação: engine do banco de dados não disponível.")
-            return "connection_error"
+            return "connection_error"   
         with engine.connect() as connection:
+                                                      
             query = text("""
-                         SELECT LOGIN_USUARIO, SENHA_CRIPTOGRAFADA, NOME_COMPLETO, TIPO_ACESSO
-                         FROM USUARIOS
-                         WHERE LOGIN_USUARIO = :user
-                         """)
+                         SELECT login_usuario, senha_criptografada, nome_completo, tipo_acesso
+                         FROM usuarios
+                         WHERE login_usuario = :user
+                         """)   
             result = connection.execute(query, {"user": username}).fetchone()
             if result:
-                user_data = {key.lower(): value for key, value in result._mapping.items()}
+                                                                                                 
+                user_data = {key.lower(): value for key, value in result._mapping.items()}   
                 hashed_password_from_db = user_data['senha_criptografada'].encode('utf-8')
                 password_from_user = password.encode('utf-8')
                 if bcrypt.checkpw(password_from_user, hashed_password_from_db):
                     logger.info(f"Login bem-sucedido para: {username}")
-                    return {
-                        "username": user_data['login_usuario'],
-                        "name": user_data['nome_completo'],
-                        "access_level": user_data['tipo_acesso']
+                                                              
+                    return {   
+                        "username": user_data['login_usuario'],   
+                        "name": user_data['nome_completo'],   
+                        "access_level": user_data['tipo_acesso']   
                     }
                 else:
                     logger.warning(f"Senha inválida para o usuário: {username}")
                     return None
-            else:
+            else:   
                 logger.warning(f"Usuário não encontrado: {username}")
                 return None
     except ConnectionError as e:
@@ -40,7 +42,7 @@ def verify_user_credentials(username, password):
         return "connection_error"
     except Exception as e:
         logger.error(f"Erro inesperado durante a verificação de credenciais para '{username}': {e}")
-        return None
+        return None   
 
 def hash_password(plain_text_password):
     salt = bcrypt.gensalt()

@@ -1,293 +1,354 @@
-# 🧩 Painel de Controle Moderno com Python e Tkinter
+# ✨ Nexus Tkinter Framework ✨ - Forjando Aplicações Desktop Robustas com Elegância
 
-Este projeto é um **framework robusto e completo** para a construção de **aplicações de desktop modernas e orientadas a dados**.  
-Utilizando **Python**, a biblioteca gráfica nativa **Tkinter** (com o tema `'clam'` do ttk) e uma arquitetura limpa (**MVC**), ele fornece uma **base sólida, segura e altamente extensível** para desenvolvedores — juntamente com um poderoso conjunto de ferramentas que **acelera drasticamente o ciclo de desenvolvimento**.
+**Bem-vindo ao Nexus, um framework Python meticulosamente arquitetado para capacitar desenvolvedores na criação de aplicações desktop sofisticadas, seguras e orientadas a dados, utilizando o poder nativo do Tkinter/ttk com uma abordagem moderna e produtiva.**
 
----
-
-## 🚀 Principais Funcionalidades
-
-### 🧱 Arquitetura MVC (Model-View-Controller)
-Código organizado com clara separação entre:
-- **View:** Interface gráfica.
-- **Controller:** Lógica de negócios.
-- **Model:** Acesso e manipulação de dados.
-
-➡️ Facilita manutenção, testes e escalabilidade do projeto.
+Cansado da complexidade desnecessária ou da falta de estrutura em projetos Tkinter? O Nexus emerge como a solução definitiva, oferecendo uma **base MVC (Model-View-Controller) coesa**, **segurança integrada de ponta**, **suporte multi-banco flexível** e um **arsenal incomparável de ferramentas de desenvolvimento** que transmutam o tedioso em trivial.
 
 ---
 
-### 🗄️ Suporte a Múltiplos Bancos de Dados
-- Utiliza **SQLAlchemy** e um sistema de configuração flexível (`banco.ini`).
-- Conecta-se a:
-  - SQLite  
-  - PostgreSQL  
-  - MySQL  
-  - SQL Server  
-  - MariaDB  
-  - Oracle  
-  - Firebird  
+## 🌟 Pilares Fundamentais do Framework
+
+O Nexus foi construído sobre princípios que garantem excelência e longevidade aos seus projetos:
+
+### 🏛️ 1. Arquitetura MVC Iluminada
+* **Clareza Estrutural:** Separação rigorosa entre Interface (`View`), Lógica de Negócios (`Controller`) e Acesso a Dados (`Model`).
+* **Manutenibilidade Celestial:** Modificações e expansões se tornam intuitivas, com baixo acoplamento entre componentes.
+* **Testabilidade Pura:** Camadas isoladas facilitam a criação de testes unitários precisos e eficazes.
+* **Escalabilidade Infinita:** A estrutura modular suporta o crescimento orgânico da aplicação sem sacrificar a organização.
+
+### 🛡️ 2. Segurança Inabalável
+* **Autenticação Robusta:** Senhas de usuário protegidas com **hashing bcrypt**, o padrão-ouro contra ataques de força bruta e rainbow tables.
+* **Credenciais Sigilosas:** Chaves de acesso ao banco (`banco.ini`) resguardadas por criptografia **Fernet (AES)**, vinculadas a uma `secret.key` local, eliminando a exposição de dados sensíveis em texto plano.
+
+### 🗄️ 3. Flexibilidade Multi-Banco Universal
+* **SQLAlchemy Core:** Utiliza o poder do SQLAlchemy para uma comunicação agnóstica e eficiente com diversos SGBDs.
+* **Configuração Simplificada:** Alterne entre bancos de dados com uma simples edição no arquivo `banco.ini`.
+* **Suporte Abrangente:** Conecte-se nativamente a:
+    * SQLite (`sqlite3`)
+    * PostgreSQL (`psycopg2-binary`)
+    * MySQL (`PyMySQL`)
+    * MariaDB (`mariadb`)
+    * Microsoft SQL Server (`pymssql`)
+    * Oracle (`oracledb`) - *Requer instalação do driver específico*
+    * Firebird (`fdb`) - *Requer instalação do driver específico*
+* **Consistência Garantida:** A camada de persistência normaliza nomes de colunas para minúsculas, assegurando compatibilidade cross-SGBD.
+
+### 🎨 4. Interface Nativa & Adaptável (ttk 'clam')
+* **Visual Profissional:** Utiliza o tema `'clam'` do `ttk` como base para uma aparência limpa e moderna em diferentes sistemas operacionais.
+* **Personalização Profunda:**
+    * **Editor de Temas Avançado:** Uma ferramenta gráfica dedicada permite ajustar cores primárias, secundárias, fontes globais, tamanho de fonte e até detalhes como espessura de borda em tempo real.
+    * **Persistência Simples:** Suas preferências de tema são salvas no arquivo `settings.json`, carregadas automaticamente ao iniciar.
+
+### 💾 5. Camada de Persistência Abstrata e Inteligente
+* **`GenericRepository`:** Centraliza e padroniza as operações CRUD (Create, Read, Update, Delete), desacoplando os Controllers dos detalhes do SQL.
+* **`DataService`:** Orquestra transações complexas envolvendo múltiplas tabelas (ex: atualizar um registro e gravar um log de auditoria), garantindo **atomicidade** (ou tudo funciona, ou nada é alterado).
 
 ---
 
-### 🔐 Segurança Integrada
+## 🛠️ O Arsenal do Desenvolvedor: Ferramentas Integradas
 
-#### Autenticação Segura
-- Senhas armazenadas com **hashing bcrypt** — padrão da indústria para proteção de credenciais.
+O Nexus transcende ser apenas um framework; ele é um **ecossistema de produtividade**. As ferramentas gráficas inclusas foram projetadas para **eliminar tarefas repetitivas e acelerar drasticamente** o ciclo de vida do desenvolvimento:
 
-#### Credenciais Criptografadas
-- Credenciais do banco (`banco.ini`) criptografadas com **cryptography (Fernet)**.
-- Protegidas por uma chave local (`secret.key`), evitando exposição em texto plano.
+### ✨ [1] Gerador de Código MVC Divino (`toolsDev`)
+* **Propósito:** Automatizar a criação da estrutura básica para novos painéis ou modais CRUD.
+* **Funcionalidades:**
+    * Conecta-se ao banco de dados configurado.
+    * Inspeciona a estrutura (colunas, chaves) da tabela selecionada.
+    * Utiliza **templates Jinja2** para gerar:
+        * Arquivo `_controller.py` (com lógica CRUD básica, validações e chamadas ao Repository).
+        * Arquivo `_view.py` (com formulário ttk, Treeview e botões pré-configurados).
+        * Arquivo `_model.py` (se lógica de dados específica for necessária, além do Repository).
+    * Configura automaticamente `PANEL_NAME`, `PANEL_ICON` e `ALLOWED_ACCESS`.
+    * Registra o novo painel no `panels/__init__.py`.
+* **Resultado:** Criação de módulos CRUD funcionais em segundos, liberando o desenvolvedor para focar na lógica de negócios específica.
 
----
+### 🔑 [2] Gestor de Configuração e Segurança (`credenciais_manager_gui.py`)
+* **Propósito:** Gerenciar de forma segura e visual as configurações sensíveis e scripts SQL.
+* **Funcionalidades:**
+    * **Gerenciador `banco.ini`:** Ativa/desativa diferentes configurações de banco com um clique, comentando/descomentando seções automaticamente.
+    * **Criptografador de Credenciais:** Criptografa `user` e `password` em texto plano no `banco.ini` usando a `secret.key`.
+    * **Atualizador de Hashes SQL:** Lê arquivos `.sql` (schemas), encontra senhas em texto plano em comandos `INSERT INTO usuarios` e as substitui por hashes **bcrypt** seguros.
+    * **Visualizador/Decifrador:** Permite inspecionar `banco.ini` ou `.sql`, exibindo credenciais criptografadas/hasheadas e tentando decifrá-las (usando `secret.key` para .ini ou senhas conhecidas para .sql).
+* **Resultado:** Manutenção segura das configurações, migração facilitada de senhas inseguras e auditoria de credenciais.
 
-### 🎨 Interface Nativa e Personalizável
-- Usa o tema **'clam' do ttk** para um visual limpo e profissional.
-- Painel de **personalização de temas em tempo real**, permitindo:
-  - Ajustar cores, fontes e estilos.  
-  - Salvar preferências em `settings.json`.
+### 🧪 [3] Executor de Testes Unitários (`toolTestU`)
+* **Propósito:** Interface gráfica para descobrir, executar e analisar testes `unittest`.
+* **Funcionalidades:**
+    * **Descoberta Automática:** Encontra todos os arquivos `test_*.py` no diretório `toolTestU/`.
+    * **Execução Flexível:** Roda todos os testes, apenas os selecionados, ou re-executa apenas os que falharam na última execução.
+    * **Resultados Detalhados:** Exibe o status (Sucesso, Falha, Erro), duração e nome de cada teste em uma Treeview.
+    * **Análise de Falhas:** Mostra o traceback completo e logs de erro para testes que falharam.
+    * **Log de Execução:** Gera um arquivo de log (`.log`) detalhado para cada execução.
+* **Resultado:** Facilita a execução regular de testes unitários e a identificação rápida de regressões.
 
----
+### 🧠 [4] Dashboard de Testes Supremo (`toolTest`)
+* **Propósito:** Plataforma avançada para testes de integração, estresse, concorrência e resiliência, com foco em performance e comportamento sob carga.
+* **Funcionalidades:**
+    * **Suítes Pré-definidas:** Inclui suítes como Clássica (sequencial), Moderna (parametrizada), Paralela (ThreadPool), Estresse de BD (simulação de usuários), Concorrência (locks, race conditions) e mais.
+    * **Execução Individual ou Total:** Roda suítes específicas ou todas em sequência.
+    * **Métricas Abrangentes:** Exibe resultados individuais com status especiais (✨DIVINE, ⚡GODLIKE para performance extrema), duração, severidade, logs detalhados e *métricas de sistema* (uso de CPU/RAM durante o teste via `psutil`).
+    * **Visualização Clara:** Dashboard com resumo geral (Total, Taxa Sucesso, Tempo), contagem por status e tabela detalhada dos resultados.
+    * **Exportação CSV:** Exporta todos os dados e metadados dos resultados para análise externa.
+* **Resultado:** Permite validar a robustez, performance e escalabilidade da aplicação sob condições realistas e extremas.
 
-### 💾 Camada de Persistência Abstrata
-- `GenericRepository` padroniza operações CRUD.  
-- Garante **insensibilidade a maiúsculas/minúsculas** em nomes de colunas.
-
----
-
-## 🧰 Suíte de Ferramentas para Desenvolvedores
-
-O projeto inclui diversas ferramentas gráficas para **acelerar o desenvolvimento, teste e manutenção** da aplicação.
-
----
-
-### ⚙️ 1. Gerador de Código MVC
-Ferramenta visual que:
-- Inspeciona tabelas do banco de dados.
-- Gera automaticamente todos os arquivos MVC necessários.
-
-**Funcionalidades:**
-- Gera Controller, View e Model via **templates Jinja2**.  
-- Cria formulários e colunas automaticamente.  
-- Configura controle de acesso.  
-
----
-
-### 🛡️ 2. Gestor de Configuração e Segurança
-Interface gráfica para gerenciar o arquivo `banco.ini` e outras configurações.
-
-**Funcionalidades:**
-- Ativa/desativa conexões com um clique.  
-- Criptografa credenciais em texto plano.  
-- Atualiza scripts `.sql` com **hashes bcrypt**.  
-- Permite visualizar e decifrar credenciais.  
-
----
-
-### 🧪 3. Dashboard de Testes Unitários
-Interface gráfica para **descoberta e execução de testes `unittest`**.
-
-**Funcionalidades:**
-- Descobre automaticamente `test_*.py`.  
-- Executa todos, selecionados ou apenas os que falharam.  
-- Exibe resultados detalhados (status, duração, logs).  
+### 🩺 [5] Ferramenta de Diagnóstico (Health Check) (`toolTest/health_check_gui.py`)
+* **Propósito:** Verificação rápida do ambiente de desenvolvimento e dependências essenciais.
+* **Funcionalidades:**
+    * **Verificação Estrutural:** Confirma a existência de arquivos e diretórios cruciais do projeto.
+    * **Teste de Conexão:** Tenta conectar ao banco de dados atualmente configurado no `banco.ini`.
+    * **Checagem de Bibliotecas:** Verifica a presença de dependências opcionais importantes (ex: `GPUtil` para monitoramento de GPU, se aplicável).
+    * **Log Detalhado:** Registra cada passo da verificação.
+* **Resultado:** Ajuda a diagnosticar rapidamente problemas de configuração de ambiente ou dependências ausentes.
 
 ---
 
-### 🧠 4. Dashboard de Testes Supremo
-Ferramenta para **testes de estresse, concorrência e resiliência** com métricas detalhadas.
+## 🗺️ Arquitetura e Fluxo de Dados
 
-**Funcionalidades:**
-- Executa diferentes suítes (Clássica, Paralela, Estresse de BD, etc).  
-- Simula múltiplos usuários.  
-- Coleta métricas de performance.  
-- Exporta resultados em **CSV**.  
+O framework adota uma abordagem em camadas clara, promovendo organização e baixo acoplamento:
 
----
+```mermaid
+graph LR
+    A[Usuário] -- Interage --> B(View - Tkinter/ttk);
+    B -- Evento --> C{Controller};
+    C -- Solicita/Envia Dados --> D[Model];
+    D -- Lê/Escreve --> E((Banco de Dados));
+    D -- Retorna Dados --> C;
+    C -- Atualiza --> B;
 
-### 🩺 5. Ferramenta de Diagnóstico (Health Check)
-GUI simples para verificar a integridade do ambiente de desenvolvimento.
+    subgraph Camada de Apresentação
+        B
+    end
 
-**Funcionalidades:**
-- Verifica arquivos e diretórios essenciais.  
-- Testa conexão com o banco configurado.  
-- Checa bibliotecas opcionais (ex: `GPUtil`).  
+    subgraph Camada de Controle
+        C
+    end
 
----
+    subgraph Camada de Modelo/Persistência
+        D(GenericRepository / DataService)
+        E
+    end
 
-## 🏗️ Arquitetura e Fluxo de Dados
+    style D fill:#f9f,stroke:#333,stroke-width:2px
+Exemplo de Fluxo — Salvando um Novo Usuário:
+Usuário preenche os campos na GestaoUsuariosView (View).
 
-### Estrutura em Camadas
-- **Apresentação:** `run.py`, `app.py`
-- **View:** `panels/`, `modals/`, `dialogs/`
-- **Controller:** `*_controller.py`
-- **Model/Persistência:** `persistencia/`
+Clica no botão "Salvar".
 
----
+A View aciona o método salvar_usuario no PainelGestaoUsuariosController (Controller).
 
-### Exemplo de Fluxo — Salvando um item
+O Controller obtém os dados das tk.StringVar, valida as entradas (campos obrigatórios, etc.).
 
-1. Usuário preenche formulário na **View**.  
-2. **Controller** (`inserir_item`) coleta dados e valida.  
-3. Chama **Model** (`GenericRepository.write_dataframe_to_table`).  
-4. Banco confirma → Controller atualiza View (`carregar_dados`).  
+O Controller chama persistencia.auth.hash_password para gerar o hash da senha.
 
----
+O Controller monta um DataFrame Pandas com os dados do novo usuário (incluindo o hash).
 
-## 🧱 Estrutura do Projeto
+O Controller chama GenericRepository.write_dataframe_to_table("usuarios", df) (Model).
 
-```
+O GenericRepository usa SQLAlchemy para gerar e executar o INSERT no banco de dados configurado (Banco de Dados).
+
+Se a inserção for bem-sucedida, o GenericRepository retorna.
+
+O Controller recebe a confirmação e chama messagebox.showinfo.
+
+O Controller chama seu próprio método carregar_dados para atualizar a lista.
+
+carregar_dados chama GenericRepository.read_table_to_dataframe("usuarios").
+
+O GenericRepository executa o SELECT.
+
+O DataFrame com a lista atualizada retorna ao Controller.
+
+O Controller instrui a GestaoUsuariosView (View) a limpar e repopular a ttk.Treeview.
+
+A View exibe a tabela atualizada para o Usuário.
+
+Ficheiros e Diretórios Essenciais
 /
-├── app.py
-├── run.py
-├── config.py
-├── banco.ini
-├── settings.json
-├── secret.key
+├── run.py                     # Ponto de entrada da aplicação, valida config, inicializa DB
+├── app.py                     # Classe principal da aplicação Tkinter (janela, sidebar, menubar)
+├── config.py                  # Configurações globais (flags booleanas, logs, etc.)
+├── banco.ini                  # Configurações de conexão com bancos de dados (ATIVAR APENAS UMA)
+├── settings.json              # Configurações de tema e UI salvas pelo usuário
+├── secret.key                 # Chave de criptografia (gerada automaticamente) - NÃO COMPARTILHAR!
 │
-├── panels/
-│   ├── __init__.py
-│   ├── base_panel.py
-│   ├── painel_gestao_gatos_controller.py
-│   └── painel_gestao_gatos_view.py
+├── panels/                    # Módulos dos painéis principais (interface e lógica)
+│   ├── __init__.py            # Registra todos os painéis disponíveis
+│   ├── base_panel.py          # Classe base abstrata para todos os painéis
+│   ├── *_controller.py        # Lógica de controle de cada painel
+│   └── *_view.py              # Construção da interface (widgets) de cada painel
 │
-├── modals/
-│   ├── tipos_vegetais_controller.py
-│   ├── tipos_vegetais_view.py
-│   └── tipos_vegetais_model.py
+├── modals/                    # Módulos para janelas modais (Toplevels) com lógica própria
+│   ├── *_controller.py
+│   ├── *_view.py
+│   └── *_model.py             # Lógica de dados específica do modal (se necessário)
 │
-├── dialogs/
-│   ├── login_ui.py
-│   └── about_dialog.py
+├── dialogs/                   # Módulos para diálogos simples (Toplevels sem controller complexo)
+│   ├── login_ui.py            # Diálogo de login
+│   ├── about_dialog.py        # Diálogo "Sobre"
+│   └── advanced_theme_dialog.py # Diálogo de personalização de tema
 │
-├── persistencia/
-│   ├── database.py
-│   ├── repository.py
-│   ├── data_service.py
-│   ├── auth.py
-│   ├── security.py
-│   └── sql_schema_.sql
+├── persistencia/              # Camada de acesso e manipulação de dados
+│   ├── database.py            # Gerencia a conexão com o banco (lê banco.ini)
+│   ├── repository.py          # CRUD genérico usando SQLAlchemy Core e Pandas
+│   ├── data_service.py        # Orquestra transações atômicas e regras de negócio
+│   ├── auth.py                # Verifica credenciais, faz hashing/verificação de senhas (bcrypt)
+│   ├── security.py            # Gera/carrega secret.key, criptografa/descriptografa (Fernet)
+│   ├── logger.py              # Configura o sistema de logging (arquivos rotativos, console)
+│   └── sql_schema_*.sql       # Scripts SQL para criação de tabelas em diferentes SGBDs
 │
-└── utilParaDesenvolvimento/
-    ├── credenciais_manager_gui.py
-    ├── toolsDev/
+└── utilParaDesenvolvimento/   # Ferramentas auxiliares para o desenvolvedor
+    ├── credenciais_manager_gui.py # (Ver Ferramenta 2)
+    ├── toolsDev/                  # (Ver Ferramenta 1 - Gerador de Código)
     │   ├── run_generator.py
     │   ├── generator_ui.py
     │   ├── generator_logic.py
-    │   └── templates/
-    ├── toolTest/
+    │   └── templates_jinja/       # Templates Jinja2 para geração de código
+    ├── toolTest/                  # (Ver Ferramenta 4 - Dashboard Supremo)
     │   ├── dashboard_supremo.py
-    │   ├── health_check_gui.py
-    │   └── suites/
-    └── toolTestU/
+    │   ├── health_check_gui.py    # (Ver Ferramenta 5 - Health Check)
+    │   └── suites/                # Suítes de teste para o Dashboard Supremo
+    └── toolTestU/                 # (Ver Ferramenta 3 - Testes Unitários)
         ├── run_all_tests_gui.py
-        ├── mock_dependencies.py
-        └── test_.py
-```
+        ├── mock_dependencies.py   # Mocks para isolar testes unitários
+        └── test_*.py              # Arquivos de teste unittest
+⚙️ Configuração e Execução Detalhada
+Pré-requisitos Celestiais
+Python: Versão 3.9 ou superior é recomendada.
 
----
+Pip: O instalador de pacotes do Python (geralmente incluído).
 
-## 🗃️ Banco de Dados
+Git: Para clonar o repositório.
 
-O framework é **agnóstico ao SGBD**, suportando:
+1️⃣ Evocação (Clone)
+Abra seu terminal ou prompt de comando:
 
-- SQLite  
-- PostgreSQL  
-- MySQL  
-- MariaDB  
-- SQL Server  
-- Oracle  
-- Firebird  
+Bash
 
-📁 Scripts SQL disponíveis em `persistencia/sql_schema_*.sql`.
+git clone <URL_DO_SEU_REPOSITORIO>
+cd <NOME_DO_REPOSITORIO>
+2️⃣ Criação do Santuário (Ambiente Virtual)
+É altamente recomendado usar um ambiente virtual para isolar as dependências deste projeto:
 
----
+Bash
 
-## 🧩 Pré-requisitos
-
-- Python **3.9+**
-- `pip` (gerenciador de pacotes)
-
----
-
-## ⚙️ Instalação e Execução
-
-### 1️⃣ Clone o Repositório
-
-```bash
-git clone <url-do-seu-repositorio>
-cd <nome-do-repositorio>
-```
-
-### 2️⃣ Crie e Ative o Ambiente Virtual
-
-```bash
 # Windows
-python -m venv venv
-venv\Scripts\activate
+python -m venv .venv
+.venv\Scripts\activate
 
 # macOS / Linux
-python3 -m venv venv
-source venv/bin/activate
-```
+python3 -m venv .venv
+source .venv/bin/activate
+(Você verá (.venv) no início do seu prompt se funcionou.)
 
-### 3️⃣ Instale as Dependências
+3️⃣ Instalação dos Artefatos (Dependências)
+Instale as bibliotecas essenciais para a aplicação:
 
-**Aplicação principal:**
-```bash
-pip install pandas sqlalchemy cryptography bcrypt
-```
+Bash
 
-**Ferramentas de desenvolvedor (opcional):**
-```bash
+pip install pandas sqlalchemy cryptography bcrypt ttkbootstrap
+(Nota: ttkbootstrap pode ser usado opcionalmente para temas mais avançados, mas o código atual foca no 'clam' nativo. Adapte se necessário.)
+
+Instale as dependências opcionais para as Ferramentas do Desenvolvedor:
+
+Bash
+
 pip install jinja2 psutil gputil
-```
+(Nota: gputil é opcional e requer drivers NVIDIA/CUDA configurados para funcionar.)
 
-**Driver do banco de dados (exemplo PostgreSQL):**
-```bash
+Instale o driver específico para o banco de dados que você usará (escolha apenas um):
+
+Bash
+
+# Para PostgreSQL:
 pip install psycopg2-binary
-```
 
-> 💡 Consulte o `banco.ini` para ver os drivers recomendados para cada SGBD.
+# Para MySQL:
+pip install PyMySQL
 
-### 4️⃣ Configure o Banco de Dados
+# Para MariaDB:
+pip install mariadb
 
-1. Abra o arquivo `banco.ini`.  
-2. Descomente a seção do banco desejado.  
-3. Certifique-se de ativar **apenas uma seção**.  
-4. Para SQLite, o arquivo `NexlifyTTk.db` é criado automaticamente.
+# Para SQL Server:
+pip install pymssql
 
-### 5️⃣ Execute a Aplicação
+# Para Oracle: (Requer instalação adicional do Oracle Instant Client)
+# pip install oracledb
 
-```bash
+# Para Firebird: (Requer instalação adicional do driver Firebird)
+# pip install fdb
+💡 Consulte os comentários no arquivo banco.ini ou a documentação do SQLAlchemy para os drivers recomendados e suas dependências.
+
+4️⃣ Alinhamento Cósmico (Configuração do Banco)
+Abra o arquivo banco.ini na raiz do projeto.
+
+Localize a seção correspondente ao seu banco de dados (ex: [postgresql]).
+
+Remova o # do início de cada linha dessa seção (ex: type = postgresql, host = ..., etc.).
+
+Adicione # no início de todas as linhas das outras seções de banco de dados para desativá-las. Apenas UMA seção pode estar ativa!
+
+Ajuste os valores de host, port, dbname, user e password conforme necessário.
+
+Lembre-se: Se user e password estiverem criptografados (começando com gAAAAA...), use a Ferramenta 2 (credenciais_manager_gui.py) para gerar novas credenciais criptografadas se precisar alterá-los.
+
+Para SQLite: Apenas descomente a seção [sqlite]. O arquivo (.db) será criado automaticamente na primeira execução se INITIALIZE_DATABASE_ON_STARTUP = True em config.py.
+
+Para outros bancos: Certifique-se de que o banco de dados (dbname) e o usuário (user) já existam no seu servidor SGBD. Você pode usar os scripts persistencia/sql_schema_*.sql como guia para criar a estrutura (execute-os usando uma ferramenta apropriada como psql, mysql, SQL Server Management Studio, etc., antes de rodar a aplicação pela primeira vez).
+
+5️⃣ A Manifestação (Execução)
+Certifique-se de que seu ambiente virtual (.venv) está ativado e execute:
+
+Bash
+
 python run.py
-```
+A aplicação deverá iniciar, possivelmente mostrando a tela de login se USE_LOGIN = True.
 
----
+✨ Criando Seu Primeiro Painel: O Caminho do Artesão
+Existem duas sendas para adicionar novas funcionalidades (painéis):
 
-## 🪄 Primeiros Passos: Adicionando um Novo Painel
+Senda 1: A Forja Manual (Usando o Painel Modelo)
+Duplique os Arquétipos: Copie panels/painel_modelo_controller.py e panels/painel_modelo_view.py.
 
-### Método 1 — Manual (Painel Modelo)
-1. Copie:
-   - `panels/painel_modelo_controller.py`
-   - `panels/painel_modelo_view.py`
-2. Renomeie as classes `PainelModelo` e `ModeloView`.  
-3. Defina:
-   - `PANEL_NAME`
-   - `PANEL_ICON`
-   - `ALLOWED_ACCESS`
-4. Adicione widgets e lógica.  
-5. Registre no arquivo `panels/__init__.py`.
+Renomeie com Propósito: Altere os nomes dos arquivos e das classes internas (ex: PainelGerenciarProdutos, GerenciarProdutosView).
 
-### Método 2 — Automatizado (Gerador de Código)
+Defina a Essência (Controller): Ajuste as constantes de classe:
 
-1. Execute:
-   ```bash
-   python utilParaDesenvolvimento/toolsDev/run_generator.py
-   ```
-2. Na interface:
-   - Escolha o tipo de componente (Painel ou Modal).
-   - Selecione “MVC CRUD”.
-   - Escolha a tabela e clique em **Gerar Painel**.
+PANEL_NAME: O nome que aparecerá no menu/sidebar (ex: "Gerenciar Produtos").
 
-O gerador criará automaticamente os arquivos `controller`, `view` e `model`, além de registrar o painel.
+PANEL_ICON: Um emoji para identificação visual (ex: "📦").
+
+ALLOWED_ACCESS: Lista de perfis que podem ver este painel (lista vazia [] significa acesso livre).
+
+Molde a Interface (View): Em _create_widgets (ou método similar na View), adicione os ttk.Label, ttk.Entry, ttk.Button, ttk.Treeview, etc., necessários.
+
+Infunda a Lógica (Controller): Crie métodos no Controller para responder a eventos da View (ex: _on_salvar_click), interagir com o GenericRepository ou DataService, e atualizar a View.
+
+Registre a Criação: Abra panels/__init__.py, importe sua nova classe Controller e adicione-a à lista ALL_PANELS.
+
+Senda 2: A Conjuração Automática (Usando o Gerador de Código)
+Invoque o Gerador: Execute a ferramenta:
+
+Bash
+
+python utilParaDesenvolvimento/toolsDev/run_generator.py
+Siga o Ritual:
+
+Na interface do gerador, selecione "Painel" como tipo de componente.
+
+Escolha a opção "MVC CRUD a partir do Banco".
+
+Clique em "Carregar Tabelas" e selecione a tabela desejada (ex: produtos).
+
+Preencha o Nome de Exibição (ex: "Gerenciar Produtos") e o Ícone (ex: "📦").
+
+Selecione os Perfis de Acesso permitidos.
+
+Clique em "Gerar Painel".
+
+Contemple a Criação: O gerador criará os arquivos _controller.py, _view.py, registrará o painel em __init__.py e fornecerá uma estrutura CRUD básica funcional. Você só precisa refinar a View e adicionar lógicas específicas.
+
+##📜 Licença
+
+(Adicione aqui a sua licença, ex: MIT, GPL, etc.)
+
+Exemplo: Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para detalhes.
