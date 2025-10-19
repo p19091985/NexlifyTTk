@@ -29,21 +29,21 @@ class CredentialToolApp(tk.Tk):
         super().__init__()
         self.title(APP_TITLE)
 
-        # --- INÍCIO DA CORREÇÃO ---
-        # Lógica para centralizar a janela na TELA
-        w = 800  # Largura da janela
-        h = 700  # Altura da janela
+                                    
+                                                  
+        w = 800                     
+        h = 700                    
 
-        # Obter dimensões da tela
+                                 
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
 
-        # Calcular posição x, y
+                               
         x = (sw // 2) - (w // 2)
         y = (sh // 2) - (h // 2)
 
         self.geometry(f"{w}x{h}+{x}+{y}")
-        # --- FIM DA CORREÇÃO ---
+                                 
 
         self.minsize(700, 600)
 

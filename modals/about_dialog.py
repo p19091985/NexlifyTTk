@@ -13,13 +13,13 @@ class AboutDialog(tk.Toplevel):
         self.transient(parent)
         self.grab_set()
 
-        # --- INÍCIO DA CORREÇÃO ---
-        # Força o Tkinter a processar a fila de eventos e atualizar
-        # as informações de geometria da janela 'parent' (principal),
-        # que agora está maximizada. Sem isso, winfo_x/y/width/height
-        # retornam valores incorretos (antigos ou 0).
+                                    
+                                                                   
+                                                                     
+                                                                     
+                                                     
         self.update_idletasks()
-        # --- FIM DA CORREÇÃO ---
+                                 
 
         parent_x = parent.winfo_x()
         parent_y = parent.winfo_y()

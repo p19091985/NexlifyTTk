@@ -3,9 +3,10 @@
 *.log
 *.logs
 *.db
-
+config_settings.ini.bak
 /documentacao
 
+.key
 __pycache__/
 *.py[codz]
 *$py.class

@@ -46,21 +46,21 @@ class LauncherApp(tk.Tk):
         super().__init__()
         self.title("🚀 Lançador DevTools (Desktop) 🚀")
 
-        # --- INÍCIO DA CORREÇÃO ---
-        # Lógica para centralizar a janela na TELA
-        w = 450  # Largura da janela
-        h = 320  # Altura da janela
+                                    
+                                                  
+        w = 450                     
+        h = 320                    
 
-        # Obter dimensões da tela
+                                 
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
 
-        # Calcular posição x, y
+                               
         x = (sw // 2) - (w // 2)
         y = (sh // 2) - (h // 2)
 
         self.geometry(f"{w}x{h}+{x}+{y}")
-        # --- FIM DA CORREÇÃO ---
+                                 
 
         self.minsize(400, 280)
 

@@ -46,32 +46,32 @@ class AdvancedThemeDialog(tk.Toplevel):
         self.title("Painel de Personalização Avançada")
         self.transient(parent)
 
-        # --- INÍCIO DA CORREÇÃO ---
-        # Adiciona a mesma lógica de centralização do about_dialog.py
+                                    
+                                                                     
 
-        # 1. Força a atualização para obter a geometria correta do 'parent'
+                                                                           
         self.update_idletasks()
 
-        # 2. Define o tamanho desejado para este diálogo
+                                                        
         self_width = 850
         self_height = 700
 
-        # 3. Obtém a geometria da janela principal (que está maximizada)
+                                                                        
         parent_x = parent.winfo_x()
         parent_y = parent.winfo_y()
         parent_width = parent.winfo_width()
         parent_height = parent.winfo_height()
 
-        # 4. Calcula a posição central
+                                      
         pos_x = parent_x + (parent_width // 2) - (self_width // 2)
         pos_y = parent_y + (parent_height // 2) - (self_height // 2)
 
-        # 5. Define a geometria (tamanho + posição) e impede redimensionamento
+                                                                              
         self.geometry(f"{self_width}x{self_height}+{pos_x}+{pos_y}")
         self.resizable(False, False)
-        # --- FIM DA CORREÇÃO ---
+                                 
 
-        # A linha original self.geometry("850x700") foi substituída pela lógica acima.
+                                                                                      
 
         self.app = parent
         self.settings_manager = settings_manager

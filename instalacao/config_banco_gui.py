@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 import os
 import re
 from pathlib import Path
-import sys  # Importar sys para o fallback de criação de arquivo
+import sys                                                      
 
 BLOCK_DEFINITIONS = {
     'sqlserver': ['type', 'host', 'port', 'dbname', 'user', 'password'],
@@ -93,21 +93,21 @@ class App(tk.Tk):
 
         self.title("Configurador de Conexão (banco.ini)")
 
-        # --- INÍCIO DA CORREÇÃO ---
-        # Lógica para centralizar a janela na TELA
-        w = 500  # Largura da janela
-        h = 400  # Altura da janela
+                                    
+                                                  
+        w = 500                     
+        h = 400                    
 
-        # Obter dimensões da tela
+                                 
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
 
-        # Calcular posição x, y
+                               
         x = (sw // 2) - (w // 2)
         y = (sh // 2) - (h // 2)
 
         self.geometry(f"{w}x{h}+{x}+{y}")
-        # --- FIM DA CORREÇÃO ---
+                                 
 
         self.minsize(450, 350)
 

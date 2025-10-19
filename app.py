@@ -240,23 +240,22 @@ class AplicacaoPrincipal(tk.Tk):
                                parent=self):
             self.destroy()
 
-    # --- INÍCIO DA CORREÇÃO ---
+                                
     def _set_initial_geometry(self) -> None:
         try:
-            # CORREÇÃO:
-            # O comando 'self.attributes('-zoomed', True)' é específico do Linux.
-            # 'self.state('zoomed')' é o comando padrão e multiplataforma
-            # para maximizar a janela, e ele respeita a barra de tarefas.
+                       
+                                                                                 
+                                                                         
+                                                                         
             self.state('zoomed')
         except tk.TclError:
-            # O bloco 'except' original era o problema.
-            # 'self.geometry(f"{w}x{h}+0+0")' força a janela
-            # a cobrir a tela inteira, incluindo a barra de tarefas.
-            # Vamos usar um fallback melhor (90% da tela) caso 'zoomed' falhe.
+                                                       
+                                                            
+                                                                    
+                                                                              
             w, h = self.winfo_screenwidth(), self.winfo_screenheight()
             self.geometry(f"{int(w * 0.9)}x{int(h * 0.9)}")
 
-        # Esta parte de definir o tamanho mínimo está correta e deve ser mantida.
+                                                                                 
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
         self.minsize(int(w * 0.5), int(h * 0.5))
-    # --- FIM DA CORREÇÃO ---

@@ -14,12 +14,12 @@ class TiposVegetaisView(tk.Toplevel):
 
         self._create_widgets()
 
-        # --- INÍCIO DA CORREÇÃO ---
-        # Movemos o 'update_idletasks' para cá (de dentro do _center_window)
-        # para garantir que a geometria do 'parent' (maximizado)
-        # seja lida corretamente ANTES de tentar centralizar.
+                                    
+                                                                            
+                                                                
+                                                             
         self.update_idletasks()
-        # --- FIM DA CORREÇÃO ---
+                                 
 
         self._center_window()
         self.nome_entry.focus_set()
@@ -124,7 +124,7 @@ class TiposVegetaisView(tk.Toplevel):
         return messagebox.askyesno(title, message, icon='warning', parent=self)
 
     def _center_window(self):
-        # A linha 'self.update_idletasks()' foi removida daqui
+                                                              
         p_w, p_h = self.parent.winfo_width(), self.parent.winfo_height()
         p_x, p_y = self.parent.winfo_x(), self.parent.winfo_y()
         w, h = self.winfo_width(), self.winfo_height()

@@ -1,48 +1,24 @@
--- =========================================================================================
--- PARTE 1: GERENCIAMENTO DE BANCO E USUÁRIO (EXECUTAR COMO SUPERUSUÁRIO postgres)
--- =========================================================================================
-
--- Força a desconexão de qualquer usuário do banco de dados "nexlifyttk" (minúsculas)
 SELECT
     pg_terminate_backend(pg_stat_activity.pid)
 FROM
     pg_stat_activity
 WHERE
-    -- CORREÇÃO: Nome do banco em minúsculas
     pg_stat_activity.datname = 'nexlifyttk' AND pid <> pg_backend_pid();
-
--- Exclui o banco de dados e o usuário (role) se já existirem (usando minúsculas)
 DROP DATABASE IF EXISTS nexlifyttk;
 DROP ROLE IF EXISTS gato;
-
--- Cria o usuário (role)
 CREATE ROLE gato LOGIN PASSWORD '-Vladmir!5Anos-';
-
--- Cria o banco de dados (usando minúsculas e sem aspas)
 CREATE DATABASE nexlifyttk
     WITH
     OWNER = gato
     ENCODING = 'UTF8'
     CONNECTION LIMIT = -1;
-
--- Concede ao usuário 'gato' o privilégio de se conectar ao banco (usando minúsculas)
 GRANT CONNECT ON DATABASE nexlifyttk TO gato;
-
--- =========================================================================================
--- PARTE 2: ESTRUTURA, PERMISSÕES E DADOS (CONECTE-SE AO BANCO "nexlifyttk" como usuário 'gato' ou 'postgres')
--- =========================================================================================
-
--- ETAPA 2.1: Ajuste de Permissões
--- Concede ao usuário 'gato' a permissão para criar objetos dentro do schema 'public'.
 GRANT CREATE ON SCHEMA public TO gato;
-
--- ETAPA 2.2: Criação das Tabelas (usando minúsculas e sem aspas)
 DROP TABLE IF EXISTS log_alteracoes;
 DROP TABLE IF EXISTS vegetais;
 DROP TABLE IF EXISTS tipos_vegetais;
 DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS especie_gatos;
-
 CREATE TABLE usuarios (
     login_usuario VARCHAR(255) PRIMARY KEY NOT NULL,
     senha_criptografada VARCHAR(255) NOT NULL,
@@ -52,41 +28,31 @@ CREATE TABLE usuarios (
         'Supervisor de Produção', 'Operador de Linha', 'Analista de Dados', 'Auditor Externo'
     ))
 );
-
 CREATE TABLE tipos_vegetais (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL UNIQUE
 );
-
 CREATE TABLE vegetais (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     id_tipo INT,
     FOREIGN KEY (id_tipo) REFERENCES tipos_vegetais(id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
-
 CREATE TABLE log_alteracoes (
     id SERIAL PRIMARY KEY,
-    -- CORREÇÃO: Nome da coluna timestamp em minúsculas e sem aspas
     timestamp TIMESTAMP NOT NULL,
     login_usuario VARCHAR(255),
     acao TEXT,
     FOREIGN KEY (login_usuario) REFERENCES usuarios(login_usuario) ON DELETE SET NULL ON UPDATE CASCADE
 );
-
 CREATE TABLE especie_gatos (
     id SERIAL PRIMARY KEY,
     nome_especie VARCHAR(255) NOT NULL UNIQUE,
     pais_origem VARCHAR(255),
     temperamento VARCHAR(255)
 );
-
--- ETAPA 2.3: Concessão de Permissões de Acesso aos Dados
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO gato;
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO gato;
-
-
--- ETAPA 2.4: Inserção de Dados Iniciais (usando nomes de tabela/coluna minúsculos)
 INSERT INTO usuarios (login_usuario, senha_criptografada, nome_completo, tipo_acesso) VALUES
 ('admin', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Usuário Administrador', 'Administrador Global'),
 ('dev_user', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Usuário de Desenvolvimento', 'Administrador Global'),
@@ -104,18 +70,13 @@ INSERT INTO usuarios (login_usuario, senha_criptografada, nome_completo, tipo_ac
 ('joao.operador', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'João Operador', 'Operador de Linha'),
 ('lara.admin', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Lara Administradora', 'Administrador Global'),
 ('mateus.auditor', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Mateus Auditor', 'Auditor Externo');
-
 INSERT INTO tipos_vegetais (nome) VALUES
 ('Raízes e Tubérculos'), ('Folhas'), ('Flores e Inflorescências'), ('Frutos'), ('Legumes');
-
 INSERT INTO vegetais (nome, id_tipo) VALUES
 ('Abóbora', 4), ('Abobrinha', 4), ('Agrião', 2), ('Aipim', 1), ('Alface', 2), ('Alho', 1), ('Almeirão', 2),
-('Batata-doce', 1), ('Batata', 1), ('Berinjela', 4), ('Beterraba', 1), ('Brócolis', 3), ('Cebola', 1); -- Removida vírgula extra no final
-
+('Batata-doce', 1), ('Batata', 1), ('Berinjela', 4), ('Beterraba', 1), ('Brócolis', 3), ('Cebola', 1); 
 INSERT INTO especie_gatos (nome_especie, pais_origem, temperamento) VALUES
 ('Siamês', 'Tailândia', 'Inteligente e Afetuoso'),
 ('Persa', 'Irã (Pérsia)', 'Calmo e Dócil'),
 ('Maine Coon', 'Estados Unidos', 'Gentil e Brincalhão'),
 ('Bengal', 'Estados Unidos', 'Ativo e Curioso');
-
--- FIM DO SCRIPT
