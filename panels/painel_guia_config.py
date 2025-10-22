@@ -6,7 +6,7 @@ import webbrowser
 from panels.base_panel import BasePanel
 
 
-# Não precisamos mais importar a View, pois ela está nesta classe.
+                                                                  
 
 
 class PainelGuiaConfig(BasePanel):
@@ -26,7 +26,7 @@ class PainelGuiaConfig(BasePanel):
         Substitui a necessidade de um arquivo de View separado.
         """
 
-        # --- Início do código copiado da GuiaConfigView.__init__ ---
+                                                                     
 
         main_frame = ttk.Frame(self, padding=20)
         main_frame.pack(fill="both", expand=True)
@@ -63,7 +63,7 @@ class PainelGuiaConfig(BasePanel):
         text_area.tag_configure("warning", foreground="#856404", font=("Segoe UI", 10, "bold"))
         text_area.tag_configure("info", foreground="#004085")
 
-        # --- Inserção do Texto ---
+                                   
 
         text_area.insert(tk.END, "Guia de Configuração da Aplicação\n", "h1")
         text_area.insert(tk.END,
@@ -206,11 +206,11 @@ class PainelGuiaConfig(BasePanel):
 
         text_area.config(state="disabled")
 
-        # --- Fim do código copiado ---
+                                       
 
     def _open_video_link(self):
         """Abre o link do vídeo de introdução no navegador."""
-        # (Este método não está sendo chamado por nenhum widget,
-        # mas o deixamos aqui caso você queira adicionar um botão "Ver Vídeo")
+                                                                
+                                                                              
         url = "https://www.youtube.com/watch?v=zxA97KcUm1Q"
         webbrowser.open(url)

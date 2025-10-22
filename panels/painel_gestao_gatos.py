@@ -3,9 +3,9 @@ from tkinter import ttk, messagebox
 import pandas as pd
 import config
 from panels.base_panel import BasePanel
-# CORREÇÃO: Usar import relativo e remover DataService
+                                                      
 from persistencia.repository import GenericRepository
-# from persistencia.data_service import DataService # REMOVIDO
+                                                              
 
 
 class PainelGestaoGatos(BasePanel):
@@ -22,7 +22,7 @@ class PainelGestaoGatos(BasePanel):
         self.nome_var = tk.StringVar()
         self.pais_var = tk.StringVar()
         self.temperamento_var = tk.StringVar()
-        # self.novo_nome_var = tk.StringVar() # REMOVIDO
+                                                        
 
         self.tree = None
         self.nome_entry = None
@@ -36,8 +36,8 @@ class PainelGestaoGatos(BasePanel):
 
         main_frame = ttk.Frame(self, padding=15)
         main_frame.pack(fill="both", expand=True)
-        # REMOVIDO: rowconfigure(1, weight=1) -> agora são 2 rows (0 e 1)
-        main_frame.rowconfigure(1, weight=1) # Mantido para a tabela expandir
+                                                                         
+        main_frame.rowconfigure(1, weight=1)                                 
         main_frame.columnconfigure(0, weight=1)
 
         top_container = ttk.Frame(main_frame)
@@ -54,13 +54,13 @@ class PainelGestaoGatos(BasePanel):
         self._create_crud_buttons(crud_buttons_frame)
 
         table_frame = ttk.LabelFrame(main_frame, text=" 🐱 Tabela 'especie_gatos' ", padding=15)
-        table_frame.grid(row=1, column=0, sticky="nsew") # Mudou para row 1
+        table_frame.grid(row=1, column=0, sticky="nsew")                   
         self._create_table(table_frame)
 
-        # REMOVIDO: Criação do trans_frame e chamada a _create_transaction_widgets
-        # trans_frame = ttk.LabelFrame(main_frame, text=" 🛡️ Operação Atômica (Transação) ", padding=15)
-        # trans_frame.grid(row=2, column=0, sticky="nsew", pady=(10, 0)) # Era row 2
-        # self._create_transaction_widgets(trans_frame)
+                                                                                  
+                                                                                                        
+                                                                                    
+                                                       
 
         self.carregar_dados()
 
@@ -107,9 +107,9 @@ class PainelGestaoGatos(BasePanel):
         scrollbar.grid(row=0, column=1, sticky="ns")
         self.tree.bind("<<TreeviewSelect>>", self.on_item_select)
 
-    # REMOVIDO: Método _create_transaction_widgets
-    # def _create_transaction_widgets(self, parent):
-    #     ...
+                                                  
+                                                    
+             
 
     def carregar_dados(self):
         try:
@@ -137,7 +137,7 @@ class PainelGestaoGatos(BasePanel):
         self.nome_var.set("")
         self.pais_var.set("")
         self.temperamento_var.set("")
-        # self.novo_nome_var.set("") # REMOVIDO
+                                               
         if self.tree.selection():
             self.tree.selection_remove(self.tree.selection()[0])
         if self.nome_entry:
@@ -185,6 +185,6 @@ class PainelGestaoGatos(BasePanel):
         except Exception as e:
             messagebox.showerror("Erro de Exclusão", f"Não foi possível excluir o registro: {e}", parent=self)
 
-    # REMOVIDO: Método executar_transacao_rename
-    # def executar_transacao_rename(self):
-    #     ...
+                                                
+                                          
+             

@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 from panels.base_panel import BasePanel
 
 
-# Não precisamos mais importar a View, pois ela está nesta classe.
+                                                                  
 
 
 class PainelModelo(BasePanel):
@@ -13,7 +13,7 @@ class PainelModelo(BasePanel):
     """
     PANEL_NAME = "Painel Modelo"
     PANEL_ICON = "📋"
-    ALLOWED_ACCESS = []  # Deixe vazio para permitir acesso a todos
+    ALLOWED_ACCESS = []                                            
 
     def __init__(self, parent, app_controller, **kwargs):
         super().__init__(parent, app_controller, **kwargs)
@@ -32,8 +32,8 @@ class PainelModelo(BasePanel):
         conteudo_frame = ttk.LabelFrame(main_frame, text=" Guia Rápido (Padrão Simplificado) ", padding=15)
         conteudo_frame.pack(fill="both", expand=True, pady=10)
 
-        # --- TEXTO DE INSTRUÇÃO ATUALIZADO ---
-        # Agora ele reflete o nosso novo padrão de arquivo único.
+                                               
+                                                                 
         instrucoes_texto = (
             "Este painel serve como um ponto de partida para novas telas.\n\n"
             "Passos para criar um novo painel:\n"
@@ -48,17 +48,17 @@ class PainelModelo(BasePanel):
         instrucoes_label = ttk.Label(conteudo_frame, text=instrucoes_texto, justify="left")
         instrucoes_label.pack(pady=10)
 
-        # Comando direto: self._on_botao_click (não self.controller._on_botao_click)
+                                                                                    
         botao_exemplo = ttk.Button(conteudo_frame, text="Testar Interação",
                                    command=self._on_botao_click, style="Success.TButton")
         botao_exemplo.pack(pady=20)
 
     def _on_botao_click(self):
         """Lógica de evento chamada diretamente pelo botão."""
-        # self.app é herdado de BasePanel
+                                         
         usuario_atual = self.app.get_current_user()
 
-        # --- MENSAGEM ATUALIZADA ---
+                                     
         messagebox.showinfo(
             "Interação Funcionou!",
             f"Olá, {usuario_atual['name']}!\n\nO painel modelo no padrão UNIFICADO está funcionando corretamente.",

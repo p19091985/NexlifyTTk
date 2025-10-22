@@ -5,11 +5,11 @@ import config
 
 from panels.base_panel import BasePanel
 from persistencia.repository import GenericRepository
-# from persistencia.data_service import DataService # REMOVIDO
+                                                              
 from modals.tipos_vegetais_manager import TiposVegetaisManagerDialog
 
 
-# Não precisamos mais importar a View, pois ela está nesta classe.
+                                                                  
 
 
 class PainelCadastroVegetais(BasePanel):
@@ -22,22 +22,22 @@ class PainelCadastroVegetais(BasePanel):
     ALLOWED_ACCESS = ['Administrador Global', 'Diretor de Operações', 'Gerente de TI', 'Analista de Dados']
 
     def __init__(self, parent, app_controller, **kwargs):
-        # Variáveis de estado (da lógica do Controller)
+                                                       
         self.selected_item_id = None
         self.nome_var = tk.StringVar()
         self.tipo_var = tk.StringVar()
 
-        # Widgets da View (serão criados em 'create_widgets')
+                                                             
         self.nome_entry = None
         self.tipo_combobox = None
         self.tree = None
 
-        # Chama o __init__ do BasePanel, que por sua vez chama create_widgets()
+                                                                               
         super().__init__(parent, app_controller, **kwargs)
 
-    # --------------------------------------------------------------------
-    # 1. CRIAÇÃO DE WIDGETS (Lógica que era da View)
-    # --------------------------------------------------------------------
+                                                                          
+                                                    
+                                                                          
 
     def create_widgets(self):
         """
@@ -49,7 +49,7 @@ class PainelCadastroVegetais(BasePanel):
                       font=("-size", 12, "-weight", "bold")).pack(pady=50)
             return
 
-        # Estrutura principal (do __init__ da View)
+                                                   
         main_frame = ttk.Frame(self, padding=15)
         main_frame.pack(fill="both", expand=True)
         main_frame.rowconfigure(1, weight=1)
@@ -57,13 +57,13 @@ class PainelCadastroVegetais(BasePanel):
 
         form_frame = ttk.LabelFrame(main_frame, text=" 🥕 Cadastro de Vegetal ", padding=15)
         form_frame.grid(row=0, column=0, sticky="nsew", pady=(0, 15))
-        self._create_form_widgets(form_frame)  # Método da View, agora local
+        self._create_form_widgets(form_frame)                               
 
         table_frame = ttk.LabelFrame(main_frame, text=" 🍽️ Vegetais Cadastrados ", padding=15)
         table_frame.grid(row=1, column=0, sticky="nsew")
-        self._create_table_widgets(table_frame)  # Método da View, agora local
+        self._create_table_widgets(table_frame)                               
 
-        # Carrega os dados iniciais (da lógica do Controller)
+                                                             
         self._carregar_dados()
         self._carregar_tipos_vegetais()
 
@@ -72,8 +72,8 @@ class PainelCadastroVegetais(BasePanel):
         parent.columnconfigure(1, weight=1)
 
         ttk.Label(parent, text="Nome do Vegetal:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
-        # Referência direta: self.nome_entry (não self.view.nome_entry)
-        # Variável direta: self.nome_var (não self.controller.nome_var)
+                                                                       
+                                                                       
         self.nome_entry = ttk.Entry(parent, textvariable=self.nome_var)
         self.nome_entry.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 
@@ -84,14 +84,14 @@ class PainelCadastroVegetais(BasePanel):
         self.tipo_combobox = ttk.Combobox(tipo_frame, textvariable=self.tipo_var, state="readonly")
         self.tipo_combobox.pack(side="left", fill="x", expand=True)
 
-        # Comando direto: self.open_tipos_modal (não self.controller.open_tipos_modal)
+                                                                                      
         ttk.Button(tipo_frame, text="Gerenciar Tipos...", command=self.open_tipos_modal, width=15).pack(
             side="left", padx=(5, 0))
 
         btn_frame = ttk.Frame(parent)
         btn_frame.grid(row=2, column=1, pady=(10, 0), sticky="e")
 
-        # Comandos diretos: self.save_item, self.delete_item, self.clear_form
+                                                                             
         ttk.Button(btn_frame, text="Salvar", command=self.save_item, style="Success.TButton").pack(
             side="left", padx=5)
         ttk.Button(btn_frame, text="Excluir", command=self.delete_item, style="Danger.TButton").pack(
@@ -105,7 +105,7 @@ class PainelCadastroVegetais(BasePanel):
         parent.columnconfigure(0, weight=1)
 
         columns = ('id', 'nome', 'tipo')
-        # Referência direta: self.tree
+                                      
         self.tree = ttk.Treeview(parent, columns=columns, show='headings', selectmode='browse')
 
         self.tree.heading('id', text='ID')
@@ -122,17 +122,17 @@ class PainelCadastroVegetais(BasePanel):
         self.tree.grid(row=0, column=0, sticky="nsew")
         scrollbar.grid(row=0, column=1, sticky="ns")
 
-        # Evento direto: self.on_item_select
+                                            
         self.tree.bind("<<TreeviewSelect>>", self.on_item_select)
 
-    # --------------------------------------------------------------------
-    # 2. LÓGICA DE EVENTOS (Métodos que eram do Controller)
-    # --------------------------------------------------------------------
+                                                                          
+                                                           
+                                                                          
 
     def _carregar_dados(self):
         """Carrega a lista de vegetais já cadastrados na Treeview."""
         try:
-            # Referência direta: self.tree
+                                          
             for item in self.tree.get_children():
                 self.tree.delete(item)
 
@@ -148,7 +148,7 @@ class PainelCadastroVegetais(BasePanel):
         try:
             df_tipos = GenericRepository.read_table_to_dataframe("tipos_vegetais")
             tipos_lista = sorted(df_tipos['nome'].tolist()) if not df_tipos.empty else []
-            # Referência direta: self.tipo_combobox
+                                                   
             self.tipo_combobox['values'] = tipos_lista
         except Exception as e:
             messagebox.showerror("Erro de Carga", f"Não foi possível recarregar os tipos de vegetais.\n{e}",
@@ -210,14 +210,14 @@ class PainelCadastroVegetais(BasePanel):
         self.selected_item_id = None
         self.nome_var.set("")
         self.tipo_var.set("")
-        # Referências diretas: self.tree e self.nome_entry
+                                                          
         if self.tree.selection():
             self.tree.selection_remove(self.tree.selection()[0])
         self.nome_entry.focus()
 
     def on_item_select(self, event=None):
         """Preenche o formulário quando um item é selecionado na tabela."""
-        # Referência direta: self.tree
+                                      
         selected_items = self.tree.selection()
         if not selected_items: return
 

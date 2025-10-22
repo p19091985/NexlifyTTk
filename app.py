@@ -2,56 +2,56 @@ import tkinter as tk
 from tkinter import ttk, messagebox, font
 import logging
 from typing import Dict, Any
-import platform # Mantido para a lógica de geometria
-import config # Importa as flags do config_settings.ini
+import platform                                     
+import config                                          
 from panels.base_panel import BasePanel
-from panels import ALL_PANELS # Usará a lista atualizada
-from settings_manager import SettingsManager # Para ler settings.json (tema)
+from panels import ALL_PANELS                           
+from settings_manager import SettingsManager                                
 from dialogs.login_ui import LoginDialog
-from modals.tipos_vegetais_manager import TiposVegetaisManagerDialog # Modal unificado
+from modals.tipos_vegetais_manager import TiposVegetaisManagerDialog                  
 from modals.about_dialog import AboutDialog
-# REMOVIDO: A importação do AdvancedThemeDialog foi retirada
-# from dialogs.advanced_theme_dialog import AdvancedThemeDialog
+                                                            
+                                                               
 
 class AplicacaoPrincipal(tk.Tk):
     def __init__(self, project_root: str) -> None:
         super().__init__()
-        # 1. Gerenciador de Configurações de Tema (settings.json)
+                                                                 
         self.settings_manager = SettingsManager(project_root=project_root)
 
-        self.withdraw() # Esconde a janela principal inicialmente
+        self.withdraw()                                          
 
-        # 2. Configura e Aplica Estilos Iniciais - ESTA PARTE GARANTE A LEITURA DO TEMA
+                                                                                       
         self._configure_styles()
         current_settings = self.settings_manager.load_settings()
-        self._apply_theme_settings(self.style, current_settings) # Aplica o tema lido
+        self._apply_theme_settings(self.style, current_settings)                     
 
         self.logger = logging.getLogger("main_app")
         self.project_root = project_root
         self.current_user = None
 
-        # 3. Lógica de Login baseada no config.py (lido do config_settings.ini)
+                                                                               
         if config.USE_LOGIN:
             self.logger.info("Sistema de login ATIVO.")
             user_info = self._run_login_process()
-            # Se o login falhar ou for cancelado, encerra
+                                                         
             if not user_info or user_info in ["max_attempts_failed", "connection_error"]:
                 self.logger.warning("Falha no login ou cancelado. Encerrando aplicação.")
                 self.destroy()
-                return # Impede a continuação se o login falhar
+                return                                         
         else:
             self.logger.warning("Sistema de login DESABILITADO. Usando usuário de desenvolvimento.")
-            # Define um usuário padrão para modo de desenvolvimento sem login
+                                                                             
             user_info = {"name": "Usuário de Desenvolvimento", "access_level": "Administrador Global",
                          "username": "dev_user"}
 
-        # 4. Inicializa a UI principal após login (ou skip)
+                                                           
         self._initialize_session_for_user(user_info)
 
     def _configure_styles(self):
         """Configurações básicas do estilo ttk."""
         self.style = ttk.Style(self)
-        self.style.theme_use('clam') # Usa um tema base que permite mais customização
+        self.style.theme_use('clam')                                                 
 
     def _apply_theme_settings(self, style_obj: ttk.Style, settings: Dict[str, Any]):
         """
@@ -63,7 +63,7 @@ class AplicacaoPrincipal(tk.Tk):
         default_font_tuple = (font_family, font_size)
 
         try:
-            font.Font(family=font_family, size=font_size) # Testa se a fonte existe
+            font.Font(family=font_family, size=font_size)                          
             style_obj.configure('.', font=default_font_tuple)
             style_obj.configure('Treeview', font=default_font_tuple)
             style_obj.configure('Treeview.Heading', font=(font_family, font_size, 'bold'))
@@ -77,7 +77,7 @@ class AplicacaoPrincipal(tk.Tk):
 
         custom_colors = settings.get('custom_colors', {})
         logging.debug(f"Cores carregadas do settings: {custom_colors}")
-        # Mapeamento dos nomes de estilo para chaves em custom_colors e cores padrão
+                                                                                    
         button_styles_config = {
             'Danger.TButton': {'key': 'danger', 'default_bg': '#dc3545', 'active': '#c82333'},
             'Success.TButton': {'key': 'success', 'default_bg': '#28a745', 'active': '#218838'},
@@ -88,8 +88,8 @@ class AplicacaoPrincipal(tk.Tk):
 
         for style_name, config_data in button_styles_config.items():
             bg_color = custom_colors.get(config_data['key'], config_data['default_bg'])
-            fg_color = config_data.get('fg', 'white') # Foreground (cor do texto)
-            active_bg = config_data.get('active', bg_color) # Cor quando pressionado
+            fg_color = config_data.get('fg', 'white')                            
+            active_bg = config_data.get('active', bg_color)                         
 
             try:
                 style_obj.configure(style_name, foreground=fg_color, background=bg_color, padding=6, relief="flat")
@@ -97,17 +97,17 @@ class AplicacaoPrincipal(tk.Tk):
                 logging.debug(f"Aplicado estilo '{style_name}': BG={bg_color}, FG={fg_color}, ActiveBG={active_bg}")
             except tk.TclError as e:
                 logging.warning(f"Erro ao aplicar estilo '{style_name}' com cor {bg_color}: {e}. Usando fallback.")
-                # Fallback para cores padrão se a cor do JSON for inválida
+                                                                          
                 try:
                     style_obj.configure(style_name, foreground=fg_color, background=config_data['default_bg'], padding=6, relief="flat")
                     style_obj.map(style_name, background=[('active', config_data['active'])])
-                except tk.TclError: # Se até o default falhar (improvável)
+                except tk.TclError:                                       
                     logging.error(f"Falha crítica ao aplicar fallback para '{style_name}'.")
 
 
-        # Estilos gerais (não dependem diretamente do custom_colors, mas usam a fonte)
-        style_obj.configure('TButton', padding=6, relief="flat") # Estilo base para botões normais
-        style_obj.configure('Sidebar.TFrame', background='#f0f0f0') # Cor fixa para sidebar
+                                                                                      
+        style_obj.configure('TButton', padding=6, relief="flat")                                  
+        style_obj.configure('Sidebar.TFrame', background='#f0f0f0')                        
         style_obj.configure('Sidebar.TLabel', background='#f0f0f0')
         style_obj.configure('Sidebar.TButton', background='#f0f0f0', borderwidth=0, anchor='w')
         style_obj.map('Sidebar.TButton', background=[('active', '#dcdcdc')])
@@ -119,14 +119,14 @@ class AplicacaoPrincipal(tk.Tk):
 
         self.current_user = user_info
         self.title("Painel de Controle NexlifyTTk")
-        self._set_initial_geometry() # Define tamanho/posição da janela
+        self._set_initial_geometry()                                   
 
         self.panels: Dict[str, BasePanel] = {}
         self.sidebar_buttons: Dict[str, ttk.Button] = {}
         self.current_panel_name: str = ""
 
         self._setup_ui()
-        self.config(menu=self._create_menubar()) # Chama o _create_menubar atualizado
+        self.config(menu=self._create_menubar())                                     
 
         if self.sidebar_buttons:
             first_button_name = next(iter(self.sidebar_buttons))
@@ -219,8 +219,8 @@ class AplicacaoPrincipal(tk.Tk):
 
         config_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Configurações", menu=config_menu)
-        # REMOVIDO: A opção de personalizar tema
-        # Adiciona um placeholder se o menu ficar vazio
+                                                
+                                                       
         if not config_menu.index("end"):
              config_menu.add_command(label="(Nenhuma opção)", state="disabled")
 
@@ -261,8 +261,8 @@ class AplicacaoPrincipal(tk.Tk):
             messagebox.showerror("Erro Crítico", f"Não foi possível abrir a janela de gestão: {e}", parent=self)
             logging.critical(f"Falha ao abrir TiposVegetaisManagerDialog: {e}", exc_info=True)
 
-    # REMOVIDO: Método _open_theme_dialog
-    # def _open_theme_dialog(self): ...
+                                         
+                                       
 
     def _show_about_dialog(self):
         """Abre o diálogo 'Sobre'."""
@@ -275,23 +275,23 @@ class AplicacaoPrincipal(tk.Tk):
             self.destroy()
 
     def _set_initial_geometry(self) -> None:
-        # Detecta o sistema operacional
+                                       
         system_name = platform.system()
 
         if system_name == "Windows":
-            # Tenta maximizar no Windows, que geralmente funciona bem
+                                                                     
             try:
                 self.state('zoomed')
             except tk.TclError:
-                # Fallback para 90% se 'zoomed' falhar no Windows
+                                                                 
                 w, h = self.winfo_screenwidth(), self.winfo_screenheight()
                 self.geometry(f"{int(w * 0.9)}x{int(h * 0.9)}")
         else:
-            # Para Linux (e macOS), usa diretamente o cálculo percentual
-            # evitando o self.state('zoomed') que pode ser problemático
+                                                                        
+                                                                       
             w, h = self.winfo_screenwidth(), self.winfo_screenheight()
             self.geometry(f"{int(w * 0.9)}x{int(h * 0.9)}")
-            # Centraliza a janela após definir o tamanho (opcional, mas bom)
+                                                                            
             self.update_idletasks()
             win_w = self.winfo_width()
             win_h = self.winfo_height()

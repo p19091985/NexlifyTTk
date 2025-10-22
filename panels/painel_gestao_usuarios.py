@@ -6,7 +6,7 @@ from panels.base_panel import BasePanel
 from persistencia.repository import GenericRepository
 from persistencia.auth import hash_password
 
-# A constante de perfis permanece no topo para fácil edição
+                                                           
 PERFIS_DE_ACESSO = [
     'Administrador Global',
     'Diretor de Operações',
@@ -27,26 +27,26 @@ class PainelGestaoUsuariosController(BasePanel):
     ALLOWED_ACCESS = ['Administrador Global', 'Gerente de TI']
 
     def __init__(self, parent, app_controller, **kwargs):
-        # Variáveis de estado (da lógica do Controller)
+                                                       
         self.selected_item_login = None
         self.login_var = tk.StringVar()
         self.nome_completo_var = tk.StringVar()
         self.tipo_acesso_var = tk.StringVar()
         self.senha_var = tk.StringVar()
 
-        # Widgets da View (serão criados em 'create_widgets')
+                                                             
         self.tree = None
         self.login_entry = None
         self.nome_entry = None
         self.tipo_acesso_combo = None
         self.senha_entry = None
 
-        # Chama o __init__ do BasePanel, que por sua vez chama create_widgets()
+                                                                               
         super().__init__(parent, app_controller, **kwargs)
 
-    # --------------------------------------------------------------------
-    # 1. CRIAÇÃO DE WIDGETS (Lógica que era da View)
-    # --------------------------------------------------------------------
+                                                                          
+                                                    
+                                                                          
 
     def create_widgets(self):
         """
@@ -58,7 +58,7 @@ class PainelGestaoUsuariosController(BasePanel):
                        font=("-size", 12, "-weight", "bold")).pack(pady=50)
             return
 
-        # Estrutura principal (do __init__ da View)
+                                                   
         main_frame = ttk.Frame(self, padding=15)
         main_frame.pack(fill="both", expand=True)
         main_frame.rowconfigure(1, weight=1)
@@ -71,17 +71,17 @@ class PainelGestaoUsuariosController(BasePanel):
 
         form_frame = ttk.LabelFrame(top_container, text=" 📝 Dados do Usuário ", padding=15)
         form_frame.grid(row=0, column=0, sticky="nsew", padx=(0, 10))
-        self._create_form_widgets(form_frame) # Método da View, agora local
+        self._create_form_widgets(form_frame)                              
 
         crud_buttons_frame = ttk.Frame(top_container, padding=(10,0))
         crud_buttons_frame.grid(row=0, column=1, sticky="nsew")
-        self._create_crud_buttons(crud_buttons_frame) # Método da View, agora local
+        self._create_crud_buttons(crud_buttons_frame)                              
 
         table_frame = ttk.LabelFrame(main_frame, text=" 👥 Usuários Cadastrados ", padding=15)
         table_frame.grid(row=1, column=0, sticky="nsew")
-        self._create_table(table_frame) # Método da View, agora local
+        self._create_table(table_frame)                              
 
-        # Carrega os dados iniciais (da lógica do Controller)
+                                                             
         self.carregar_dados()
 
     def _create_form_widgets(self, parent):
@@ -89,8 +89,8 @@ class PainelGestaoUsuariosController(BasePanel):
         parent.columnconfigure(1, weight=1)
 
         ttk.Label(parent, text="Login:").grid(row=0, column=0, sticky="w", pady=3, padx=5)
-        # Referência direta: self.login_entry
-        # Variável direta: self.login_var (não self.controller.login_var)
+                                             
+                                                                         
         self.login_entry = ttk.Entry(parent, textvariable=self.login_var)
         self.login_entry.grid(row=0, column=1, sticky="ew", pady=3, padx=5)
 
@@ -99,7 +99,7 @@ class PainelGestaoUsuariosController(BasePanel):
         self.nome_entry.grid(row=1, column=1, sticky="ew", pady=3, padx=5)
 
         ttk.Label(parent, text="Perfil de Acesso:").grid(row=2, column=0, sticky="w", pady=3, padx=5)
-        # Usa a constante PERFIS_DE_ACESSO diretamente
+                                                      
         self.tipo_acesso_combo = ttk.Combobox(parent, textvariable=self.tipo_acesso_var,
                                               values=PERFIS_DE_ACESSO, state="readonly")
         self.tipo_acesso_combo.grid(row=2, column=1, sticky="ew", pady=3, padx=5)
@@ -117,7 +117,7 @@ class PainelGestaoUsuariosController(BasePanel):
         parent.rowconfigure(2, weight=1)
         parent.columnconfigure(0, weight=1)
 
-        # Comandos diretos: self.salvar_usuario, self.excluir_usuario, etc.
+                                                                           
         save_btn = ttk.Button(parent, text="Salvar", command=self.salvar_usuario, style="Success.TButton")
         save_btn.grid(row=0, column=0, sticky="nsew", padx=2, pady=3, ipady=4)
 
@@ -133,7 +133,7 @@ class PainelGestaoUsuariosController(BasePanel):
         parent.columnconfigure(0, weight=1)
 
         columns = ('login_usuario', 'nome_completo', 'tipo_acesso')
-        # Referência direta: self.tree
+                                      
         self.tree = ttk.Treeview(parent, columns=columns, show='headings', selectmode='browse')
 
         self.tree.heading('login_usuario', text='Login')
@@ -150,17 +150,17 @@ class PainelGestaoUsuariosController(BasePanel):
         self.tree.grid(row=0, column=0, sticky="nsew")
         scrollbar.grid(row=0, column=1, sticky="ns")
 
-        # Evento direto: self.on_item_select
+                                            
         self.tree.bind("<<TreeviewSelect>>", self.on_item_select)
 
-    # --------------------------------------------------------------------
-    # 2. LÓGICA DE EVENTOS (Métodos que eram do Controller)
-    # --------------------------------------------------------------------
+                                                                          
+                                                           
+                                                                          
 
     def carregar_dados(self):
         """(READ) Busca os usuários e instrui a View a exibi-los."""
         try:
-            # Referência direta: self.tree
+                                          
             for item in self.tree.get_children():
                 self.tree.delete(item)
 
@@ -182,7 +182,7 @@ class PainelGestaoUsuariosController(BasePanel):
 
     def on_item_select(self, event=None):
         """Atualiza o formulário quando um usuário é selecionado na Treeview."""
-        # Referência direta: self.tree
+                                      
         selected_items = self.tree.selection()
         if not selected_items:
             self.limpar_form()
@@ -196,7 +196,7 @@ class PainelGestaoUsuariosController(BasePanel):
         self.tipo_acesso_var.set(item_values[2])
         self.senha_var.set("")
 
-        # Referências diretas: self.login_entry e self.senha_entry
+                                                                  
         self.login_entry.config(state='disabled')
         self.senha_entry.focus()
 
@@ -208,8 +208,8 @@ class PainelGestaoUsuariosController(BasePanel):
         self.tipo_acesso_var.set("")
         self.senha_var.set("")
 
-        # Referências diretas: self.login_entry e self.tree
-        if self.login_entry: # Adiciona verificação caso o widget não tenha sido criado ainda
+                                                           
+        if self.login_entry:                                                                 
             self.login_entry.config(state='normal')
 
         if self.tree and self.tree.selection():
@@ -231,7 +231,7 @@ class PainelGestaoUsuariosController(BasePanel):
 
         try:
             if self.selected_item_login:
-                # Lógica de UPDATE
+                                  
                 update_values = {
                     'nome_completo': nome,
                     'tipo_acesso': tipo_acesso
@@ -245,7 +245,7 @@ class PainelGestaoUsuariosController(BasePanel):
                 messagebox.showinfo("Sucesso", f"Usuário '{login}' atualizado com sucesso!", parent=self)
 
             else:
-                # Lógica de CREATE
+                                  
                 if not nova_senha:
                     messagebox.showwarning("Validação", "A Senha é obrigatória para novos usuários.", parent=self)
                     return

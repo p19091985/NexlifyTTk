@@ -2,9 +2,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
 from sqlalchemy import exc
-# CORREÇÃO: Voltar para import absoluto
+                                       
 from persistencia.repository import GenericRepository
-# FIM DA CORREÇÃO
+                 
 
 class TiposVegetaisManagerDialog(tk.Toplevel):
     """
@@ -20,34 +20,34 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
         self.on_close_callback = on_close_callback
         self.selected_item_id = None
 
-        # --- Configuração da Janela (View) ---
+                                               
         self.title("Gerenciar Tipos de Vegetais")
         self.geometry("600x450")
-        self.transient(parent)  # Mantém sobre a janela pai
-        self.grab_set()         # Bloqueia interação com a janela pai (modal)
+        self.transient(parent)                             
+        self.grab_set()                                                      
         self.resizable(False, False)
 
-        # --- Variáveis de Estado (View) ---
+                                            
         self.nome_var = tk.StringVar()
 
-        # --- Inicialização ---
+                               
         self._create_widgets()
         self._center_window()
         self._load_data()
         self.nome_entry.focus_set()
 
-        # Garante que o callback seja chamado ao fechar pelo "X"
+                                                                
         self.protocol("WM_DELETE_WINDOW", self._on_close)
 
-    # (Restante do código é igual ao que você já tem na versão unificada anterior)
-    # ...
-    # Copie e cole aqui o restante dos métodos da sua versão unificada anterior,
-    # pois a única mudança necessária era no import no topo do arquivo.
-    # Certifique-se de copiar desde a linha `def _create_widgets(self):` até o final.
+                                                                                  
+         
+                                                                                
+                                                                       
+                                                                                     
 
-    # --------------------------------------------------------------------
-    # 1. MÉTODOS DE CRIAÇÃO DE WIDGETS (LÓGICA DA VIEW)
-    # --------------------------------------------------------------------
+                                                                          
+                                                       
+                                                                          
 
     def _create_widgets(self):
         """Cria a estrutura principal da UI."""
@@ -71,7 +71,7 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
         btn_frame = ttk.Frame(parent)
         btn_frame.pack(fill="x")
 
-        # Conecta os botões diretamente aos métodos de controle
+                                                               
         self.save_button = ttk.Button(btn_frame, text="Salvar", style="Success.TButton",
                                       command=self._save_item)
         self.save_button.pack(side="left", expand=True, fill="x", padx=(0, 5))
@@ -102,12 +102,12 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
         self.tree.pack(side='left', fill='both', expand=True)
         scrollbar.pack(side='right', fill='y')
 
-        # Conecta o evento de seleção ao método de controle
+                                                           
         self.tree.bind('<<TreeviewSelect>>', self._on_item_select)
 
-    # --------------------------------------------------------------------
-    # 2. MÉTODOS DE CONTROLE (LÓGICA DO CONTROLLER)
-    # --------------------------------------------------------------------
+                                                                          
+                                                   
+                                                                          
 
     def _load_data(self):
         """Busca os dados do modelo e atualiza a Treeview."""
@@ -122,11 +122,11 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
         nome = self.get_form_data()['nome']
         try:
             if self.selected_item_id is None:
-                # Lógica de CREATE
+                                  
                 self._model_add_tipo(nome)
                 self.show_info("Sucesso", "Tipo cadastrado!")
             else:
-                # Lógica de UPDATE
+                                  
                 self._model_update_tipo(self.selected_item_id, nome)
                 self.show_info("Sucesso", "Tipo atualizado!")
 
@@ -174,9 +174,9 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
             self.on_close_callback()
         self.destroy()
 
-    # --------------------------------------------------------------------
-    # 3. MÉTODOS DE ACESSO A DADOS (LÓGICA DO MODEL)
-    # --------------------------------------------------------------------
+                                                                          
+                                                    
+                                                                          
 
     def _model_get_all_tipos(self):
         try:
@@ -209,14 +209,14 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
         try:
             GenericRepository.delete_from_table("tipos_vegetais", {'id': item_id})
         except exc.IntegrityError:
-            # Erro comum se o tipo estiver sendo usado por um vegetal
+                                                                     
             raise ValueError("Não foi possível excluir. Este tipo está em uso por um ou mais vegetais.")
         except exc.SQLAlchemyError as e:
             raise ConnectionError(f"Ocorreu uma falha ao excluir os dados.\Detalhe: {e}")
 
-    # --------------------------------------------------------------------
-    # 4. MÉTODOS AUXILIARES DA UI (LÓGICA DA VIEW)
-    # --------------------------------------------------------------------
+                                                                          
+                                                  
+                                                                          
 
     def populate_treeview(self, data):
         """Limpa e preenche a Treeview com dados de um DataFrame."""
