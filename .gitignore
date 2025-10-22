@@ -7,7 +7,7 @@ config_settings.ini.bak
 /documentacao
 
 *.bak
-.key
+
 __pycache__/
 *.py[codz]
 *$py.class
