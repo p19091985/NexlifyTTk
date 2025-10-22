@@ -1,87 +1,103 @@
 import logging
 import sys
-from logging.handlers import RotatingFileHandler
+import os
 from pathlib import Path
 
+# Importa as variáveis de configuração
+try:
+    # Estas variáveis vêm do arquivo config.py
+    from config import LOG_LEVEL, LOG_FORMAT, REDIRECT_CONSOLE_TO_LOG
+except ImportError as e:
+    print(f"Erro fatal: Não foi possível importar configurações do logger: {e}", file=sys.stderr)
+    print("Verifique se o arquivo config.py existe e define LOG_LEVEL, LOG_FORMAT e REDIRECT_CONSOLE_TO_LOG.",
+          file=sys.stderr)
+    sys.exit(1)
+except Exception as e:
+    print(f"Erro inesperado ao importar config: {e}", file=sys.stderr)
+    sys.exit(1)
 
 
-from config import LOG_LEVEL, LOG_FORMAT, REDIRECT_CONSOLE_TO_LOG
+class LogRedirector:
+    """
+    Uma classe para redirecionar saídas padrão (stdout, stderr) para um
+    objeto logger.
+    """
 
+    def __init__(self, logger_instance, log_level=logging.INFO):
+        self.logger = logger_instance
+        self.log_level = log_level
+        self.line_buffer = ''
 
-class StreamToLogger:
-    def __init__(self, logger: logging.Logger, level: int):
-        self.logger = logger
-        self.level = level
-
-    def write(self, buf: str):
+    def write(self, buf):
+        """Redireciona cada linha do buffer para o logger."""
         for line in buf.rstrip().splitlines():
-            if line.strip():
-                self.logger.log(self.level, line.rstrip())
+            self.logger.log(self.log_level, line.rstrip())
 
     def flush(self):
+        """Necessário para a interface de 'file-like object'."""
         pass
 
 
-                           
-
 def setup_loggers():
-    project_root = Path(__file__).parent.parent.resolve()
-    log_dir = project_root / "logs"
-    log_dir.mkdir(exist_ok=True)
-    log_format = logging.Formatter(LOG_FORMAT)
-    log_level = getattr(logging, LOG_LEVEL.upper(), logging.INFO)
+    """
+    Configura e inicializa os handlers de log (console e arquivo)
+    para a aplicação.
+    """
 
-                                   
-    app_logger = logging.getLogger("main_app")
-    app_logger.setLevel(log_level)
-    app_logger.propagate = False
+    # --- A CORREÇÃO ESTÁ AQUI ---
+    # A variável LOG_LEVEL importada de config.py JÁ É UM INTEIRO
+    # (ex: logging.DEBUG, logging.INFO, etc.).
+    # Nós apenas a utilizamos diretamente, sem fazer .upper() ou getattr().
 
-                                                                                   
-    if app_logger.hasHandlers():
-        app_logger.handlers.clear()
+    log_level = LOG_LEVEL
 
-                                    
-    app_handler = RotatingFileHandler(
-        log_dir / "app.log", maxBytes=2 * 1024 * 1024, backupCount=5, encoding='utf-8'
-    )
-    app_handler.setFormatter(log_format)
-    app_logger.addHandler(app_handler)
+    # --- FIM DA CORREÇÃO ---
 
-                                     
-    login_logger = logging.getLogger("login_attempts")
-    login_logger.setLevel(log_level)
-    login_logger.propagate = False
+    # Configura o formato da mensagem de log
+    formatter = logging.Formatter(LOG_FORMAT)
 
-    if login_logger.hasHandlers():
-        login_logger.handlers.clear()
+    # Obtém o logger raiz
+    root_logger = logging.getLogger()
+    root_logger.setLevel(log_level)
 
-    login_handler = RotatingFileHandler(
-        log_dir / "login.log", maxBytes=1 * 1024 * 1024, backupCount=3, encoding='utf-8'
-    )
-    login_handler.setFormatter(log_format)
-    login_logger.addHandler(login_handler)
+    # Limpa handlers existentes para evitar logs duplicados ao reiniciar
+    if root_logger.hasHandlers():
+        root_logger.handlers.clear()
 
-
-    if not REDIRECT_CONSOLE_TO_LOG:
+    # 1. Handler do Console (StreamHandler)
+    # Sempre envia para sys.stdout
+    try:
         console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setFormatter(log_format)
-        app_logger.addHandler(console_handler)
-        logging.info("Sistema de logging configurado para saída no console.")
-    else:
+        console_handler.setLevel(log_level)
+        console_handler.setFormatter(formatter)
+        root_logger.addHandler(console_handler)
+    except Exception as e:
+        print(f"Erro ao configurar o logger do console: {e}", file=sys.stderr)
 
-        stdout_logger = logging.getLogger("stdout")
-        if not stdout_logger.hasHandlers():
-            stdout_logger.addHandler(app_handler)
-            stdout_logger.setLevel(logging.INFO)
-            sys.stdout = StreamToLogger(stdout_logger, logging.INFO)
+    # 2. Handler de Arquivo (FileHandler)
+    try:
+        # Define o caminho para a pasta 'logs' na raiz do projeto
+        log_dir = Path(__file__).parent.parent / "logs"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_file_path = log_dir / "app.log"
 
-        stderr_logger = logging.getLogger("stderr")
-        if not stderr_logger.hasHandlers():
-            stderr_logger.addHandler(app_handler)
-            stderr_logger.setLevel(logging.ERROR)
-            sys.stderr = StreamToLogger(stderr_logger, logging.ERROR)
+        # Cria o handler que escreve no arquivo (modo 'a' = append)
+        file_handler = logging.FileHandler(log_file_path, mode='a', encoding='utf-8')
+        file_handler.setLevel(log_level)
+        file_handler.setFormatter(formatter)
+        root_logger.addHandler(file_handler)
 
-        logging.info("Redirecionamento do console para o arquivo de log está ATIVO.")
+    except Exception as e:
+        # Se falhar, pelo menos o log do console funcionará
+        root_logger.error(f"Não foi possível criar o handler de arquivo de log em '{log_file_path}': {e}")
 
+    # 3. Redirecionamento (Opcional)
+    # Se configurado, captura todos os 'print()' e os envia para o log
+    if REDIRECT_CONSOLE_TO_LOG:
+        root_logger.info("Redirecionando stdout e stderr para os handlers de log...")
+        sys.stdout = LogRedirector(logging.getLogger("STDOUT"), logging.INFO)
+        sys.stderr = LogRedirector(logging.getLogger("STDERR"), logging.ERROR)
 
-    logging.info("Sistema de logging configurado com sucesso.")
+    root_logger.info("=" * 30)
+    root_logger.info("Sistema de loggers configurado com sucesso.")
+    root_logger.debug(f"Nível de log definido como: {logging.getLevelName(log_level)} ({log_level})")
