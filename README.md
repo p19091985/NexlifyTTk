@@ -1,12 +1,12 @@
-# **✨ NexlifyTTk ✨ \- Framework Desktop Python com Arquitetura em Camadas**
+# **✨ nexlifyttk ✨ \- Framework Desktop Python com Arquitetura em Camadas**
 
-**NexlifyTTk** é um *boilerplate* Python projetado para o desenvolvimento de aplicações desktop robustas, seguras e orientadas a dados, utilizando o *toolkit* nativo **Tkinter/ttk**. O foco principal é a aplicação rigorosa de padrões de projeto que garantem baixo acoplamento, alta coesão e facilidade de manutenção e teste.
+**nexlifyttk** é um *boilerplate* Python projetado para o desenvolvimento de aplicações desktop robustas, seguras e orientadas a dados, utilizando o *toolkit* nativo **Tkinter/ttk**. O foco principal é a aplicação rigorosa de padrões de projeto que garantem baixo acoplamento, alta coesão e facilidade de manutenção e teste.
 
 Este documento detalha a arquitetura em camadas e os padrões de software implementados.
 
 ## **🏛️ 1\. Arquitetura em Camadas e Padrões de Projeto**
 
-O NexlifyTTk adota a **Arquitetura em Camadas (Layered Architecture)**, separando o software em responsabilidades bem definidas, que comunicam-se de cima para baixo (apresentação \-\> domínio/serviço \-\> persistência).
+O nexlifyttk adota a **Arquitetura em Camadas (Layered Architecture)**, separando o software em responsabilidades bem definidas, que comunicam-se de cima para baixo (apresentação \-\> domínio/serviço \-\> persistência).
 
 | Camada | Módulos Principais | Padrões de Projeto Aplicados | Responsabilidade Primária |
 | :---- | :---- | :---- | :---- |

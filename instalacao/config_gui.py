@@ -4,23 +4,20 @@ import os
 import sys
 import shutil
 from pathlib import Path
-import configparser                            
+import configparser
 
 try:
     script_dir = Path(__file__).parent.resolve()
     project_root = script_dir.parent.resolve()
-                        
-                                      
+
     config_file_path = project_root / "config_settings.ini"
     if not config_file_path.is_file():
-                                                           
         try:
             default_ini_content = """[Settings]
 database_enabled = True
 initialize_database_on_startup = True
 use_login = True
 redirect_console_to_log = False
-enable_theme_menu = True
 """
             with open(config_file_path, 'w', encoding='utf-8') as f:
                 f.write(default_ini_content)
@@ -37,40 +34,32 @@ class ConfigApp(tk.Tk):
     def __init__(self, config_path):
         super().__init__()
         self.config_path = config_path
-                                                           
         self.parser = configparser.ConfigParser()
 
         self.title("Configurador Inteligente (config_settings.ini)")
 
-                                           
         w = 600
-        h = 650
+        h = 550
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
         x = (sw // 2) - (w // 2)
         y = (sh // 2) - (h // 2)
         self.geometry(f"{w}x{h}+{x}+{y}")
-        self.minsize(550, 650)
+        self.minsize(550, 550)
 
         self.db_enabled_var = tk.BooleanVar()
         self.init_db_var = tk.BooleanVar()
         self.use_login_var = tk.BooleanVar()
         self.redirect_log_var = tk.BooleanVar()
-        self.enable_theme_var = tk.BooleanVar()
 
-                                                           
         self.vars_map = {
             "database_enabled": self.db_enabled_var,
             "initialize_database_on_startup": self.init_db_var,
             "use_login": self.use_login_var,
-            "redirect_console_to_log": self.redirect_log_var,
-            "enable_theme_menu": self.enable_theme_var
+            "redirect_console_to_log": self.redirect_log_var
         }
 
-                          
-                                          
         self.original_save_button_text = "Salvar Configurações"
-                                 
 
         self._setup_styles()
         self._create_widgets()
@@ -135,14 +124,8 @@ class ConfigApp(tk.Tk):
         self.redirect_log_check.pack(anchor="w")
         ttk.Label(general_frame,
                   text="Se ativo, a saída do console (print) vai para arquivos de log.",
-                  style="Help.TLabel", wraplength=500).pack(anchor="w", padx=20, pady=(0, 5))
-        self.enable_theme_check = ttk.Checkbutton(general_frame,
-                                                  text="Habilitar Menu de Temas (enable_theme_menu)",
-                                                  variable=self.enable_theme_var)
-        self.enable_theme_check.pack(anchor="w", pady=(5, 0))
-        ttk.Label(general_frame,
-                  text="Adiciona a opção 'Personalizar Tema...' no menu de Configurações.",
-                  style="Help.TLabel", wraplength=500).pack(anchor="w", padx=20, pady=(0, 5))
+                  style="Help.TLabel",
+                  wraplength=500).pack(anchor="w", padx=20, pady=(0, 5))
 
         self.save_button = ttk.Button(main_frame, text=self.original_save_button_text, command=self._save_settings,
                                       style="Success.TButton")
@@ -170,19 +153,16 @@ class ConfigApp(tk.Tk):
                 style="Warning.TLabel"
             )
 
-                              
     def _load_initial_values(self):
         """Lê o config_settings.ini e define o estado inicial."""
         try:
             self.parser.read(self.config_path)
 
             if 'Settings' not in self.parser:
-                                                                            
                 self.parser['Settings'] = {}
                 self._update_status("Aviso: Seção [Settings] não encontrada no .ini. Usando padrões.", "orange")
 
             for key, tk_var in self.vars_map.items():
-                                                           
                 value = self.parser.getboolean('Settings', key, fallback=False)
                 tk_var.set(value)
 
@@ -193,58 +173,42 @@ class ConfigApp(tk.Tk):
 
         self._on_db_setting_change()
 
-                                              
     def _save_settings(self):
         """Salva as novas configurações no arquivo config_settings.ini."""
-
-                                                      
         self.save_button.config(state="disabled", text="Salvando...")
         self._update_status("Salvando configurações...", "blue")
-        self.update_idletasks()                          
+        self.update_idletasks()
 
         try:
-                                
             backup_path = self.config_path.with_suffix(".ini.bak")
             shutil.copy2(self.config_path, backup_path)
 
-                                                   
             if 'Settings' not in self.parser:
                 self.parser['Settings'] = {}
 
-                                                    
             for key, tk_var in self.vars_map.items():
-                                                                              
                 self.parser.set('Settings', key, str(tk_var.get()))
 
-                                                            
             with open(self.config_path, 'w', encoding='utf-8') as configfile:
                 self.parser.write(configfile)
 
-                                    
             self._update_status(f"Salvo! Backup: {backup_path.name}", "green")
             self.save_button.config(text="✔ Salvo com Sucesso!")
 
-                                           
             self.after(2000, self._revert_save_button)
 
         except Exception as e:
             messagebox.showerror("Erro ao Salvar", f"Não foi possível salvar '{self.config_path}':\n{e}", parent=self)
             self._update_status(f"Erro ao salvar: {e}", "red")
-                                                              
             self._revert_save_button()
 
-                                    
     def _revert_save_button(self):
         """Restaura o botão de salvar ao seu estado original."""
         try:
-                                                                   
             if self.winfo_exists():
                 self.save_button.config(state="normal", text=self.original_save_button_text)
         except tk.TclError:
-                                                           
             pass
-
-                                
 
     def _update_status(self, message, color):
         """Atualiza o label de status principal."""
@@ -252,5 +216,5 @@ class ConfigApp(tk.Tk):
 
 
 if __name__ == "__main__":
-    app = ConfigApp(config_file_path)                           
+    app = ConfigApp(config_file_path)
     app.mainloop()

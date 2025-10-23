@@ -236,19 +236,19 @@ if __name__ == "__main__":
 #type = sqlserver # 
 #host = 10.77.77.189 # 
 #port = 1433 # 
-#dbname = NexlifyTTk # 
+#dbname = nexlifyttk # 
 #user = gato # 
 #password = -Vladmir!5Anos- # 
 
 #  Configuração para SQLite # 
 type = sqlite # 
-path = NexlifyTTk.db # 
+path = nexlifyttk.db # 
 
 #  Configuração para PostgreSQL # 
 #type = postgresql # 
 #host = 10.77.77.185 # 
 #port = 5432 # 
-#dbname = NexlifyTTk # 
+#dbname = nexlifyttk # 
 #user = gato # 
 #password = -Vladmir!5Anos- # 
 
@@ -256,7 +256,7 @@ path = NexlifyTTk.db #
 #type = mysql # 
 #host = localhost # 
 #port = 3306 # 
-#dbname = NexlifyTTk # 
+#dbname = nexlifyttk # 
 #user = gato # 
 #password = -Vladmir!5Anos- # 
 
@@ -264,7 +264,7 @@ path = NexlifyTTk.db #
 #type = mariadb # 
 #host = 10.77.77.189 # 
 #port = 3306 # 
-#dbname = NexlifyTTk # 
+#dbname = nexlifyttk # 
 #user = gAAAAABo52D7Wefg0RLLMr62vnJinZeI5CMPv46SR-QgTHB18DdC9RmvR53QM4MBQOlLj_bUo0Rouzp8LuMWJfW2FjP4Du387w== # 
 #password = gAAAAABo52D7sEBmtfcCv2shxybef66zojupLPMP25CTQ8Z5TzQMw8gw8CHLwJ_CN1qsg3kkIgypYqpMmsRiRuH0X5QXjhvMXQ== # 
 """

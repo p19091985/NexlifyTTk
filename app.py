@@ -2,68 +2,64 @@ import tkinter as tk
 from tkinter import ttk, messagebox, font
 import logging
 from typing import Dict, Any
-import platform                                     
-import config                                          
+import platform
+import config
 from panels.base_panel import BasePanel
-from panels import ALL_PANELS                           
-from settings_manager import SettingsManager                                
+from panels import ALL_PANELS
+from settings_manager import SettingsManager
 from dialogs.login_ui import LoginDialog
-from modals.tipos_vegetais_manager import TiposVegetaisManagerDialog                  
+from modals.tipos_vegetais_manager import TiposVegetaisManagerDialog
 from modals.about_dialog import AboutDialog
-                                                            
-                                                               
+
 
 class AplicacaoPrincipal(tk.Tk):
     def __init__(self, project_root: str) -> None:
         super().__init__()
-                                                                 
+
         self.settings_manager = SettingsManager(project_root=project_root)
 
-        self.withdraw()                                          
+        self.withdraw()
 
-                                                                                       
         self._configure_styles()
         current_settings = self.settings_manager.load_settings()
-        self._apply_theme_settings(self.style, current_settings)                     
+        self._apply_theme_settings(self.style, current_settings)
 
         self.logger = logging.getLogger("main_app")
         self.project_root = project_root
+
         self.current_user = None
 
-                                                                               
         if config.USE_LOGIN:
             self.logger.info("Sistema de login ATIVO.")
             user_info = self._run_login_process()
-                                                         
+
             if not user_info or user_info in ["max_attempts_failed", "connection_error"]:
                 self.logger.warning("Falha no login ou cancelado. Encerrando aplicação.")
                 self.destroy()
-                return                                         
+                return
         else:
             self.logger.warning("Sistema de login DESABILITADO. Usando usuário de desenvolvimento.")
-                                                                             
             user_info = {"name": "Usuário de Desenvolvimento", "access_level": "Administrador Global",
                          "username": "dev_user"}
 
-                                                           
         self._initialize_session_for_user(user_info)
 
     def _configure_styles(self):
         """Configurações básicas do estilo ttk."""
         self.style = ttk.Style(self)
-        self.style.theme_use('clam')                                                 
+        self.style.theme_use('clam')
 
     def _apply_theme_settings(self, style_obj: ttk.Style, settings: Dict[str, Any]):
         """
         Aplica as configurações de fonte e cor lidas do settings.json
-        ao objeto de estilo ttk. (Verificado e correto)
+        ao objeto de estilo ttk.
         """
         font_family = settings.get('font_family', 'Segoe UI')
         font_size = settings.get('font_size', 10)
         default_font_tuple = (font_family, font_size)
 
         try:
-            font.Font(family=font_family, size=font_size)                          
+            font.Font(family=font_family, size=font_size)
             style_obj.configure('.', font=default_font_tuple)
             style_obj.configure('Treeview', font=default_font_tuple)
             style_obj.configure('Treeview.Heading', font=(font_family, font_size, 'bold'))
@@ -77,7 +73,7 @@ class AplicacaoPrincipal(tk.Tk):
 
         custom_colors = settings.get('custom_colors', {})
         logging.debug(f"Cores carregadas do settings: {custom_colors}")
-                                                                                    
+
         button_styles_config = {
             'Danger.TButton': {'key': 'danger', 'default_bg': '#dc3545', 'active': '#c82333'},
             'Success.TButton': {'key': 'success', 'default_bg': '#28a745', 'active': '#218838'},
@@ -87,9 +83,15 @@ class AplicacaoPrincipal(tk.Tk):
         }
 
         for style_name, config_data in button_styles_config.items():
-            bg_color = custom_colors.get(config_data['key'], config_data['default_bg'])
-            fg_color = config_data.get('fg', 'white')                            
-            active_bg = config_data.get('active', bg_color)                         
+                                        
+                                                                                                 
+            bg_color = custom_colors.get(config_data['key'], config_data['default_bg']) or config_data['default_bg']
+
+            fg_color = config_data.get('fg', 'white')
+
+                                                                                                                
+            active_bg = config_data.get('active', bg_color) or bg_color
+                                     
 
             try:
                 style_obj.configure(style_name, foreground=fg_color, background=bg_color, padding=6, relief="flat")
@@ -97,17 +99,15 @@ class AplicacaoPrincipal(tk.Tk):
                 logging.debug(f"Aplicado estilo '{style_name}': BG={bg_color}, FG={fg_color}, ActiveBG={active_bg}")
             except tk.TclError as e:
                 logging.warning(f"Erro ao aplicar estilo '{style_name}' com cor {bg_color}: {e}. Usando fallback.")
-                                                                          
                 try:
-                    style_obj.configure(style_name, foreground=fg_color, background=config_data['default_bg'], padding=6, relief="flat")
+                    style_obj.configure(style_name, foreground=fg_color, background=config_data['default_bg'], padding=6,
+                                        relief="flat")
                     style_obj.map(style_name, background=[('active', config_data['active'])])
-                except tk.TclError:                                       
+                except tk.TclError:
                     logging.error(f"Falha crítica ao aplicar fallback para '{style_name}'.")
 
-
-                                                                                      
-        style_obj.configure('TButton', padding=6, relief="flat")                                  
-        style_obj.configure('Sidebar.TFrame', background='#f0f0f0')                        
+        style_obj.configure('TButton', padding=6, relief="flat")
+        style_obj.configure('Sidebar.TFrame', background='#f0f0f0')
         style_obj.configure('Sidebar.TLabel', background='#f0f0f0')
         style_obj.configure('Sidebar.TButton', background='#f0f0f0', borderwidth=0, anchor='w')
         style_obj.map('Sidebar.TButton', background=[('active', '#dcdcdc')])
@@ -118,15 +118,15 @@ class AplicacaoPrincipal(tk.Tk):
             widget.destroy()
 
         self.current_user = user_info
-        self.title("Painel de Controle NexlifyTTk")
-        self._set_initial_geometry()                                   
+        self.title("Painel de Controle nexlifyttk")
+        self._set_initial_geometry()
 
         self.panels: Dict[str, BasePanel] = {}
         self.sidebar_buttons: Dict[str, ttk.Button] = {}
         self.current_panel_name: str = ""
 
         self._setup_ui()
-        self.config(menu=self._create_menubar())                                     
+        self.config(menu=self._create_menubar())
 
         if self.sidebar_buttons:
             first_button_name = next(iter(self.sidebar_buttons))
@@ -183,9 +183,11 @@ class AplicacaoPrincipal(tk.Tk):
                     name, icon = PanelClass.PANEL_NAME, PanelClass.PANEL_ICON
                     panel_instance = PanelClass(self.content_frame, self)
                     self.panels[name] = panel_instance
+
                     btn = ttk.Button(self.sidebar_frame, text=f" {icon} {name}", compound="left",
                                      command=lambda n=name: self.switch_panel_by_name(n),
                                      style="Sidebar.TButton")
+
                     btn.pack(fill="x", pady=2, padx=10)
                     self.sidebar_buttons[name] = btn
             except Exception as e:
@@ -198,8 +200,10 @@ class AplicacaoPrincipal(tk.Tk):
         if panel_name not in self.panels:
             logging.warning(f"Tentativa de trocar para painel inexistente: {panel_name}")
             return
+
         if self.current_panel_name and self.current_panel_name in self.panels:
             self.panels[self.current_panel_name].pack_forget()
+
         self.current_panel_name = panel_name
         self.panels[panel_name].pack(fill="both", expand=True)
         logging.debug(f"Trocado para o painel: {panel_name}")
@@ -219,10 +223,9 @@ class AplicacaoPrincipal(tk.Tk):
 
         config_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Configurações", menu=config_menu)
-                                                
-                                                       
+
         if not config_menu.index("end"):
-             config_menu.add_command(label="(Nenhuma opção)", state="disabled")
+            config_menu.add_command(label="(Nenhuma opção)", state="disabled")
 
         help_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Ajuda", menu=help_menu)
@@ -235,6 +238,7 @@ class AplicacaoPrincipal(tk.Tk):
         """Reinicia a aplicação para permitir a troca de usuário."""
         self.logger.info(f"Usuário '{self.current_user['username']}' iniciou a troca de sessão.")
         self.withdraw()
+
         new_user_info = self._run_login_process()
         if new_user_info and new_user_info not in ["max_attempts_failed", "connection_error"]:
             self.logger.info(f"Login bem-sucedido para '{new_user_info['username']}'. Reconstruindo UI.")
@@ -247,7 +251,7 @@ class AplicacaoPrincipal(tk.Tk):
         """Abre o diálogo unificado para gerenciar tipos de vegetais."""
         if not config.DATABASE_ENABLED:
             messagebox.showwarning("Funcionalidade Indisponível",
-                                   "O banco de dados está desabilitado.", parent=self)
+                                 "O banco de dados está desabilitado.", parent=self)
             return
         try:
             callback = None
@@ -261,9 +265,6 @@ class AplicacaoPrincipal(tk.Tk):
             messagebox.showerror("Erro Crítico", f"Não foi possível abrir a janela de gestão: {e}", parent=self)
             logging.critical(f"Falha ao abrir TiposVegetaisManagerDialog: {e}", exc_info=True)
 
-                                         
-                                       
-
     def _show_about_dialog(self):
         """Abre o diálogo 'Sobre'."""
         AboutDialog(self)
@@ -275,26 +276,21 @@ class AplicacaoPrincipal(tk.Tk):
             self.destroy()
 
     def _set_initial_geometry(self) -> None:
-                                       
         system_name = platform.system()
 
         if system_name == "Windows":
-                                                                     
             try:
                 self.state('zoomed')
             except tk.TclError:
-                                                                 
                 w, h = self.winfo_screenwidth(), self.winfo_screenheight()
                 self.geometry(f"{int(w * 0.9)}x{int(h * 0.9)}")
         else:
-                                                                        
-                                                                       
             w, h = self.winfo_screenwidth(), self.winfo_screenheight()
             self.geometry(f"{int(w * 0.9)}x{int(h * 0.9)}")
-                                                                            
-            self.update_idletasks()
-            win_w = self.winfo_width()
-            win_h = self.winfo_height()
-            x = (w // 2) - (win_w // 2)
-            y = (h // 2) - (win_h // 2)
-            self.geometry(f'+{x}+{y}')
+
+        self.update_idletasks()
+        win_w = self.winfo_width()
+        win_h = self.winfo_height()
+        x = (w // 2) - (win_w // 2)
+        y = (h // 2) - (win_h // 2)
+        self.geometry(f'+{x}+{y}')
