@@ -2,9 +2,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
 from sqlalchemy import exc
-                                       
+
 from persistencia.repository import GenericRepository
-                 
+
 
 class TiposVegetaisManagerDialog(tk.Toplevel):
     """
@@ -20,34 +20,20 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
         self.on_close_callback = on_close_callback
         self.selected_item_id = None
 
-                                               
         self.title("Gerenciar Tipos de Vegetais")
         self.geometry("600x450")
-        self.transient(parent)                             
-        self.grab_set()                                                      
+        self.transient(parent)
+        self.grab_set()
         self.resizable(False, False)
 
-                                            
         self.nome_var = tk.StringVar()
 
-                               
         self._create_widgets()
         self._center_window()
         self._load_data()
         self.nome_entry.focus_set()
 
-                                                                
         self.protocol("WM_DELETE_WINDOW", self._on_close)
-
-                                                                                  
-         
-                                                                                
-                                                                       
-                                                                                     
-
-                                                                          
-                                                       
-                                                                          
 
     def _create_widgets(self):
         """Cria a estrutura principal da UI."""
@@ -71,7 +57,6 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
         btn_frame = ttk.Frame(parent)
         btn_frame.pack(fill="x")
 
-                                                               
         self.save_button = ttk.Button(btn_frame, text="Salvar", style="Success.TButton",
                                       command=self._save_item)
         self.save_button.pack(side="left", expand=True, fill="x", padx=(0, 5))
@@ -102,12 +87,7 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
         self.tree.pack(side='left', fill='both', expand=True)
         scrollbar.pack(side='right', fill='y')
 
-                                                           
         self.tree.bind('<<TreeviewSelect>>', self._on_item_select)
-
-                                                                          
-                                                   
-                                                                          
 
     def _load_data(self):
         """Busca os dados do modelo e atualiza a Treeview."""
@@ -122,11 +102,11 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
         nome = self.get_form_data()['nome']
         try:
             if self.selected_item_id is None:
-                                  
+
                 self._model_add_tipo(nome)
                 self.show_info("Sucesso", "Tipo cadastrado!")
             else:
-                                  
+
                 self._model_update_tipo(self.selected_item_id, nome)
                 self.show_info("Sucesso", "Tipo atualizado!")
 
@@ -174,10 +154,6 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
             self.on_close_callback()
         self.destroy()
 
-                                                                          
-                                                    
-                                                                          
-
     def _model_get_all_tipos(self):
         try:
             return GenericRepository.read_table_to_dataframe("tipos_vegetais")
@@ -203,20 +179,16 @@ class TiposVegetaisManagerDialog(tk.Toplevel):
         except exc.IntegrityError:
             raise ValueError(f"O nome '{nome}' já existe.")
         except exc.SQLAlchemyError as e:
-            raise ConnectionError(f"Ocorreu uma falha ao atualizar os dados.\Detalhe: {e}")
+            raise ConnectionError(f"Ocorreu uma falha ao atualizar os dados.\nDetalhe: {e}")
 
     def _model_delete_tipo(self, item_id: int):
         try:
             GenericRepository.delete_from_table("tipos_vegetais", {'id': item_id})
         except exc.IntegrityError:
-                                                                     
+
             raise ValueError("Não foi possível excluir. Este tipo está em uso por um ou mais vegetais.")
         except exc.SQLAlchemyError as e:
-            raise ConnectionError(f"Ocorreu uma falha ao excluir os dados.\Detalhe: {e}")
-
-                                                                          
-                                                  
-                                                                          
+            raise ConnectionError(f"Ocorreu uma falha ao excluir os dados.\nDetalhe: {e}")
 
     def populate_treeview(self, data):
         """Limpa e preenche a Treeview com dados de um DataFrame."""
