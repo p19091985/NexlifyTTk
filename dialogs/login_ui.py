@@ -6,7 +6,6 @@ import time
 import config
 from persistencia import auth
 
-
 class LoginDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
@@ -18,7 +17,6 @@ class LoginDialog(tk.Toplevel):
 
         self.title("Login do Sistema")
 
-
         self.grab_set()
         self.resizable(False, False)
 
@@ -26,11 +24,9 @@ class LoginDialog(tk.Toplevel):
 
         self._setup_widgets()
 
-
         self.deiconify()
 
         self._center_window()
-
 
         self.protocol("WM_DELETE_WINDOW", self._on_cancel)
         self.user_entry.focus_set()

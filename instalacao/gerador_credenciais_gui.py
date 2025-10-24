@@ -25,7 +25,6 @@ FONT_CODE = ("Courier New", 9)
 FONT_H1 = ("Segoe UI", 16, "bold")
 FONT_H2 = ("Segoe UI", 12, "bold")
 
-
 class CredentialToolApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -308,7 +307,6 @@ Este hash é seguro. Mesmo que alguém o veja, não é possível descobrir a sen
             messagebox.showinfo("Sucesso", "Conteúdo copiado para a área de transferências.", parent=self)
         else:
             messagebox.showwarning("Nada a Copiar", "Nenhum conteúdo foi gerado para copiar.", parent=self)
-
 
 if __name__ == "__main__":
     app = CredentialToolApp()

@@ -21,17 +21,13 @@ class PainelCadastroVegetais(BasePanel):
                                      
         self.selected_item_id = None                                               
         self.nome_var = tk.StringVar()                                        
-        self.tipo_var = tk.StringVar()                                
+        self.tipo_var = tk.StringVar()
 
-                                        
         self.nome_entry = None                          
         self.tipo_combobox = None                  
-        self.tree = None                    
+        self.tree = None
 
-                                                                 
         super().__init__(parent, app_controller, **kwargs)
-
-                                               
 
     def create_widgets(self):
         """
@@ -42,7 +38,6 @@ class PainelCadastroVegetais(BasePanel):
                       font=("-size", 12, "-weight", "bold")).pack(pady=50)
             return
 
-                                  
         main_frame = ttk.Frame(self, padding=15)
         main_frame.pack(fill="both", expand=True)
                                                    
@@ -50,12 +45,9 @@ class PainelCadastroVegetais(BasePanel):
                                  
         main_frame.columnconfigure(0, weight=1)
 
-                                                                 
         self._build_form(main_frame)
         self._build_table(main_frame)
 
-                                      
-                                                           
         self._load_data_into_table()
         self._load_tipos_into_combobox()
 
@@ -67,30 +59,25 @@ class PainelCadastroVegetais(BasePanel):
                                                                       
         form_frame.columnconfigure(1, weight=1)
 
-                               
         ttk.Label(form_frame, text="Nome do Vegetal:").grid(row=0, column=0, sticky="w", padx=5, pady=5)
         self.nome_entry = ttk.Entry(form_frame, textvariable=self.nome_var)
         self.nome_entry.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 
-                                                 
         ttk.Label(form_frame, text="Tipo:").grid(row=1, column=0, sticky="w", padx=5, pady=5)
                                                              
         tipo_frame = ttk.Frame(form_frame)
         tipo_frame.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
 
         self.tipo_combobox = ttk.Combobox(tipo_frame, textvariable=self.tipo_var, state="readonly")
-        self.tipo_combobox.pack(side="left", fill="x", expand=True)                    
+        self.tipo_combobox.pack(side="left", fill="x", expand=True)
 
-                                                              
         ttk.Button(tipo_frame, text="Gerenciar Tipos...", command=self._on_manage_tipos_click, width=15).pack(
-            side="left", padx=(5, 0))                             
+            side="left", padx=(5, 0))
 
-                                                      
         btn_frame = ttk.Frame(form_frame)
                                                                  
         btn_frame.grid(row=2, column=1, pady=(10, 0), sticky="e")
 
-                                                        
         ttk.Button(btn_frame, text="Salvar", command=self._on_save_button_click, style="Success.TButton").pack(
             side="left", padx=5)
         ttk.Button(btn_frame, text="Excluir", command=self._on_delete_button_click, style="Danger.TButton").pack(
@@ -107,11 +94,9 @@ class PainelCadastroVegetais(BasePanel):
         table_frame.rowconfigure(0, weight=1)
         table_frame.columnconfigure(0, weight=1)
 
-                           
         columns = ('id', 'nome', 'tipo')
         self.tree = ttk.Treeview(table_frame, columns=columns, show='headings', selectmode='browse')
 
-                                                    
         self.tree.heading('id', text='ID')
         self.tree.heading('nome', text='Nome do Vegetal')
         self.tree.heading('tipo', text='Tipo')
@@ -119,18 +104,13 @@ class PainelCadastroVegetais(BasePanel):
         self.tree.column('nome', width=200)
         self.tree.column('tipo', width=180)
 
-                                 
         scrollbar = ttk.Scrollbar(table_frame, orient="vertical", command=self.tree.yview)
         self.tree.configure(yscrollcommand=scrollbar.set)
 
-                                              
         self.tree.grid(row=0, column=0, sticky="nsew")
         scrollbar.grid(row=0, column=1, sticky="ns")
 
-                                                                
         self.tree.bind("<<TreeviewSelect>>", self._on_table_select)
-
-                                       
 
     def _load_data_into_table(self):
         """ (READ) Busca os vegetais (com nome do tipo) e preenche a tabela. """
@@ -139,10 +119,8 @@ class PainelCadastroVegetais(BasePanel):
             for item in self.tree.get_children():
                 self.tree.delete(item)
 
-                                                                                        
             df_vegetais = GenericRepository.read_vegetais_com_tipo()
 
-                                               
             if not df_vegetais.empty:
                 for _, row in df_vegetais.iterrows():
                     self.tree.insert("", "end", values=list(row))
@@ -175,12 +153,9 @@ class PainelCadastroVegetais(BasePanel):
                                
         self.nome_entry.focus()
 
-                                          
-
     def _on_manage_tipos_click(self):
         """ Chamado ao clicar no botão 'Gerenciar Tipos...'. Abre o diálogo modal. """
-                                                                            
-                                                                  
+
         dialog = TiposVegetaisManagerDialog(self, on_close_callback=self._load_tipos_into_combobox)
                                                                        
         dialog.wait_window()
@@ -188,16 +163,14 @@ class PainelCadastroVegetais(BasePanel):
     def _on_save_button_click(self):
         """ (CREATE/UPDATE) Chamado ao clicar no botão 'Salvar'. """
         nome = self.nome_var.get().strip()
-        tipo_nome = self.tipo_var.get()                                              
+        tipo_nome = self.tipo_var.get()
 
-                           
         if not nome or not tipo_nome:
             messagebox.showerror("Erro de Validação", "Os campos 'Nome' e 'Tipo' são obrigatórios.", parent=self)
             return
 
         try:
-                                        
-                                                                       
+
             df_tipo = GenericRepository.read_table_to_dataframe(
                 "tipos_vegetais",
                 where_conditions={'nome': tipo_nome}                               
@@ -207,13 +180,10 @@ class PainelCadastroVegetais(BasePanel):
                 messagebox.showerror("Erro de Dados", f"O tipo '{tipo_nome}' não foi encontrado.", parent=self)
                 return
 
-                                                              
             id_tipo = int(df_tipo.iloc[0]['id'])
 
-                                      
             data = {'nome': nome, 'id_tipo': id_tipo}
 
-                                                               
             if self.selected_item_id is None:
                                                                        
                 GenericRepository.write_dataframe_to_table(pd.DataFrame([data]), "vegetais")
@@ -227,7 +197,6 @@ class PainelCadastroVegetais(BasePanel):
                 )
                 messagebox.showinfo("Sucesso", "Vegetal atualizado!", parent=self)
 
-                              
             self._clear_form_fields()                     
             self._load_data_into_table()                     
 
@@ -240,7 +209,6 @@ class PainelCadastroVegetais(BasePanel):
             messagebox.showwarning("Atenção", "Selecione um vegetal na tabela para excluir.", parent=self)
             return
 
-                     
         if messagebox.askyesno("Confirmar Exclusão", "Deseja realmente excluir este vegetal?", icon='warning',
                                parent=self):
             try:
@@ -251,12 +219,10 @@ class PainelCadastroVegetais(BasePanel):
                 )
                 messagebox.showinfo("Sucesso", "Vegetal excluído!", parent=self)
 
-                                  
                 self._clear_form_fields()
                 self._load_data_into_table()
             except Exception as e:
-                                                                           
-                                                                            
+
                 if "FOREIGN KEY constraint failed" in str(e) or "violates foreign key constraint" in str(e):
                      messagebox.showerror("Erro de Integridade",
                                           "Não foi possível excluir este vegetal pois ele está referenciado em outro lugar.",
@@ -276,9 +242,8 @@ class PainelCadastroVegetais(BasePanel):
             return
 
         item = self.tree.item(selected_items[0])
-        values = item['values']                                                          
+        values = item['values']
 
-                                          
         self.selected_item_id = values[0]
         self.nome_var.set(values[1])
                                                                            

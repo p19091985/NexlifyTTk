@@ -34,20 +34,17 @@ except Exception as e:
     print(f"Erro ao ler .ini: {e}. Usando padrões.", file=sys.stderr)
     _parser['Settings'] = {}
 
-
 def _get_boolean_setting(key, default=False):
     try:
         return _parser.getboolean('Settings', key, fallback=default)
     except (configparser.Error, ValueError):
         return default
 
-
 def _get_string_setting(key, default=""):
     try:
         return _parser.get('Settings', key, fallback=default)
     except (configparser.Error, ValueError):
         return default
-
 
 DATABASE_ENABLED = _get_boolean_setting('database_enabled', default=True)
 INITIALIZE_DATABASE_ON_STARTUP = _get_boolean_setting('initialize_database_on_startup', default=True)

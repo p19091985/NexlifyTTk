@@ -11,7 +11,6 @@ from dialogs.login_ui import LoginDialog
 from modals.tipos_vegetais_manager import TiposVegetaisManagerDialog
 from modals.about_dialog import AboutDialog
 
-
 class AplicacaoPrincipal(tk.Tk):
     def __init__(self, project_root: str) -> None:
         super().__init__()
@@ -83,15 +82,12 @@ class AplicacaoPrincipal(tk.Tk):
         }
 
         for style_name, config_data in button_styles_config.items():
-                                        
-                                                                                                 
+
             bg_color = custom_colors.get(config_data['key'], config_data['default_bg']) or config_data['default_bg']
 
             fg_color = config_data.get('fg', 'white')
 
-                                                                                                                
             active_bg = config_data.get('active', bg_color) or bg_color
-                                     
 
             try:
                 style_obj.configure(style_name, foreground=fg_color, background=bg_color, padding=6, relief="flat")

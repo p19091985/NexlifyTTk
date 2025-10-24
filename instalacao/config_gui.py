@@ -29,7 +29,6 @@ except Exception as e:
                          f"Erro ao localizar/criar 'config_settings.ini' na pasta raiz do projeto: {e}")
     sys.exit(1)
 
-
 class ConfigApp(tk.Tk):
     def __init__(self, config_path):
         super().__init__()
@@ -213,7 +212,6 @@ class ConfigApp(tk.Tk):
     def _update_status(self, message, color):
         """Atualiza o label de status principal."""
         self.status_label.config(text=message, foreground=color)
-
 
 if __name__ == "__main__":
     app = ConfigApp(config_file_path)

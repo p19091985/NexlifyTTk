@@ -18,8 +18,6 @@ class PainelGuiaConfig(BasePanel):
     def __init__(self, parent, app_controller, **kwargs):
         super().__init__(parent, app_controller, **kwargs)
 
-                                               
-
     def create_widgets(self):
         """
         Método principal que constrói a UI do painel.
@@ -32,19 +30,15 @@ class PainelGuiaConfig(BasePanel):
                            font=("-size", 18, "-weight", "bold"))
         titulo.pack(pady=(0, 20), anchor="w")
 
-                                                     
         text_area = scrolledtext.ScrolledText(main_frame, wrap=tk.WORD, height=20,
                                               font=("Segoe UI", 10), bd=0, relief=tk.FLAT,
                                               padx=15, pady=15, background="white")
         text_area.pack(fill="both", expand=True, pady=10)
 
-                                                         
-                                                                              
         code_font = "Consolas" if "Consolas" in font.families() else "Courier New"
         header_font_family = "Segoe UI Semibold" if "Segoe UI Semibold" in font.families() else "Segoe UI"
         subheader_font_family = "Segoe UI Semibold" if "Segoe UI Semibold" in font.families() else "Segoe UI"
 
-                                                            
         text_area.tag_configure("h1", font=(header_font_family, 16, "bold"), spacing1=20, spacing3=10, foreground="#003366")
         text_area.tag_configure("h2", font=(subheader_font_family, 13, "bold"), spacing1=15, spacing3=8, foreground="#005a9e")
         text_area.tag_configure("h3", font=("Segoe UI", 11, "bold"), spacing1=10, spacing3=5, foreground="#333333")
@@ -61,8 +55,6 @@ class PainelGuiaConfig(BasePanel):
         text_area.tag_configure("warning", foreground="#856404", font=("Segoe UI", 10, "bold"))
         text_area.tag_configure("info", foreground="#004085")
 
-                                              
-                                                                 
         text_area.insert(tk.END, "Guia de Configuração da Aplicação\n", "h1")
         text_area.insert(tk.END,
                          "Esta aplicação foi desenvolvida com flexibilidade. "
@@ -185,19 +177,6 @@ class PainelGuiaConfig(BasePanel):
 
         text_area.insert(tk.END, "--- Fim do Guia ---\n", ("italic", "body"))
 
-                                      
         text_area.config(state="disabled")
 
-                                                                     
-
-                                       
-                                 
-                                                       
-
-                                                       
-                                
-             
-                                 
-                               
-                                                                       
                                                                                                               

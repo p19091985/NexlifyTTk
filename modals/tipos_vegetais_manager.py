@@ -5,7 +5,6 @@ from sqlalchemy import exc
 
 from persistencia.repository import GenericRepository
 
-
 class TiposVegetaisManagerDialog(tk.Toplevel):
     """
     Um diálogo modal unificado para gerenciar 'Tipos de Vegetais'.

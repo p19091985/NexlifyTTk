@@ -3,7 +3,6 @@ import sys
 import os
 from pathlib import Path
 
-                                      
 try:
                                               
     from config import LOG_LEVEL, LOG_FORMAT, REDIRECT_CONSOLE_TO_LOG
@@ -15,7 +14,6 @@ except ImportError as e:
 except Exception as e:
     print(f"Erro inesperado ao importar config: {e}", file=sys.stderr)
     sys.exit(1)
-
 
 class LogRedirector:
     """
@@ -37,35 +35,22 @@ class LogRedirector:
         """Necessário para a interface de 'file-like object'."""
         pass
 
-
 def setup_loggers():
     """
     Configura e inicializa os handlers de log (console e arquivo)
     para a aplicação.
     """
 
-                                  
-                                                                 
-                                              
-                                                                           
-
     log_level = LOG_LEVEL
 
-                             
-
-                                            
     formatter = logging.Formatter(LOG_FORMAT)
 
-                         
     root_logger = logging.getLogger()
     root_logger.setLevel(log_level)
 
-                                                                        
     if root_logger.hasHandlers():
         root_logger.handlers.clear()
 
-                                           
-                                  
     try:
         console_handler = logging.StreamHandler(sys.stdout)
         console_handler.setLevel(log_level)
@@ -74,14 +59,12 @@ def setup_loggers():
     except Exception as e:
         print(f"Erro ao configurar o logger do console: {e}", file=sys.stderr)
 
-                                         
     try:
                                                                  
         log_dir = Path(__file__).parent.parent / "logs"
         log_dir.mkdir(parents=True, exist_ok=True)
         log_file_path = log_dir / "app.log"
 
-                                                                   
         file_handler = logging.FileHandler(log_file_path, mode='a', encoding='utf-8')
         file_handler.setLevel(log_level)
         file_handler.setFormatter(formatter)
@@ -91,8 +74,6 @@ def setup_loggers():
                                                            
         root_logger.error(f"Não foi possível criar o handler de arquivo de log em '{log_file_path}': {e}")
 
-                                    
-                                                                      
     if REDIRECT_CONSOLE_TO_LOG:
         root_logger.info("Redirecionando stdout e stderr para os handlers de log...")
         sys.stdout = LogRedirector(logging.getLogger("STDOUT"), logging.INFO)

@@ -17,7 +17,6 @@ def _deep_merge_defaults(source: MutableMapping, defaults: MutableMapping) -> bo
         elif isinstance(value, MutableMapping) and not isinstance(source.get(key), MutableMapping):
             source[key] = value                                                
             is_dirty = True
-                                                                                                      
 
     return is_dirty
 

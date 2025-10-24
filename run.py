@@ -7,7 +7,6 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-                                                                 
 from persistencia.logger import setup_loggers
 
 setup_loggers()
@@ -16,10 +15,6 @@ import config
 from persistencia.database import DatabaseManager
 from app import AplicacaoPrincipal
 
-
-                                                                               
-                                                             
-                                                                               
 def validar_configuracoes():
     """
     Verifica a consistência das flags de configuração antes de iniciar a aplicação.
@@ -41,7 +36,6 @@ def validar_configuracoes():
         )
         return False
 
-                                                                                       
     if config.INITIALIZE_DATABASE_ON_STARTUP and not config.DATABASE_ENABLED:
         messagebox.showerror(
             "Erro de Configuração Inválida",
@@ -58,15 +52,10 @@ def validar_configuracoes():
         return False
 
     return True
-                                                                               
-                                                            
-                                                                               
-
 
 def main():
     main_logger = logging.getLogger("main_app")
 
-                                                               
     if not validar_configuracoes():
         main_logger.error("Validação de configuração falhou. A aplicação será encerrada.")
         return                                                        
@@ -95,7 +84,6 @@ def main():
     except Exception as e:
         main_logger.critical(f"Erro fatal na aplicação principal: {e}", exc_info=True)
         messagebox.showerror("Erro Crítico", f"A aplicação encontrou um erro fatal e precisa ser fechada: {e}")
-
 
 if __name__ == "__main__":
     try:

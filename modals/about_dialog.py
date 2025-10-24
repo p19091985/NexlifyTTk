@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 import webbrowser
 
-
 class AboutDialog(tk.Toplevel):
     """
     Exibe informações detalhadas sobre a arquitetura e propósito do sistema.

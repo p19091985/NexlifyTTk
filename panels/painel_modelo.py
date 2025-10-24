@@ -28,7 +28,6 @@ class PainelModelo(BasePanel):
                            font=("-size", 16, "-weight", "bold"))
         titulo.pack(pady=(0, 20))
 
-                                                                              
         self._build_content(main_frame)
 
     def _build_content(self, parent):
@@ -36,7 +35,6 @@ class PainelModelo(BasePanel):
         conteudo_frame = ttk.LabelFrame(parent, text=" Guia Rápido (Padrão Simplificado) ", padding=15)
         conteudo_frame.pack(fill="both", expand=True, pady=10)
 
-                                                                     
         instrucoes_texto = (
             "Este painel demonstra a estrutura recomendada para novos painéis.\n\n"
             "Passos Sugeridos:\n"
@@ -62,12 +60,9 @@ class PainelModelo(BasePanel):
                                    command=self._on_test_button_click, style="Success.TButton")
         botao_exemplo.pack(pady=20)
 
-                                          
-
     def _on_test_button_click(self):
         """ Lógica de exemplo chamada pelo botão 'Testar Interação'. """
-                                                                                 
-                                                                
+
         usuario_atual = self.app.get_current_user()
 
         messagebox.showinfo(
