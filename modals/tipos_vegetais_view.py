@@ -14,12 +14,7 @@ class TiposVegetaisView(tk.Toplevel):
 
         self._create_widgets()
 
-                                    
-                                                                            
-                                                                
-                                                             
         self.update_idletasks()
-                                 
 
         self._center_window()
         self.nome_entry.focus_set()

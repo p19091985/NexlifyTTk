@@ -2,7 +2,6 @@
 import tkinter as tk
 from tkinter import ttk
 
-
 class GestaoGatosView(ttk.Frame):
     """A View consolidada para a gestão de espécies de gatos."""
 
@@ -15,7 +14,6 @@ class GestaoGatosView(ttk.Frame):
         main_frame.rowconfigure(1, weight=1)
         main_frame.columnconfigure(0, weight=1)
 
-                                                   
         top_container = ttk.Frame(main_frame)
         top_container.grid(row=0, column=0, sticky="nsew", pady=(0, 15))
         top_container.columnconfigure(0, weight=1)

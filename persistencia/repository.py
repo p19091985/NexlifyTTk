@@ -6,7 +6,6 @@ from .database import DatabaseManager
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-
 class GenericRepository:
     """
     Classe genérica para interagir com o banco de dados.
@@ -76,7 +75,6 @@ class GenericRepository:
             logging.error(f"Update em '{table_name}' falhou: engine não disponível.")
             return
 
-                                                                
         update_values_lower = {k.lower(): v for k, v in update_values.items()}
         where_conditions_lower = {k.lower(): v for k, v in where_conditions.items()}
 
@@ -86,7 +84,6 @@ class GenericRepository:
         params = {f'{k}_val': v for k, v in update_values_lower.items()}
         params.update({f'wh_{k}': v for k, v in where_conditions_lower.items()})
 
-                                                                  
         query = f"UPDATE {table_name} SET {set_clause} WHERE {where_clause}"
 
         try:
@@ -110,13 +107,11 @@ class GenericRepository:
             logging.error(f"Delete em '{table_name}' falhou: engine não disponível.")
             return
 
-                                                              
         where_conditions_lower = {k.lower(): v for k, v in where_conditions.items()}
 
         where_clause = " AND ".join([f"{key} = :{key}" for key in where_conditions_lower.keys()])
-        params = where_conditions_lower                                           
+        params = where_conditions_lower
 
-                                                                  
         query = f"DELETE FROM {table_name} WHERE {where_clause}"
 
         try:
@@ -146,14 +141,11 @@ class GenericRepository:
         if not config.DATABASE_ENABLED:
             return pd.DataFrame()
 
-                                                                             
         cols_str = "*"
         if columns:
              cols_lower = [col.lower() for col in columns]
              cols_str = ", ".join(cols_lower)
 
-
-                                                                  
         query = f"SELECT {cols_str} FROM {table_name}"
 
         params_lower = None

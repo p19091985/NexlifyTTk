@@ -5,8 +5,7 @@ import config
 from panels.base_panel import BasePanel   
 from persistencia.repository import GenericRepository   
 from persistencia.data_service import DataService   
-from .painel_gestao_gatos_view import GestaoGatosView   
-
+from .painel_gestao_gatos_view import GestaoGatosView
 
 class PainelGestaoGatos(BasePanel):   
     """Controller consolidado para todas as operações da tabela especie_gatos."""
@@ -51,9 +50,8 @@ class PainelGestaoGatos(BasePanel):
         """Atualiza o estado do Controller quando um item é selecionado na View."""
         selected_items = self.view.tree.selection()   
         if not selected_items: return   
-        item = self.view.tree.item(selected_items[0], "values")   
+        item = self.view.tree.item(selected_items[0], "values")
 
-                                                                                                          
         self.selected_item_id = item[0]        
         self.nome_var.set(item[1])                  
         self.pais_var.set(item[2])                 
@@ -77,7 +75,6 @@ class PainelGestaoGatos(BasePanel):
             messagebox.showwarning("Validação", "O campo 'Nome da Espécie' é obrigatório.", parent=self)   
             return
 
-                                                       
         data = {'nome_especie': nome, 'pais_origem': self.pais_var.get().strip(),
                 'temperamento': self.temperamento_var.get().strip()}
         try:
@@ -92,9 +89,8 @@ class PainelGestaoGatos(BasePanel):
         """(UPDATE) Valida os dados e atualiza um registro existente."""
         if self.selected_item_id is None:
             messagebox.showwarning("Atenção", "Selecione um item da tabela para atualizar.", parent=self)   
-            return   
+            return
 
-                                                       
         update_values = {'nome_especie': self.nome_var.get().strip(), 'pais_origem': self.pais_var.get().strip(),
                          'temperamento': self.temperamento_var.get().strip()}   
         try:

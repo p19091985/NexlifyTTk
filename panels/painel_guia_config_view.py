@@ -18,13 +18,11 @@ class GuiaConfigView(ttk.Frame):
         titulo = ttk.Label(main_frame, text="⚙️ Guia de Configuração e Modos de Operação", font=("-size", 18, "-weight", "bold"))
         titulo.pack(pady=(0, 20), anchor="w")
 
-                                       
         text_area = scrolledtext.ScrolledText(main_frame, wrap=tk.WORD, height=20,
                                               font=("Segoe UI", 10), bd=0, relief=tk.FLAT,
                                               padx=15, pady=15, background="white")
         text_area.pack(fill="both", expand=True, pady=10)
 
-                                         
         code_font = "Consolas" if "Consolas" in font.families() else "Courier New"
         header_font_family = "Segoe UI Semibold" if "Segoe UI Semibold" in font.families() else "Segoe UI"
         subheader_font_family = "Segoe UI Semibold" if "Segoe UI Semibold" in font.families() else "Segoe UI"
@@ -45,9 +43,6 @@ class GuiaConfigView(ttk.Frame):
         text_area.tag_configure("warning", foreground="#856404", font=("Segoe UI", 10, "bold"))
         text_area.tag_configure("info", foreground="#004085")
 
-                                  
-
-                    
         text_area.insert(tk.END, "Guia de Configuração da Aplicação\n", "h1")
         text_area.insert(tk.END,
                          "Esta aplicação foi desenvolvida com flexibilidade. As flags de configuração, localizadas no arquivo ", "body")
@@ -58,14 +53,12 @@ class GuiaConfigView(ttk.Frame):
         text_area.insert(tk.END,
                          "Ao iniciar (`run.py`), um validador verifica a coerência das flags. Combinações inválidas (como exigir autenticação sem um banco de dados) são interceptadas, exibindo um alerta claro sobre a correção necessária.\n", "body")
 
-                                
         text_area.insert(tk.END, "1. Detalhamento das Flags (`config.py`)\n", "h2")
         text_area.insert(tk.END,
                          "Para alterar o modo de operação, edite os valores (`True` ou `False`) no arquivo ", "body")
         text_area.insert(tk.END, "config.py", "code")
         text_area.insert(tk.END, " e reinicie a aplicação.\n\n", "body")
 
-                          
         text_area.insert(tk.END, "DATABASE_ENABLED\n", "flag")
         text_area.insert(tk.END, "   ↳ Controla a Conexão de Dados\n", "italic")
         text_area.insert(tk.END, "   ▪ ", "body")
@@ -77,7 +70,6 @@ class GuiaConfigView(ttk.Frame):
         text_area.insert(tk.END, "False:", "bold")
         text_area.insert(tk.END, " (Dev Frontend / Offline) Desativa a conexão. A aplicação opera sem banco, ideal para focar na interface. Funcionalidades de dados exibirão avisos.\n\n", "body")
 
-                   
         text_area.insert(tk.END, "USE_LOGIN\n", "flag")
         text_area.insert(tk.END, "   ↳ Controla a Autenticação\n", "italic")
         text_area.insert(tk.END, "   ▪ ", "body")
@@ -88,7 +80,6 @@ class GuiaConfigView(ttk.Frame):
         text_area.insert(tk.END, "False:", "bold")
         text_area.insert(tk.END, " (Dev Rápido) Pula a tela de login. O acesso é concedido automaticamente com um usuário mock de 'Administrador Global', acelerando testes internos.\n\n", "body")
 
-                                        
         text_area.insert(tk.END, "INITIALIZE_DATABASE_ON_STARTUP\n", "flag")
         text_area.insert(tk.END, "   ↳ Criação Automática do Schema (Somente SQLite)\n", "italic")
         text_area.insert(tk.END, "   ▪ ", "body")
@@ -103,7 +94,6 @@ class GuiaConfigView(ttk.Frame):
         text_area.insert(tk.END, "      ↳ ", "note")
         text_area.insert(tk.END, "Não use True em produção se o banco já contém dados valiosos!\n\n", "note")
 
-                                 
         text_area.insert(tk.END, "REDIRECT_CONSOLE_TO_LOG\n", "flag")
         text_area.insert(tk.END, "   ↳ Direcionamento de Saída (Logs)\n", "italic")
         text_area.insert(tk.END, "   ▪ ", "body")
@@ -115,10 +105,8 @@ class GuiaConfigView(ttk.Frame):
         text_area.insert(tk.END, "False:", "bold")
         text_area.insert(tk.END, " (Debug Rápido) As saídas aparecem diretamente no terminal onde a aplicação foi iniciada. Útil para visibilidade imediata.\n\n", "body")
 
-                         
         text_area.insert(tk.END, "2. Cenários de Configuração Comuns\n", "h2")
 
-                           
         text_area.insert(tk.END, "✅ Modo Produção (Ambiente Real)\n", ("h3", "success"))
         text_area.insert(tk.END, "   ↳ Objetivo: Ambiente final, seguro, com dados reais e persistentes.\n", "body")
         text_area.insert(tk.END,
@@ -128,7 +116,6 @@ class GuiaConfigView(ttk.Frame):
                          "REDIRECT_CONSOLE_TO_LOG = True", "code")
         text_area.insert(tk.END, "\n   ↳ Comportamento: Exige login, conecta ao banco real, aplica permissões, registra tudo em arquivos. Máxima segurança e funcionalidade.\n\n", "body")
 
-                              
         text_area.insert(tk.END, "✅ Modo Desenvolvimento (Backend)\n", ("h3", "info"))
         text_area.insert(tk.END, "   ↳ Objetivo: Desenvolver/testar lógica de dados, serviços, regras de negócio com acesso rápido.\n", "body")
         text_area.insert(tk.END,
@@ -138,7 +125,6 @@ class GuiaConfigView(ttk.Frame):
                          "REDIRECT_CONSOLE_TO_LOG = False", "code")
         text_area.insert(tk.END, "\n   ↳ Comportamento: Conecta ao banco (podendo recriá-lo se SQLite+True), pula login (usuário Admin mock). Ideal para testar CRUD e transações sem barreiras.\n\n", "body")
 
-                               
         text_area.insert(tk.END, "✅ Modo Desenvolvimento (Frontend/Offline)\n", ("h3", "info"))
         text_area.insert(tk.END, "   ↳ Objetivo: Focar no design visual e experiência do usuário (UI/UX) sem dependência do banco.\n", "body")
         text_area.insert(tk.END,
@@ -148,7 +134,6 @@ class GuiaConfigView(ttk.Frame):
                          "REDIRECT_CONSOLE_TO_LOG = False", "code")
         text_area.insert(tk.END, "\n   ↳ Comportamento: Operação sem banco. Login pulado. Painéis que precisam de dados exibirão avisos, mas a navegação e a interface funcionarão.\n\n", "body")
 
-                            
         text_area.insert(tk.END, "❌ Cenários Inválidos (Bloqueados Automaticamente)\n", ("h2", "danger"))
         text_area.insert(tk.END, "   ↳ O validador (`run.py`) impede o início se detectar estas combinações:\n\n", "body")
 
@@ -164,8 +149,6 @@ class GuiaConfigView(ttk.Frame):
                          "INITIALIZE_DATABASE_ON_STARTUP = True", "code")
         text_area.insert(tk.END, "\n   ↳ Motivo: Não se pode criar estruturas (`True`) se o acesso ao banco está desabilitado (`False`).\n\n", "body")
 
-                     
         text_area.insert(tk.END, "--- Fim do Guia ---\n", ("italic", "body"))
 
-                           
         text_area.config(state="disabled")

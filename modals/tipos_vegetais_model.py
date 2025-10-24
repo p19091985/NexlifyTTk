@@ -42,9 +42,8 @@ class TiposVegetaisModel:
         try:
                                                
             GenericRepository.delete_from_table("tipos_vegetais", {'id': item_id})   
-        except exc.IntegrityError:   
-                                                                             
-                                              
+        except exc.IntegrityError:
+
             raise ValueError("Não foi possível excluir. Este tipo está em uso por um ou mais vegetais.")   
         except exc.SQLAlchemyError as e:   
                                                                 

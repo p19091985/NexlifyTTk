@@ -5,11 +5,9 @@ import sys
 from typing import Dict, Tuple
 import os
 
-# --- 1. Configuração do Parser e Verificação do .ini ---
 _config_path = Path(__file__).parent / "config_settings.ini"
 _parser = configparser.ConfigParser()
 
-# Se o .ini não existir, cria um padrão com todas as chaves
 if not _config_path.is_file():
     print(f"Aviso: '{_config_path.name}' não encontrado. Criando arquivo padrão.", file=sys.stderr)
     default_ini_content = """[Settings]
@@ -28,7 +26,6 @@ log_format = [%(asctime)s] [%(name)s] [%(levelname)-8s] - %(message)s
         print(f"Erro crítico: Não foi possível criar '{_config_path}': {e}", file=sys.stderr)
         sys.exit(1)
 
-# Lê o arquivo de configuração
 try:
     _parser.read(_config_path, encoding='utf-8')
     if 'Settings' not in _parser:
@@ -38,8 +35,6 @@ except Exception as e:
     print(f"Erro ao ler .ini: {e}. Usando padrões.", file=sys.stderr)
     _parser['Settings'] = {}
 
-
-# --- 2. Funções Auxiliares para Leitura ---
 def _get_boolean_setting(key, default=False):
     try:
         return _parser.getboolean('Settings', key, fallback=default)
@@ -52,21 +47,15 @@ def _get_string_setting(key, default=""):
     except (configparser.Error, ValueError):
         return default
 
-# --- 3. Definição das Constantes da Aplicação ---
-
-# Configurações Booleanas Lidas do .ini
 DATABASE_ENABLED = _get_boolean_setting('database_enabled', default=True)
 INITIALIZE_DATABASE_ON_STARTUP = _get_boolean_setting('initialize_database_on_startup', default=True)
 USE_LOGIN = _get_boolean_setting('use_login', default=True)
 REDIRECT_CONSOLE_TO_LOG = _get_boolean_setting('redirect_console_to_log', default=False)
 ENABLE_THEME_MENU = _get_boolean_setting('enable_theme_menu', default=True)
 
-# Configurações de Login (Hardcoded como no seu exemplo)
 MAX_LOGIN_ATTEMPTS = 3
 
-# Configurações de Log Lidas do .ini
 LOG_LEVEL_STR = _get_string_setting('log_level', default="INFO").upper()
 LOG_FORMAT = _get_string_setting('log_format', default="[%(asctime)s] [%(name)s] [%(levelname)-8s] - %(message)s")
 
-# Converte a string (ex: "DEBUG") para a constante do logging (ex: logging.DEBUG)
 LOG_LEVEL = getattr(logging, LOG_LEVEL_STR, logging.INFO)

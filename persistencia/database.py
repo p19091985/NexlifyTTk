@@ -11,14 +11,11 @@ project_root = Path(__file__).parent.parent.resolve()
 CONFIG_PATH = project_root / "banco.ini"
 SCHEMA_PATH = project_root / "persistencia/sql_schema_SQLLite.sql"
 
-
-                                                                           
 def _set_sqlite_pragma(dbapi_connection, connection_record):
     """Executa o PRAGMA para ativar o suporte a chaves estrangeiras no SQLite."""
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
-
 
 class DatabaseManager:
     _engine = None
@@ -69,11 +66,8 @@ class DatabaseManager:
                     connection_url = f"sqlite:///{db_path}"
                     engine_options['connect_args'] = {'timeout': 15}
 
-                                                                           
                     engine = create_engine(connection_url, **engine_options)
 
-                                                                           
-                                                                
                     event.listen(engine, "connect", _set_sqlite_pragma)
                     cls._engine = engine
                 else:
@@ -99,10 +93,8 @@ class DatabaseManager:
                     else:
                         raise ValueError(f"Tipo de banco de dados não suportado: '{db_type}'")
 
-                                                                  
                     cls._engine = create_engine(connection_url, **engine_options)
 
-                                                                                     
                 with cls._engine.connect() as connection:
                     logging.info(f"Conexão com '{db_type}' estabelecida com sucesso.")
             except (OperationalError, SQLAlchemyError) as e:

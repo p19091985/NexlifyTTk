@@ -13,7 +13,6 @@ BLOCK_DEFINITIONS = {
     'mariadb': ['type', 'host', 'port', 'dbname', 'user', 'password']
 }
 
-
 class DatabaseConfigManager:
     BLOCK_DEFINITIONS = BLOCK_DEFINITIONS
 
@@ -85,7 +84,6 @@ class DatabaseConfigManager:
         with open(self.filepath, 'w', encoding='utf-8') as f:
             f.writelines(self.lines)
 
-
 class App(tk.Tk):
     def __init__(self, manager: DatabaseConfigManager):
         super().__init__()
@@ -93,21 +91,16 @@ class App(tk.Tk):
 
         self.title("Configurador de Conexão (banco.ini)")
 
-                                    
-                                                  
         w = 500                     
-        h = 400                    
+        h = 400
 
-                                 
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
 
-                               
         x = (sw // 2) - (w // 2)
         y = (sh // 2) - (h // 2)
 
         self.geometry(f"{w}x{h}+{x}+{y}")
-                                 
 
         self.minsize(450, 350)
 
@@ -214,7 +207,6 @@ class App(tk.Tk):
     def show_error(self, message):
         self.status_label.config(text=message, foreground="red")
         messagebox.showerror("Erro", message, parent=self)
-
 
 if __name__ == "__main__":
     try:

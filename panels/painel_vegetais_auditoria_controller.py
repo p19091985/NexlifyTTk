@@ -7,8 +7,7 @@ from .base_panel import BasePanel
 from persistencia.repository import GenericRepository   
 from persistencia.data_service import DataService   
 from modals.tipos_vegetais_controller import TiposVegetaisController   
-from .painel_vegetais_auditoria_view import VegetaisAuditoriaView   
-
+from .painel_vegetais_auditoria_view import VegetaisAuditoriaView
 
 class PainelVegetaisAuditoria(BasePanel):   
     """Controller consolidado para a gestão de Vegetais e visualização de Auditoria."""
@@ -101,10 +100,8 @@ class PainelVegetaisAuditoria(BasePanel):
                 messagebox.showerror("Erro de Dados", f"O tipo '{tipo_nome}' não foi encontrado.", parent=self)   
                 return
 
-                                                  
-            id_tipo = int(df_tipo.iloc[0]['id'])   
+            id_tipo = int(df_tipo.iloc[0]['id'])
 
-                                                           
             data = {'nome': nome, 'id_tipo': id_tipo}   
 
             if self.selected_item_id is None:
@@ -173,7 +170,6 @@ class PainelVegetaisAuditoria(BasePanel):
         if not messagebox.askyesno("Confirmar Transação", msg, icon='warning', parent=self):   
             return
 
-                                                                        
         sucesso, mensagem = DataService.reclassificar_vegetal_e_logar(vegetal_nome, novo_tipo, usuario_logado)   
 
         if sucesso:   

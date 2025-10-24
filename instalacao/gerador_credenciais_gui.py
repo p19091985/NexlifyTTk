@@ -3,8 +3,6 @@ from tkinter import ttk, scrolledtext, messagebox
 from pathlib import Path
 import sys
 
-                                          
-                              
 try:
                                                                                                  
     INSTALL_DIR = Path(__file__).parent.resolve()
@@ -20,15 +18,13 @@ except ImportError as e:
                          f"Certifique-se de que este script está na pasta 'instalacao' "  
                          f"e que a pasta 'persistencia' existe na raiz do projeto.")  
     sys.exit(1)
-                                          
 
 APP_TITLE = "Gerador de Credenciais"                           
 FONT_DEFAULT = ("Segoe UI", 10)     
 FONT_BOLD = ("Segoe UI", 10, "bold")     
 FONT_CODE = ("Courier New", 9)                                          
 FONT_H1 = ("Segoe UI", 16, "bold")     
-FONT_H2 = ("Segoe UI", 12, "bold")     
-
+FONT_H2 = ("Segoe UI", 12, "bold")
 
 class CredentialToolApp(tk.Tk):
     def __init__(self):
@@ -62,15 +58,13 @@ class CredentialToolApp(tk.Tk):
         self.style.configure('TNotebook.Tab', font=FONT_BOLD, padding=[10, 5])                       
         self.style.configure('TLabelframe.Label', font=FONT_H2, foreground="#005a9e")                    
         self.style.configure('Success.TButton', foreground="white", background="#28a745", font=FONT_BOLD)                 
-        self.style.map("Success.TButton", background=[('active', '#218838')])                 
+        self.style.map("Success.TButton", background=[('active', '#218838')])
 
-                                 
     def _create_ini_tab(self, parent):  
                                 
         main_ini_frame = ttk.Frame(parent)  
-        main_ini_frame.pack(fill='both', expand=True)   
+        main_ini_frame.pack(fill='both', expand=True)
 
-                                     
         input_frame = ttk.LabelFrame(main_ini_frame, text="Credenciais para banco.ini", padding=15)   
         input_frame.pack(fill="x", pady=(0, 10))  
         input_frame.columnconfigure(1, weight=1)  
@@ -90,9 +84,8 @@ class CredentialToolApp(tk.Tk):
 
         ttk.Button(input_frame, text="Gerar Credenciais", command=self._generate_ini_creds, style="Success.TButton").grid(row=3, column=0,                          
                                                                                            columnspan=2, pady=10,   
-                                                                                           sticky="ew", ipady=5)                        
+                                                                                           sticky="ew", ipady=5)
 
-                                   
         output_frame = ttk.LabelFrame(main_ini_frame, text="Resultado (Copie e cole no banco.ini)", padding=15)  
         output_frame.pack(fill="both", expand=True, pady=(10, 0))  
         output_frame.rowconfigure(0, weight=1)  
@@ -132,16 +125,13 @@ class CredentialToolApp(tk.Tk):
 
     def _toggle_ini_pass(self):  
         show = "" if self.ini_show_pass_var.get() else "*"  
-        self.ini_pass_entry.config(show=show)  
+        self.ini_pass_entry.config(show=show)
 
-
-                                 
     def _create_sql_tab(self, parent):   
                                 
         main_sql_frame = ttk.Frame(parent)   
-        main_sql_frame.pack(fill='both', expand=True)   
+        main_sql_frame.pack(fill='both', expand=True)
 
-                            
         input_frame = ttk.LabelFrame(main_sql_frame, text="Hash de Senha para .sql (Bcrypt)", padding=15)  
         input_frame.pack(fill="x", pady=(0, 10))  
         input_frame.columnconfigure(1, weight=1)  
@@ -156,9 +146,8 @@ class CredentialToolApp(tk.Tk):
         sql_show_pass_check.grid(row=1, column=1, padx=5, pady=(0, 10), sticky="w")                      
 
         ttk.Button(input_frame, text="Gerar Hash", command=self._generate_sql_hash, style="Success.TButton").grid(row=2, column=0, columnspan=2,                         
-                                                                                       pady=10, sticky="ew", ipady=5)                        
+                                                                                       pady=10, sticky="ew", ipady=5)
 
-                          
         output_frame = ttk.LabelFrame(main_sql_frame, text="Resultado (Copie e cole no .sql)", padding=15)  
         output_frame.pack(fill="x", pady=(10, 0))  
         output_frame.columnconfigure(0, weight=1)  
@@ -189,17 +178,15 @@ class CredentialToolApp(tk.Tk):
 
     def _toggle_sql_pass(self):  
         show = "" if self.sql_show_pass_var.get() else "*"  
-        self.sql_pass_entry.config(show=show)   
+        self.sql_pass_entry.config(show=show)
 
-                             
     def _create_tutorial_tab(self, parent):   
         parent.rowconfigure(0, weight=1)  
         parent.columnconfigure(0, weight=1)  
 
         text_area = scrolledtext.ScrolledText(parent, wrap=tk.WORD, font=FONT_DEFAULT, relief="flat", padx=10, bd=0)                    
-        text_area.grid(row=0, column=0, sticky="nsew")  
+        text_area.grid(row=0, column=0, sticky="nsew")
 
-                                                                 
         tutorial_text = """Bem-vindo ao Gerador de Credenciais! # 
 Este programa gera DOIS tipos diferentes de senhas. É essencial entender a diferença. # 
 
@@ -274,20 +261,17 @@ VALUES #
 
 Este hash é seguro. Mesmo que alguém o veja, não é possível descobrir a senha original 'senhaForte123' a partir dele. # 
 """  
-        text_area.insert("1.0", tutorial_text)  
+        text_area.insert("1.0", tutorial_text)
 
-                                                      
         text_area.tag_configure("h1", font=FONT_H1, spacing3=10, spacing1=10)  
         text_area.tag_configure("h2", font=FONT_H2, foreground="#005A9E", spacing3=5, spacing1=10)  
         text_area.tag_configure("bold", font=FONT_BOLD)  
         text_area.tag_configure("alert", font=FONT_BOLD, foreground="#800020")  
         text_area.tag_configure("code", font=FONT_CODE, background="#f0f0f0", relief="solid", borderwidth=1)  
-        text_area.tag_configure("line", overstrike=True)   
+        text_area.tag_configure("line", overstrike=True)
 
-                                                                     
         text_area.tag_configure("sql_code", font=FONT_CODE)
 
-                                                                          
         start_index = "1.0"
         while True:
             pos = text_area.search("'usuarios'", start_index, stopindex=tk.END, regexp=True)
@@ -312,12 +296,8 @@ Este hash é seguro. Mesmo que alguém o veja, não é possível descobrir a sen
             text_area.tag_add("code", pos, end_index)                              
             start_index = end_index
 
-                                                                 
+        text_area.config(state="disabled")
 
-        text_area.config(state="disabled")  
-
-
-                                 
     def _copy_to_clipboard(self, content):  
         content = content.strip()  
         if content:  
@@ -325,10 +305,8 @@ Este hash é seguro. Mesmo que alguém o veja, não é possível descobrir a sen
             self.clipboard_append(content)   
             messagebox.showinfo("Sucesso", "Conteúdo copiado para a área de transferências.", parent=self)  
         else:  
-            messagebox.showwarning("Nada a Copiar", "Nenhum conteúdo foi gerado para copiar.", parent=self)  
+            messagebox.showwarning("Nada a Copiar", "Nenhum conteúdo foi gerado para copiar.", parent=self)
 
-
-                                   
 if __name__ == "__main__":  
     app = CredentialToolApp()  
     app.mainloop()  

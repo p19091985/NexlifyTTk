@@ -2,7 +2,6 @@
 import tkinter as tk
 from tkinter import ttk
 
-
 class VegetaisAuditoriaView(ttk.Frame):
     """
     A View consolidada para a gestão de Vegetais e visualização da Auditoria.
@@ -12,13 +11,11 @@ class VegetaisAuditoriaView(ttk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-                                  
         main_frame = ttk.Frame(self, padding=15)
         main_frame.pack(fill="both", expand=True)
         main_frame.rowconfigure(1, weight=1)                                        
         main_frame.columnconfigure(0, weight=1)
 
-                                                        
         top_container = ttk.Frame(main_frame)
         top_container.grid(row=0, column=0, sticky="nsew", pady=(0, 15))
         top_container.columnconfigure(0, weight=1)
@@ -32,7 +29,6 @@ class VegetaisAuditoriaView(ttk.Frame):
         crud_buttons_frame.grid(row=0, column=1, sticky="nsew")
         self._create_crud_buttons(crud_buttons_frame)
 
-                                                                
         bottom_pane = ttk.PanedWindow(main_frame, orient=tk.HORIZONTAL)
         bottom_pane.grid(row=1, column=0, sticky="nsew")
 
@@ -44,7 +40,6 @@ class VegetaisAuditoriaView(ttk.Frame):
         bottom_pane.add(log_frame, weight=2)
         self._create_table_log(log_frame)
 
-                                        
         trans_frame = ttk.LabelFrame(main_frame, text=" 🔄 Operação Atômica (Transação) ", padding=15)
         trans_frame.grid(row=2, column=0, sticky="nsew", pady=(10, 0))
         self._create_transaction_widgets(trans_frame)
@@ -125,7 +120,6 @@ class VegetaisAuditoriaView(ttk.Frame):
         ttk.Label(parent, text="Reclassificar vegetal selecionado para o tipo:").grid(row=0, column=0, sticky="w",
                                                                                       padx=5)
 
-                                                                          
         self.trans_tipo_combo = ttk.Combobox(parent, textvariable=self.controller.novo_tipo_trans_var, state="readonly")
         self.trans_tipo_combo.grid(row=0, column=1, sticky="ew", padx=5)
 

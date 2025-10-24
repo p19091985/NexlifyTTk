@@ -31,7 +31,6 @@ except Exception as e:
     messagebox.showerror("Erro Crítico", f"Erro ao configurar caminhos: {e}")
     sys.exit(1)
 
-
 def launch_script(script_path: Path):
     """Lança um script Python como um processo separado."""
     try:
@@ -40,27 +39,21 @@ def launch_script(script_path: Path):
     except Exception as e:
         messagebox.showerror("Erro ao Lançar", f"Não foi possível iniciar o script '{script_path.name}':\n{e}")
 
-
 class LauncherApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("🚀 Lançador DevTools (Desktop) 🚀")
 
-                                    
-                                                  
         w = 450                     
-        h = 320                    
+        h = 320
 
-                                 
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()
 
-                               
         x = (sw // 2) - (w // 2)
         y = (sh // 2) - (h // 2)
 
         self.geometry(f"{w}x{h}+{x}+{y}")
-                                 
 
         self.minsize(400, 280)
 
@@ -92,7 +85,6 @@ class LauncherApp(tk.Tk):
         btn_config_py = ttk.Button(main_frame, text="⚙️ Configurar Flags (config.py)",
                                    command=lambda: launch_script(SCRIPT_CONFIG_PY))
         btn_config_py.pack(fill="x", pady=6, ipady=4)
-
 
 if __name__ == "__main__":
     app = LauncherApp()

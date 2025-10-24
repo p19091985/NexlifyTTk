@@ -13,13 +13,7 @@ class AboutDialog(tk.Toplevel):
         self.transient(parent)
         self.grab_set()
 
-                                    
-                                                                   
-                                                                     
-                                                                     
-                                                     
         self.update_idletasks()
-                                 
 
         parent_x = parent.winfo_x()
         parent_y = parent.winfo_y()
@@ -97,7 +91,6 @@ class AboutDialog(tk.Toplevel):
             "   `settings.json` e diálogo de tema avançado.\n"
             "▶ **Validação:** Verificação automática de configurações lógicas ao iniciar."
             ), wraplength=self_width-60, justify="left").pack(anchor="w")
-
 
         ok_button = ttk.Button(main_frame, text="OK", command=self.destroy, style="Success.TButton")
         ok_button.pack(pady=(10, 0))

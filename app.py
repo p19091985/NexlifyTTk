@@ -12,7 +12,6 @@ from modals.tipos_vegetais_controller import TiposVegetaisController
 from modals.about_dialog import AboutDialog
 from dialogs.advanced_theme_dialog import AdvancedThemeDialog
 
-
 class AplicacaoPrincipal(tk.Tk):
     def __init__(self, project_root: str) -> None:
         super().__init__()
@@ -240,22 +239,14 @@ class AplicacaoPrincipal(tk.Tk):
                                parent=self):
             self.destroy()
 
-                                
     def _set_initial_geometry(self) -> None:
         try:
-                       
-                                                                                 
-                                                                         
-                                                                         
+
             self.state('zoomed')
         except tk.TclError:
-                                                       
-                                                            
-                                                                    
-                                                                              
+
             w, h = self.winfo_screenwidth(), self.winfo_screenheight()
             self.geometry(f"{int(w * 0.9)}x{int(h * 0.9)}")
 
-                                                                                 
         w, h = self.winfo_screenwidth(), self.winfo_screenheight()
         self.minsize(int(w * 0.5), int(h * 0.5))

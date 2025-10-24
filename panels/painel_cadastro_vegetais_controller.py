@@ -6,8 +6,7 @@ import config
 from panels.base_panel import BasePanel   
 from persistencia.repository import GenericRepository   
 from modals.tipos_vegetais_controller import TiposVegetaisController   
-from .painel_cadastro_vegetais_view import CadastroVegetaisView   
-
+from .painel_cadastro_vegetais_view import CadastroVegetaisView
 
 class PainelCadastroVegetais(BasePanel):   
     """Controller para a tela de cadastro de vegetais."""
@@ -36,9 +35,8 @@ class PainelCadastroVegetais(BasePanel):
         """Carrega a lista de vegetais já cadastrados na Treeview."""
         try:
             for item in self.view.tree.get_children():
-                self.view.tree.delete(item)   
+                self.view.tree.delete(item)
 
-                                                                             
             df_vegetais = GenericRepository.read_vegetais_com_tipo()   
             if not df_vegetais.empty:   
                 for _, row in df_vegetais.iterrows():   
@@ -82,10 +80,8 @@ class PainelCadastroVegetais(BasePanel):
                 messagebox.showerror("Erro de Dados", f"O tipo '{tipo_nome}' não foi encontrado.", parent=self)   
                 return
 
-                                                  
-            id_tipo = int(df_tipo.iloc[0]['id'])   
+            id_tipo = int(df_tipo.iloc[0]['id'])
 
-                                                           
             data = {'nome': nome, 'id_tipo': id_tipo}   
 
             if self.selected_item_id is None:   

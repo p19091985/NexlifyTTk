@@ -9,8 +9,7 @@ import configparser
 try:
     script_dir = Path(__file__).parent.resolve()
     project_root = script_dir.parent.resolve()
-                        
-                                      
+
     config_file_path = project_root / "config_settings.ini"
     if not config_file_path.is_file():
                                                            
@@ -32,7 +31,6 @@ except Exception as e:
                          f"Erro ao localizar/criar 'config_settings.ini' na pasta raiz do projeto: {e}")
     sys.exit(1)
 
-
 class ConfigApp(tk.Tk):
     def __init__(self, config_path):
         super().__init__()
@@ -42,7 +40,6 @@ class ConfigApp(tk.Tk):
 
         self.title("Configurador Inteligente (config_settings.ini)")
 
-                                           
         w = 600
         h = 650
         sw = self.winfo_screenwidth()
@@ -58,7 +55,6 @@ class ConfigApp(tk.Tk):
         self.redirect_log_var = tk.BooleanVar()
         self.enable_theme_var = tk.BooleanVar()
 
-                                                           
         self.vars_map = {
             "database_enabled": self.db_enabled_var,
             "initialize_database_on_startup": self.init_db_var,
@@ -67,10 +63,7 @@ class ConfigApp(tk.Tk):
             "enable_theme_menu": self.enable_theme_var
         }
 
-                          
-                                          
         self.original_save_button_text = "Salvar Configurações"
-                                 
 
         self._setup_styles()
         self._create_widgets()
@@ -170,7 +163,6 @@ class ConfigApp(tk.Tk):
                 style="Warning.TLabel"
             )
 
-                              
     def _load_initial_values(self):
         """Lê o config_settings.ini e define o estado inicial."""
         try:
@@ -193,11 +185,9 @@ class ConfigApp(tk.Tk):
 
         self._on_db_setting_change()
 
-                                              
     def _save_settings(self):
         """Salva as novas configurações no arquivo config_settings.ini."""
 
-                                                      
         self.save_button.config(state="disabled", text="Salvando...")
         self._update_status("Salvando configurações...", "blue")
         self.update_idletasks()                          
@@ -207,24 +197,19 @@ class ConfigApp(tk.Tk):
             backup_path = self.config_path.with_suffix(".ini.bak")
             shutil.copy2(self.config_path, backup_path)
 
-                                                   
             if 'Settings' not in self.parser:
                 self.parser['Settings'] = {}
 
-                                                    
             for key, tk_var in self.vars_map.items():
                                                                               
                 self.parser.set('Settings', key, str(tk_var.get()))
 
-                                                            
             with open(self.config_path, 'w', encoding='utf-8') as configfile:
                 self.parser.write(configfile)
 
-                                    
             self._update_status(f"Salvo! Backup: {backup_path.name}", "green")
             self.save_button.config(text="✔ Salvo com Sucesso!")
 
-                                           
             self.after(2000, self._revert_save_button)
 
         except Exception as e:
@@ -233,7 +218,6 @@ class ConfigApp(tk.Tk):
                                                               
             self._revert_save_button()
 
-                                    
     def _revert_save_button(self):
         """Restaura o botão de salvar ao seu estado original."""
         try:
@@ -244,12 +228,9 @@ class ConfigApp(tk.Tk):
                                                            
             pass
 
-                                
-
     def _update_status(self, message, color):
         """Atualiza o label de status principal."""
         self.status_label.config(text=message, foreground=color)
-
 
 if __name__ == "__main__":
     app = ConfigApp(config_file_path)                           

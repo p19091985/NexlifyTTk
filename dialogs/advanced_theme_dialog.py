@@ -3,9 +3,6 @@ from tkinter import ttk, colorchooser, font, messagebox
 import os
 from typing import Dict, Any, MutableMapping
 
-# --- 1. Dicionário Completo de Temas ---
-# Todos os temas do seu editor web, mapeados para a
-# estrutura do settings.json (custom_colors, font_family, etc.)
 PRESET_THEMES = {
     "☀️ Temas Claros": {
         "Padrão Streamlit": {
@@ -227,9 +224,6 @@ PRESET_THEMES = {
     }
 }
 
-
-# --- 2. Funções Auxiliares ---
-
 def deep_merge(source, destination):
     """Faz um merge recursivo de dicionários."""
     for key, value in source.items():
@@ -239,7 +233,6 @@ def deep_merge(source, destination):
         else:
             destination[key] = value
     return destination
-
 
 class ScrolledFrame(ttk.Frame):
     """Um frame com uma barra de rolagem vertical que funciona com a roda do mouse."""
@@ -259,9 +252,9 @@ class ScrolledFrame(ttk.Frame):
         self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
-        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel_windows)  # Windows
-        self.canvas.bind_all("<Button-4>", self._on_mousewheel_linux)  # Linux (scroll up)
-        self.canvas.bind_all("<Button-5>", self._on_mousewheel_linux)  # Linux (scroll down)
+        self.canvas.bind_all("<MouseWheel>", self._on_mousewheel_windows)           
+        self.canvas.bind_all("<Button-4>", self._on_mousewheel_linux)                     
+        self.canvas.bind_all("<Button-5>", self._on_mousewheel_linux)                       
 
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
@@ -274,7 +267,6 @@ class ScrolledFrame(ttk.Frame):
             self.canvas.yview_scroll(-1, "units")
         elif event.num == 5:
             self.canvas.yview_scroll(1, "units")
-
 
 class AdvancedThemeDialog(tk.Toplevel):
     """
@@ -307,7 +299,6 @@ class AdvancedThemeDialog(tk.Toplevel):
         self.settings_manager = settings_manager
         self.current_settings = self.settings_manager.load_settings()
 
-        # --- Variáveis de Estado (Originais) ---
         self.font_family_var = tk.StringVar()
         self.font_size_var = tk.IntVar()
         self.border_width_var = tk.IntVar()
@@ -316,7 +307,6 @@ class AdvancedThemeDialog(tk.Toplevel):
         self.preview_check_var = tk.BooleanVar(value=False)
         self.color_vars = {}
 
-        # --- Variáveis de Estado (Novas para a Galeria) ---
         self.theme_category_var = tk.StringVar()
         self.theme_name_var = tk.StringVar()
 
@@ -333,7 +323,6 @@ class AdvancedThemeDialog(tk.Toplevel):
         for name in default_colors.keys():
             self.color_vars[name] = tk.StringVar()
 
-        # Carrega os valores iniciais do settings.json para as vars
         self._populate_vars_from_settings()
 
         self._create_widgets()
@@ -341,7 +330,6 @@ class AdvancedThemeDialog(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", self._on_cancel)
         self._update_preview()
 
-        # Seleciona a primeira categoria por padrão
         first_category = list(PRESET_THEMES.keys())[0]
         self.theme_category_var.set(first_category)
         self._on_category_select()
@@ -377,7 +365,6 @@ class AdvancedThemeDialog(tk.Toplevel):
         settings_container = ttk.Frame(paned, padding=5)
         paned.add(settings_container, weight=1)
 
-        # --- INJEÇÃO DA GALERIA DE TEMAS ---
         gallery_frame = ttk.LabelFrame(settings_container, text="🎨 Galeria de Temas Predefinidos", padding=15)
         gallery_frame.pack(fill="x", pady=(0, 10))
         gallery_frame.columnconfigure(1, weight=1)
@@ -402,7 +389,6 @@ class AdvancedThemeDialog(tk.Toplevel):
         ).grid(row=2, column=0, columnspan=2, sticky="ew", padx=5, pady=(5, 0))
 
         ttk.Separator(settings_container, orient="horizontal").pack(fill='x', pady=10)
-        # --- FIM DA INJEÇÃO ---
 
         notebook = ttk.Notebook(settings_container)
         notebook.pack(fill="both", expand=True)
@@ -414,8 +400,6 @@ class AdvancedThemeDialog(tk.Toplevel):
         preview_container = ttk.LabelFrame(paned, text=" Pré-visualização em Tempo Real ", padding=15)
         paned.add(preview_container, weight=2)
         self._create_preview_widgets(preview_container)
-
-    # --- Funções da Galeria (Novas) ---
 
     def _on_category_select(self, event=None):
         """Atualiza o combobox de temas quando uma categoria é selecionada."""
@@ -438,16 +422,13 @@ class AdvancedThemeDialog(tk.Toplevel):
 
         theme_settings = PRESET_THEMES[category][theme_name]
 
-        # Faz um merge para não perder chaves desconhecidas (ex: "theme", "focus_ring")
         new_settings = self.settings_manager.load_settings()
         new_settings = deep_merge(theme_settings, new_settings)
 
         self.current_settings = new_settings
-        self._populate_vars_from_settings()  # Atualiza todas as TK Vars
-        self._update_preview()  # Atualiza a UI
+        self._populate_vars_from_settings()                             
+        self._update_preview()                 
         messagebox.showinfo("Tema Aplicado", f"O tema '{theme_name}' foi carregado no editor.", parent=self)
-
-    # --- Funções Originais (Sem modificação de propósito) ---
 
     def _create_preview_widgets(self, parent):
         f_buttons = ttk.Frame(parent)
@@ -527,7 +508,7 @@ class AdvancedThemeDialog(tk.Toplevel):
         ttk.Label(tab, text="Tamanho da Fonte Base:").pack(anchor='w', pady=(10, 0))
         font_size_spin = ttk.Spinbox(tab, from_=8, to=16, textvariable=self.font_size_var, command=self._update_preview)
         font_size_spin.pack(fill='x', pady=5)
-        self.font_size_var.trace_add('write', self._update_preview)  # Para digitação
+        self.font_size_var.trace_add('write', self._update_preview)                  
 
     def _create_fine_tuning_tab(self, notebook):
         """Cria a aba de ajustes finos para bordas."""
@@ -570,10 +551,9 @@ class AdvancedThemeDialog(tk.Toplevel):
             "font_size": self.font_size_var.get(),
             "custom_colors": {name: var.get() for name, var in self.color_vars.items()}
         }
-        # Aplica o preview no estilo da *aplicação principal*
+                                                             
         self.app._apply_theme_settings(self.app.style, preview_settings)
 
-        # Define os estilos dos botões de preview (que são filhos deste dialog)
         self._apply_preview_styles()
 
         try:
@@ -587,11 +567,8 @@ class AdvancedThemeDialog(tk.Toplevel):
 
     def _apply_preview_styles(self):
         """Aplica os estilos de preview nos botões dentro do Toplevel."""
-        # Esta função é necessária porque o preview está dentro do Toplevel,
-        # mas os estilos são aplicados no self.app.style (o root).
-        # Precisamos garantir que os estilos deste Toplevel também sejam atualizados.
 
-        style = self.app.style  # Usa o style da app principal
+        style = self.app.style                                
 
         colors = {name: var.get() for name, var in self.color_vars.items()}
         button_styles = {
@@ -608,14 +585,14 @@ class AdvancedThemeDialog(tk.Toplevel):
                 style.configure(style_name, foreground=fg, background=colors_dict['background'])
                 style.map(style_name, background=[('active', colors_dict['active'])])
             except tk.TclError:
-                pass  # Ignora cores inválidas
+                pass                          
 
         border_w = self.border_width_var.get()
         style.configure('TButton', borderwidth=border_w)
         style.configure('TEntry', borderwidth=border_w)
 
     def _save_and_close(self):
-        # Carrega o arquivo mais recente para preservar chaves desconhecidas
+                                                                            
         latest_settings = self.settings_manager.load_settings()
 
         new_settings = {
@@ -626,11 +603,10 @@ class AdvancedThemeDialog(tk.Toplevel):
             "border_radius": self.border_radius_var.get(),
         }
 
-        # Faz o merge para preservar chaves como 'theme' e 'focus_ring'
         final_settings = deep_merge(new_settings, latest_settings)
 
         self.settings_manager.save_settings(final_settings)
-        # Aplica as configurações salvas permanentemente
+                                                        
         self.app._apply_theme_settings(self.app.style, final_settings)
         messagebox.showinfo("Configurações Salvas", "O novo tema e as personalizações foram aplicados.", parent=self)
         self.destroy()
@@ -652,7 +628,7 @@ class AdvancedThemeDialog(tk.Toplevel):
                 return
 
             default_settings = self.settings_manager.load_settings()
-            # Preserva o nome do tema original (ex: 'lumen'), mas reseta o resto
+                                                                                
             default_settings['theme'] = self.current_settings.get('theme', 'lumen')
             self.settings_manager.save_settings(default_settings)
 

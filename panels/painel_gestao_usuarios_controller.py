@@ -7,8 +7,6 @@ from persistencia.repository import GenericRepository
 from persistencia.auth import hash_password                              
 from .painel_gestao_usuarios_view import GestaoUsuariosView
 
-                                                     
-                                                             
 PERFIS_DE_ACESSO = [
     'Administrador Global',
     'Diretor de Operações',
@@ -43,7 +41,6 @@ class PainelGestaoUsuariosController(BasePanel):
                        font=("-size", 12, "-weight", "bold")).pack(pady=50)
             return
 
-                                             
         self.view = GestaoUsuariosView(self, controller=self, perfis_acesso=PERFIS_DE_ACESSO)
         self.view.pack(fill="both", expand=True)
         self.carregar_dados()
@@ -55,10 +52,8 @@ class PainelGestaoUsuariosController(BasePanel):
             for item in self.view.tree.get_children():
                 self.view.tree.delete(item)
 
-                                                                 
             df_users = GenericRepository.read_table_to_dataframe("usuarios")
 
-                                                      
             if 'senha_criptografada' in df_users.columns:
                 df_users = df_users.drop(columns=['senha_criptografada'])
 
@@ -84,14 +79,12 @@ class PainelGestaoUsuariosController(BasePanel):
 
         item_values = self.view.tree.item(selected_items[0], "values")
 
-                                                          
         self.selected_item_login = item_values[0]                
         self.login_var.set(item_values[0])
         self.nome_completo_var.set(item_values[1])                
         self.tipo_acesso_var.set(item_values[2])              
-        self.senha_var.set("")                                    
+        self.senha_var.set("")
 
-                                                    
         self.view.login_entry.config(state='disabled')
         self.view.senha_entry.focus()                                  
 
@@ -103,10 +96,8 @@ class PainelGestaoUsuariosController(BasePanel):
         self.tipo_acesso_var.set("")                 
         self.senha_var.set("")
 
-                                                
         self.view.login_entry.config(state='normal')
 
-                                    
         if self.view.tree.selection():
             self.view.tree.selection_remove(self.view.tree.selection()[0])
 
@@ -139,7 +130,6 @@ class PainelGestaoUsuariosController(BasePanel):
                 GenericRepository.update_table("usuarios", update_values, where_conditions)
                 messagebox.showinfo("Sucesso", f"Usuário '{login}' atualizado com sucesso!", parent=self)
 
-                                                   
             else:
                 if not nova_senha:
                     messagebox.showwarning("Validação", "A Senha é obrigatória para novos usuários.", parent=self)
@@ -163,7 +153,6 @@ class PainelGestaoUsuariosController(BasePanel):
                  messagebox.showerror("Erro de Inserção", f"O login '{login}' já existe. Escolha outro.", parent=self)
             else:
                 messagebox.showerror("Erro ao Salvar", f"Não foi possível salvar o usuário: {e}", parent=self)
-
 
     def excluir_usuario(self):
         """(DELETE) Exclui o usuário selecionado."""
