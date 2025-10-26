@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS log_alteracoes;
-DROP TABLE IF EXISTS vegetais;
-DROP TABLE IF EXISTS tipos_vegetais;
 DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS especie_gatos;
 CREATE TABLE usuarios (
@@ -11,27 +8,6 @@ CREATE TABLE usuarios (
         'Administrador Global', 'Diretor de Operações', 'Gerente de TI',
         'Supervisor de Produção', 'Operador de Linha', 'Analista de Dados', 'Auditor Externo'
     ))
-);
-CREATE TABLE tipos_vegetais (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT NOT NULL UNIQUE
-);
-CREATE TABLE vegetais (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT NOT NULL,
-    id_tipo INTEGER,
-    FOREIGN KEY (id_tipo) REFERENCES tipos_vegetais (id)
-        ON DELETE RESTRICT
-        ON UPDATE CASCADE
-);
-CREATE TABLE log_alteracoes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp DATETIME NOT NULL,
-    login_usuario TEXT,
-    acao TEXT,
-    FOREIGN KEY (login_usuario) REFERENCES usuarios (login_usuario)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE
 );
 CREATE TABLE especie_gatos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,13 +32,6 @@ INSERT INTO usuarios (login_usuario, senha_criptografada, nome_completo, tipo_ac
 ('joao.operador', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'João Operador', 'Operador de Linha'),
 ('lara.admin', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Lara Administradora', 'Administrador Global'),
 ('mateus.auditor', '$2b$12$TgcQ51usbRmBjfGtris6eueXiKMbJpfSpsFpuyM4QE/qwqmcEX9By', 'Mateus Auditor', 'Auditor Externo');
-INSERT INTO tipos_vegetais (nome) VALUES ('Raízes e Tubérculos'), ('Folhas'), ('Flores e Inflorescências'), ('Frutos'), ('Legumes');
-INSERT INTO vegetais (nome, id_tipo) VALUES
-('Abóbora', 4), ('Abobrinha', 4), ('Agrião', 2), ('Aipim', 1), ('Alface', 2), ('Alho', 1), ('Almeirão', 2),
-('Batata-doce', 1), ('Batata', 1), ('Berinjela', 4), ('Beterraba', 1), ('Brócolis', 3), ('Cebola', 1),
-('Cenoura', 1), ('Chuchu', 4), ('Coentro', 2), ('Couve', 2), ('Couve-flor', 3), ('Ervilha', 5), ('Espinafre', 2),
-('Feijão-vagem', 5), ('Inhame', 1), ('Jiló', 4), ('Maxixe', 4), ('Milho', 4), ('Pepino', 4), ('Pimentão', 4),
-('Quiabo', 4), ('Rabanete', 1), ('Repolho', 2);
 INSERT INTO especie_gatos (nome_especie, pais_origem, temperamento) VALUES
 ('Siamês', 'Tailândia', 'Inteligente e Afetuoso'),
 ('Persa', 'Irã (Pérsia)', 'Calmo e Dócil'),
