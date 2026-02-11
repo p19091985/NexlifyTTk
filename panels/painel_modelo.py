@@ -10,10 +10,8 @@ class PainelModelo(BasePanel):
     """
     PANEL_NAME = "Painel Modelo"
     PANEL_ICON = "📋"
-    ALLOWED_ACCESS = []                    
 
     def __init__(self, parent, app_controller, **kwargs):
-                                                                                   
         super().__init__(parent, app_controller, **kwargs)
 
     def create_widgets(self):
@@ -40,7 +38,7 @@ class PainelModelo(BasePanel):
             "Passos Sugeridos:\n"
             "1. Copie este arquivo (`painel_modelo.py`) para `painel_meu_painel.py`.\n\n"
             "2. Renomeie a classe para `PainelMeuPainel`.\n\n"
-            "3. Defina `PANEL_NAME`, `PANEL_ICON`, `ALLOWED_ACCESS`.\n\n"
+            "3. Defina `PANEL_NAME` e `PANEL_ICON`.\n\n"
             "4. No `__init__`: inicialize `tk.StringVar`s e guarde refs de widgets (ex: `self.tree = None`).\n\n"
             "5. No `create_widgets`: Configure o layout principal e chame métodos auxiliares\n"
             "   para construir a UI (ex: `self._build_form(frame)`, `self._build_table(frame)`).\n\n"
@@ -62,13 +60,9 @@ class PainelModelo(BasePanel):
 
     def _on_test_button_click(self):
         """ Lógica de exemplo chamada pelo botão 'Testar Interação'. """
-
-        usuario_atual = self.app.get_current_user()
-
         messagebox.showinfo(
             "Interação Funcionou!",
-            f"Olá, {usuario_atual['name']}!\n\n"
             f"O painel '{self.PANEL_NAME}' está funcionando corretamente.\n"
             "Ele pode acessar dados da aplicação principal.",
-            parent=self                                                     
+            parent=self
         )

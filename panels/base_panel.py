@@ -4,7 +4,6 @@ from tkinter import ttk
 class BasePanel(ttk.Frame):
     PANEL_NAME = "Nome do Painel"
     PANEL_ICON = "❓"
-    ALLOWED_ACCESS = []
 
     def __init__(self, parent, app_controller, **kwargs):
         super().__init__(parent, **kwargs)

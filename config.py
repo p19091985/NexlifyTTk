@@ -2,8 +2,6 @@ import configparser
 from pathlib import Path
 import logging
 import sys
-from typing import Dict, Tuple
-import os
 
 _config_path = Path(__file__).parent / "config_settings.ini"
 _parser = configparser.ConfigParser()
@@ -11,9 +9,6 @@ _parser = configparser.ConfigParser()
 if not _config_path.is_file():
     print(f"Aviso: '{_config_path.name}' não encontrado. Criando arquivo padrão.", file=sys.stderr)
     default_ini_content = """[Settings]
-database_enabled = True
-initialize_database_on_startup = True
-use_login = True
 redirect_console_to_log = False
 log_level = DEBUG
 log_format = [%(asctime)s] [%(name)s] [%(levelname)-8s] - %(message)s
@@ -46,12 +41,7 @@ def _get_string_setting(key, default=""):
     except (configparser.Error, ValueError):
         return default
 
-DATABASE_ENABLED = _get_boolean_setting('database_enabled', default=True)
-INITIALIZE_DATABASE_ON_STARTUP = _get_boolean_setting('initialize_database_on_startup', default=True)
-USE_LOGIN = _get_boolean_setting('use_login', default=True)
 REDIRECT_CONSOLE_TO_LOG = _get_boolean_setting('redirect_console_to_log', default=False)
-
-MAX_LOGIN_ATTEMPTS = 3
 
 LOG_LEVEL_STR = _get_string_setting('log_level', default="INFO").upper()
 LOG_FORMAT = _get_string_setting('log_format', default="[%(asctime)s] [%(name)s] [%(levelname)-8s] - %(message)s")

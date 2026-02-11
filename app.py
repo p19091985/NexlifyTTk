@@ -3,12 +3,9 @@ from tkinter import ttk, messagebox, font
 import logging
 from typing import Dict, Any
 import platform
-import config
 from panels.base_panel import BasePanel
 from panels import ALL_PANELS
 from settings_manager import SettingsManager
-from dialogs.login_ui import LoginDialog
-from modals.tipos_vegetais_manager import TiposVegetaisManagerDialog
 from modals.about_dialog import AboutDialog
 
 class AplicacaoPrincipal(tk.Tk):
@@ -26,22 +23,7 @@ class AplicacaoPrincipal(tk.Tk):
         self.logger = logging.getLogger("main_app")
         self.project_root = project_root
 
-        self.current_user = None
-
-        if config.USE_LOGIN:
-            self.logger.info("Sistema de login ATIVO.")
-            user_info = self._run_login_process()
-
-            if not user_info or user_info in ["max_attempts_failed", "connection_error"]:
-                self.logger.warning("Falha no login ou cancelado. Encerrando aplicação.")
-                self.destroy()
-                return
-        else:
-            self.logger.warning("Sistema de login DESABILITADO. Usando usuário de desenvolvimento.")
-            user_info = {"name": "Usuário de Desenvolvimento", "access_level": "Administrador Global",
-                         "username": "dev_user"}
-
-        self._initialize_session_for_user(user_info)
+        self._initialize_ui()
 
     def _configure_styles(self):
         """Configurações básicas do estilo ttk."""
@@ -108,12 +90,8 @@ class AplicacaoPrincipal(tk.Tk):
         style_obj.configure('Sidebar.TButton', background='#f0f0f0', borderwidth=0, anchor='w')
         style_obj.map('Sidebar.TButton', background=[('active', '#dcdcdc')])
 
-    def _initialize_session_for_user(self, user_info: Dict[str, Any]):
-        """Limpa a UI antiga (se houver) e constrói a nova com base no usuário."""
-        for widget in self.winfo_children():
-            widget.destroy()
-
-        self.current_user = user_info
+    def _initialize_ui(self):
+        """Constrói a interface principal da aplicação."""
         self.title("Painel de Controle nexlifyttk")
         self._set_initial_geometry()
 
@@ -131,34 +109,11 @@ class AplicacaoPrincipal(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self._confirm_exit)
         self.deiconify()
 
-    def _run_login_process(self) -> dict | str | None:
-        """Abre o diálogo de login e aguarda o resultado."""
-        login_dialog = LoginDialog(self)
-        self.wait_window(login_dialog)
-        return login_dialog.user_info
-
-    def get_current_user(self) -> dict:
-        """Método público para outros painéis acessarem dados do usuário logado."""
-        return self.current_user
-
     def _setup_ui(self) -> None:
         """Cria a estrutura da UI principal (sidebar e área de conteúdo)."""
         self.sidebar_frame = ttk.Frame(self, width=250, style='Sidebar.TFrame')
         self.sidebar_frame.pack(side="left", fill="y", padx=(5, 0), pady=5)
         self.sidebar_frame.pack_propagate(False)
-
-        user_info_frame = ttk.Frame(self.sidebar_frame, style='Sidebar.TFrame')
-        user_info_frame.pack(fill="x", pady=10, padx=10)
-
-        ttk.Label(user_info_frame, text=f"Usuário: {self.current_user['name']}", anchor="w",
-                  style='Sidebar.TLabel').pack(fill="x")
-        ttk.Label(user_info_frame, text=f"Perfil: {self.current_user['access_level']}", anchor="w",
-                  style='Sidebar.TLabel').pack(fill="x")
-
-        if config.USE_LOGIN:
-            ttk.Button(user_info_frame, text="Trocar de Usuário", command=self._switch_user).pack(fill="x", pady=(5, 0))
-
-        ttk.Separator(self.sidebar_frame, orient="horizontal").pack(fill='x', pady=5, padx=10)
 
         self.content_frame = ttk.Frame(self)
         self.content_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
@@ -170,22 +125,19 @@ class AplicacaoPrincipal(tk.Tk):
         logout_btn.pack(side="bottom", fill="x", pady=10, padx=10)
 
     def _load_and_create_panels(self):
-        """Carrega painéis da lista ALL_PANELS verificando permissões."""
-        user_access_level = self.current_user.get('access_level', 'Desenvolvedor')
-
+        """Carrega painéis da lista ALL_PANELS."""
         for PanelClass in ALL_PANELS:
             try:
-                if not PanelClass.ALLOWED_ACCESS or user_access_level in PanelClass.ALLOWED_ACCESS:
-                    name, icon = PanelClass.PANEL_NAME, PanelClass.PANEL_ICON
-                    panel_instance = PanelClass(self.content_frame, self)
-                    self.panels[name] = panel_instance
+                name, icon = PanelClass.PANEL_NAME, PanelClass.PANEL_ICON
+                panel_instance = PanelClass(self.content_frame, self)
+                self.panels[name] = panel_instance
 
-                    btn = ttk.Button(self.sidebar_frame, text=f" {icon} {name}", compound="left",
-                                     command=lambda n=name: self.switch_panel_by_name(n),
-                                     style="Sidebar.TButton")
+                btn = ttk.Button(self.sidebar_frame, text=f" {icon} {name}", compound="left",
+                                 command=lambda n=name: self.switch_panel_by_name(n),
+                                 style="Sidebar.TButton")
 
-                    btn.pack(fill="x", pady=2, padx=10)
-                    self.sidebar_buttons[name] = btn
+                btn.pack(fill="x", pady=2, padx=10)
+                self.sidebar_buttons[name] = btn
             except Exception as e:
                 messagebox.showerror("Erro de Carregamento de Painel",
                                      f"Erro fatal ao carregar o painel '{PanelClass.__name__}':\n\n{e}", parent=self)
@@ -205,17 +157,13 @@ class AplicacaoPrincipal(tk.Tk):
         logging.debug(f"Trocado para o painel: {panel_name}")
 
     def _create_menubar(self) -> tk.Menu:
-        """Cria a barra de menus superior (sem a opção de personalizar tema)."""
+        """Cria a barra de menus superior."""
         menubar = tk.Menu(self)
 
         paineis_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Painéis", menu=paineis_menu)
         for name in self.sidebar_buttons.keys():
             paineis_menu.add_command(label=name, command=lambda n=name: self.switch_panel_by_name(n))
-
-        cadastros_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Cadastros Auxiliares", menu=cadastros_menu)
-        cadastros_menu.add_command(label="Tipos de Vegetais...", command=self._open_tipos_vegetais_modal)
 
         config_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Configurações", menu=config_menu)
@@ -230,37 +178,6 @@ class AplicacaoPrincipal(tk.Tk):
         menubar.add_command(label="Sair", command=self._confirm_exit)
         return menubar
 
-    def _switch_user(self):
-        """Reinicia a aplicação para permitir a troca de usuário."""
-        self.logger.info(f"Usuário '{self.current_user['username']}' iniciou a troca de sessão.")
-        self.withdraw()
-
-        new_user_info = self._run_login_process()
-        if new_user_info and new_user_info not in ["max_attempts_failed", "connection_error"]:
-            self.logger.info(f"Login bem-sucedido para '{new_user_info['username']}'. Reconstruindo UI.")
-            self._initialize_session_for_user(new_user_info)
-        else:
-            self.logger.warning("Troca de usuário falhou ou foi cancelada. Fechando a aplicação.")
-            self.destroy()
-
-    def _open_tipos_vegetais_modal(self):
-        """Abre o diálogo unificado para gerenciar tipos de vegetais."""
-        if not config.DATABASE_ENABLED:
-            messagebox.showwarning("Funcionalidade Indisponível",
-                                 "O banco de dados está desabilitado.", parent=self)
-            return
-        try:
-            callback = None
-            current_panel = self.panels.get(self.current_panel_name)
-            if current_panel and hasattr(current_panel, '_carregar_tipos_vegetais'):
-                callback = getattr(current_panel, '_carregar_tipos_vegetais')
-
-            dialog = TiposVegetaisManagerDialog(self, on_close_callback=callback)
-            dialog.wait_window()
-        except Exception as e:
-            messagebox.showerror("Erro Crítico", f"Não foi possível abrir a janela de gestão: {e}", parent=self)
-            logging.critical(f"Falha ao abrir TiposVegetaisManagerDialog: {e}", exc_info=True)
-
     def _show_about_dialog(self):
         """Abre o diálogo 'Sobre'."""
         AboutDialog(self)
@@ -273,15 +190,15 @@ class AplicacaoPrincipal(tk.Tk):
 
     def _set_initial_geometry(self) -> None:
         system_name = platform.system()
+        w = self.winfo_screenwidth()
+        h = self.winfo_screenheight()
 
         if system_name == "Windows":
             try:
                 self.state('zoomed')
             except tk.TclError:
-                w, h = self.winfo_screenwidth(), self.winfo_screenheight()
                 self.geometry(f"{int(w * 0.9)}x{int(h * 0.9)}")
         else:
-            w, h = self.winfo_screenwidth(), self.winfo_screenheight()
             self.geometry(f"{int(w * 0.9)}x{int(h * 0.9)}")
 
         self.update_idletasks()

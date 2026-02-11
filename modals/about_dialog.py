@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-import webbrowser
 
 class AboutDialog(tk.Toplevel):
     """
@@ -9,7 +8,7 @@ class AboutDialog(tk.Toplevel):
 
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Sobre o Sistema (v1.0.0)")
+        self.title("Sobre o nexlifyttk (v1.0.0)")
 
         self.transient(parent)
         self.grab_set()
@@ -41,9 +40,8 @@ class AboutDialog(tk.Toplevel):
         title_frame = ttk.Frame(header_frame)
         title_frame.pack(side="left")
 
-        ttk.Label(title_frame, text="Sistema de Demonstração Tkinter/ttk", font=("-size", 16, "-weight", "bold")).pack(
-            anchor="w")
-        ttk.Label(title_frame, text="Versão 1.0.0 - Arquitetura de Painéis Unificados", font=("-size", 9)).pack(anchor="w")
+        ttk.Label(title_frame, text="nexlifyttk", font=("-size", 16, "-weight", "bold")).pack(anchor="w")
+        ttk.Label(title_frame, text="Versão 1.0.0 — Template Desktop Python com Painéis", font=("-size", 9)).pack(anchor="w")
 
         ttk.Separator(main_frame, orient="horizontal").pack(fill="x", pady=(0, 15))
 
@@ -53,46 +51,45 @@ class AboutDialog(tk.Toplevel):
         purpose_tab = ttk.Frame(notebook, padding=10)
         notebook.add(purpose_tab, text=" Propósito ")
         ttk.Label(purpose_tab, text=(
-            "Esta aplicação é um boilerplate de referência, construído com Tkinter e o estilo ttk.\n"
-            "Seu objetivo principal é demonstrar uma arquitetura de software desacoplada, "
-            "aplicada a um ambiente desktop Python.\n\n"
-            "O foco do projeto é a clareza da separação de camadas, a manutenibilidade e a extensibilidade "
-            "que essa estrutura proporciona."
+            "O nexlifyttk é um boilerplate/template de referência para aplicações\n"
+            "desktop Python, construído com Tkinter e o estilo ttk.\n\n"
+            "Seu objetivo é fornecer uma base limpa e extensível para\n"
+            "o desenvolvimento de aplicações desktop, com foco na clareza\n"
+            "da organização do código e na facilidade de adicionar novas\n"
+            "funcionalidades através do sistema de painéis."
         ), wraplength=self_width - 60, justify="left").pack(anchor="w")
 
         arch_tab = ttk.Frame(notebook, padding=10)
         notebook.add(arch_tab, text=" Arquitetura ")
         ttk.Label(arch_tab, text=(
-            "O sistema é estruturado em camadas bem definidas:\n\n"
-            "■ UI (Interface): Tkinter/ttk (Views, Dialogs, Modals)\n"
-            "   ↳ Responsável pela apresentação visual e interação primária.\n\n"
-            "■ Camada de Aplicação (`panels`):\n"
-            "   ↳ Segue um padrão de 'Painel Unificado'. Cada painel (ex: `PainelGestaoGatos`)\n"
-            "      é responsável por sua própria lógica (Controller) e pela criação\n"
-            "      de seus widgets (View), simplificando a estrutura.\n\n"
-            "■ Persistência (`persistencia`):\n"
-            "   ↳ Abstrai o acesso aos dados, garantindo independência do banco.\n"
-            "   ↳ `Repository`: CRUD genérico via SQLAlchemy Core.\n"
-            "   ↳ `Database`: Gerencia a conexão (lê `banco.ini`).\n"
-            "   ↳ `Auth/Security`: Cuida da autenticação (bcrypt) e criptografia (Fernet).\n\n"
-            "■ Configuração (`config_settings.ini`, `banco.ini`, `settings.json`):\n"
-            "   ↳ Permite flexibilidade em tempo de execução e deployment."
+            "O sistema é estruturado em camadas simples:\n\n"
+            "■ Ponto de Entrada (run.py):\n"
+            "   ↳ Inicializa loggers e lança a aplicação.\n\n"
+            "■ Controlador Principal (app.py):\n"
+            "   ↳ Janela raiz, sidebar de navegação, menus,\n"
+            "      aplicação de tema visual.\n\n"
+            "■ Painéis (panels/):\n"
+            "   ↳ Cada painel combina View + Controller em uma\n"
+            "      classe que herda de BasePanel.\n\n"
+            "■ Configuração (config_settings.ini, settings.json):\n"
+            "   ↳ Comportamento e aparência personalizáveis.\n\n"
+            "■ Logging (persistencia/logger.py):\n"
+            "   ↳ Sistema de log rotativo com categorias separadas."
         ), wraplength=self_width - 60, justify="left").pack(anchor="w")
 
         features_tab = ttk.Frame(notebook, padding=10)
         notebook.add(features_tab, text=" Destaques ")
         ttk.Label(features_tab, text=(
             "Pontos Notáveis:\n\n"
-            "▶ **Multi-Banco:** Suporte nativo a SQLite, PostgreSQL, MySQL/MariaDB\n"
-            "   e SQL Server, configurável via `banco.ini`.\n"
-            "▶ **Segurança:** Senhas de usuário hasheadas (bcrypt) e credenciais\n"
-            "   de banco criptografadas (Fernet).\n"
-            "▶ **Desacoplamento:** Clara separação entre UI, lógica e dados.\n"
-            "▶ **Configurabilidade:** Flags em `config_settings.ini` para modos de operação\n"
-            "   (Produção, Dev Backend, Dev Frontend Offline).\n"
-            "▶ **Estilo Personalizável:** Configuração de fontes e cores via\n"
-            "   `settings.json`.\n"
-            "▶ **Validação:** Verificação automática de configurações lógicas ao iniciar."
+            "▶ Arquitetura Limpa: Separação clara entre UI,\n"
+            "   lógica e configuração.\n\n"
+            "▶ Extensível: Novos painéis são fáceis de adicionar\n"
+            "   seguindo o template do Painel Modelo.\n\n"
+            "▶ Configurável: Comportamento via config_settings.ini\n"
+            "   e aparência via settings.json.\n\n"
+            "▶ Logging Robusto: Sistema de log rotativo com\n"
+            "   múltiplos loggers e categorias.\n\n"
+            "▶ Cross-Platform: Funciona em Windows, Linux e macOS."
         ), wraplength=self_width - 60, justify="left").pack(anchor="w")
 
         ok_button = ttk.Button(main_frame, text="OK", command=self.destroy, style="Success.TButton")

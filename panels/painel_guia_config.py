@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, font
 from tkinter import scrolledtext
-import sys
-import webbrowser
 from panels.base_panel import BasePanel
 
 class PainelGuiaConfig(BasePanel):
@@ -13,7 +11,6 @@ class PainelGuiaConfig(BasePanel):
     """
     PANEL_NAME = "Guia de Configuração"
     PANEL_ICON = "📚"
-    ALLOWED_ACCESS = []                    
 
     def __init__(self, parent, app_controller, **kwargs):
         super().__init__(parent, app_controller, **kwargs)
@@ -51,65 +48,21 @@ class PainelGuiaConfig(BasePanel):
         text_area.tag_configure("note", lmargin1=20, lmargin2=20, foreground="#555555", font=("Segoe UI", 9, "italic"), spacing3=8)
         text_area.tag_configure("flag", font=(code_font, 10, "bold"), foreground="#cc0000")
         text_area.tag_configure("success", foreground="#155724", font=("Segoe UI", 10, "bold"))
-        text_area.tag_configure("danger", foreground="#721c24", font=("Segoe UI", 10, "bold"))
-        text_area.tag_configure("warning", foreground="#856404", font=("Segoe UI", 10, "bold"))
         text_area.tag_configure("info", foreground="#004085")
 
         text_area.insert(tk.END, "Guia de Configuração da Aplicação\n", "h1")
         text_area.insert(tk.END,
-                         "Esta aplicação foi desenvolvida com flexibilidade. "
-                         "As flags de configuração, localizadas no arquivo ", "body")
+                         "Esta aplicação é um template/boilerplate de referência, construído com Tkinter e o estilo ttk. "
+                         "As configurações, localizadas no arquivo ", "body")
         text_area.insert(tk.END, "config_settings.ini", "code")
         text_area.insert(tk.END,
-                         ", permitem ajustar o comportamento do sistema para cenários de desenvolvimento, teste ou produção.\n\n", "body")
-        text_area.insert(tk.END, "🛡️ Sistema de Validação Integrado:\n", ("h3", "info"))
-        text_area.insert(tk.END,
-                         "Ao iniciar (`run.py`), um validador verifica a coerência das flags. Combinações inválidas (como exigir autenticação sem um banco de dados) são interceptadas, exibindo um alerta claro sobre a correção necessária.\n", "body")
+                         ", permitem ajustar o comportamento do sistema.\n\n", "body")
 
-        text_area.insert(tk.END, "1. Detalhamento das Flags (`config_settings.ini`)\n", "h2")
+        text_area.insert(tk.END, "1. Detalhamento das Configurações (`config_settings.ini`)\n", "h2")
         text_area.insert(tk.END,
-                         "Para alterar o modo de operação, edite os valores (`True` ou `False`) no arquivo ", "body")
+                         "Para alterar o modo de operação, edite os valores no arquivo ", "body")
         text_area.insert(tk.END, "config_settings.ini", "code")
         text_area.insert(tk.END, " e reinicie a aplicação.\n\n", "body")
-
-        text_area.insert(tk.END, "DATABASE_ENABLED\n", "flag")
-        text_area.insert(tk.END, "   ↳ Controla a Conexão de Dados\n", "italic")
-        text_area.insert(tk.END, "   ▪ ", "body")
-        text_area.insert(tk.END, "True:", "bold")
-        text_area.insert(tk.END, " (Produção / Dev Backend) Abre a conexão com o banco definido em ", "body")
-        text_area.insert(tk.END, "banco.ini", "code")
-        text_area.insert(tk.END, ". Funções que dependem de dados (CRUD, login) são ativadas.\n", "body")
-        text_area.insert(tk.END, "   ▪ ", "body")
-        text_area.insert(tk.END, "False:", "bold")
-        text_area.insert(tk.END,
-                         " (Dev Frontend / Offline) Desativa a conexão. A aplicação opera sem banco, ideal para focar na interface. Funcionalidades de dados exibirão avisos.\n\n", "body")
-
-        text_area.insert(tk.END, "USE_LOGIN\n", "flag")
-        text_area.insert(tk.END, "   ↳ Controla a Autenticação\n", "italic")
-        text_area.insert(tk.END, "   ▪ ", "body")
-        text_area.insert(tk.END, "True:", "bold")
-        text_area.insert(tk.END, " (Produção) Exige que o usuário se autentique. Permissões de acesso são aplicadas. ", "body")
-        text_area.insert(tk.END, "Requer DATABASE_ENABLED = True.\n", ("body", "warning"))
-        text_area.insert(tk.END, "   ▪ ", "body")
-        text_area.insert(tk.END, "False:", "bold")
-        text_area.insert(tk.END,
-                         " (Dev Rápido) Pula a tela de login. O acesso é concedido automaticamente com um usuário mock de 'Administrador Global', acelerando testes internos.\n\n", "body")
-
-        text_area.insert(tk.END, "INITIALIZE_DATABASE_ON_STARTUP\n", "flag")
-        text_area.insert(tk.END, "   ↳ Criação Automática do Schema (Somente SQLite)\n", "italic")
-        text_area.insert(tk.END, "   ▪ ", "body")
-        text_area.insert(tk.END, "True:", "bold")
-        text_area.insert(tk.END,
-                         " (Setup Inicial / Testes) Se o arquivo SQLite estiver ausente ou vazio, cria as tabelas e dados iniciais do script ", "body")
-        text_area.insert(tk.END, "sql_schema_SQLLite.sql", "code")
-        text_area.insert(tk.END, ". ", "body")
-        text_area.insert(tk.END, "Requer DATABASE_ENABLED = True.\n", ("body", "warning"))
-        text_area.insert(tk.END, "   ▪ ", "body")
-        text_area.insert(tk.END, "False:", "bold")
-        text_area.insert(tk.END,
-                         " (Padrão Seguro / Produção) Assume que o banco de dados já existe e está pronto. Essencial para bancos de dados externos ou SQLite já populados.\n", "body")
-        text_area.insert(tk.END, "      ↳ ", "note")
-        text_area.insert(tk.END, "Não use True em produção se o banco já contém dados valiosos!\n\n", "note")
 
         text_area.insert(tk.END, "REDIRECT_CONSOLE_TO_LOG\n", "flag")
         text_area.insert(tk.END, "   ↳ Direcionamento de Saída (Logs)\n", "italic")
@@ -124,59 +77,53 @@ class PainelGuiaConfig(BasePanel):
         text_area.insert(tk.END,
                          " (Debug Rápido) As saídas aparecem diretamente no terminal onde a aplicação foi iniciada. Útil para visibilidade imediata.\n\n", "body")
 
-        text_area.insert(tk.END, "2. Cenários de Configuração Comuns\n", "h2")
+        text_area.insert(tk.END, "ENABLE_THEME_MENU\n", "flag")
+        text_area.insert(tk.END, "   ↳ Controla a Exibição do Menu de Temas\n", "italic")
+        text_area.insert(tk.END, "   ▪ ", "body")
+        text_area.insert(tk.END, "True:", "bold")
+        text_area.insert(tk.END, " Exibe opções de personalização de tema no menu de configurações.\n", "body")
+        text_area.insert(tk.END, "   ▪ ", "body")
+        text_area.insert(tk.END, "False:", "bold")
+        text_area.insert(tk.END, " Oculta as opções de tema.\n\n", "body")
 
-        text_area.insert(tk.END, "✅ Modo Produção (Ambiente Real)\n", ("h3", "success"))
-        text_area.insert(tk.END, "   ↳ Objetivo: Ambiente final, seguro, com dados reais e persistentes.\n", "body")
+        text_area.insert(tk.END, "2. Configurações de Estilo (`settings.json`)\n", "h2")
         text_area.insert(tk.END,
-                         "DATABASE_ENABLED = True\n"
-                         "USE_LOGIN = True\n"
-                         "INITIALIZE_DATABASE_ON_STARTUP = False\n"
-                         "REDIRECT_CONSOLE_TO_LOG = True", "code")
+                         "O arquivo ", "body")
+        text_area.insert(tk.END, "settings.json", "code")
         text_area.insert(tk.END,
-                         "\n   ↳ Comportamento: Exige login, conecta ao banco real, aplica permissões, registra tudo em arquivos. Máxima segurança e funcionalidade.\n\n", "body")
+                         " permite personalizar a aparência da aplicação:\n\n", "body")
+        text_area.insert(tk.END, "   ▪ ", "body")
+        text_area.insert(tk.END, "font_family:", "bold")
+        text_area.insert(tk.END, " Família da fonte (ex: 'Segoe UI', 'Arial').\n", "body")
+        text_area.insert(tk.END, "   ▪ ", "body")
+        text_area.insert(tk.END, "font_size:", "bold")
+        text_area.insert(tk.END, " Tamanho da fonte em pontos.\n", "body")
+        text_area.insert(tk.END, "   ▪ ", "body")
+        text_area.insert(tk.END, "custom_colors:", "bold")
+        text_area.insert(tk.END, " Cores personalizadas para os estilos de botão (danger, success, warning, etc.).\n\n", "body")
 
-        text_area.insert(tk.END, "✅ Modo Desenvolvimento (Backend)\n", ("h3", "info"))
+        text_area.insert(tk.END, "3. Configuração de Logging\n", "h2")
         text_area.insert(tk.END,
-                         "   ↳ Objetivo: Desenvolver/testar lógica de dados, serviços, regras de negócio com acesso rápido.\n", "body")
-        text_area.insert(tk.END,
-                         "DATABASE_ENABLED = True\n"
-                         "USE_LOGIN = False\n"
-                         "INITIALIZE_DATABASE_ON_STARTUP = True  # Opcional, ótimo com SQLite para reset\n"
-                         "REDIRECT_CONSOLE_TO_LOG = False", "code")
-        text_area.insert(tk.END,
-                         "\n   ↳ Comportamento: Conecta ao banco (podendo recriá-lo se SQLite+True), pula login (usuário Admin mock). Ideal para testar CRUD e transações sem barreiras.\n\n", "body")
+                         "O sistema de logging é configurado em ", "body")
+        text_area.insert(tk.END, "config_settings.ini", "code")
+        text_area.insert(tk.END, " com as seguintes opções:\n\n", "body")
+        text_area.insert(tk.END, "   ▪ ", "body")
+        text_area.insert(tk.END, "log_level:", "bold")
+        text_area.insert(tk.END, " Nível de log (DEBUG, INFO, WARNING, ERROR, CRITICAL).\n", "body")
+        text_area.insert(tk.END, "   ▪ ", "body")
+        text_area.insert(tk.END, "log_format:", "bold")
+        text_area.insert(tk.END, " Formato das mensagens de log.\n\n", "body")
 
-        text_area.insert(tk.END, "✅ Modo Desenvolvimento (Frontend/Offline)\n", ("h3", "info"))
+        text_area.insert(tk.END, "4. Como Adicionar Novos Painéis\n", "h2")
         text_area.insert(tk.END,
-                         "   ↳ Objetivo: Focar no design visual e experiência do usuário (UI/UX) sem dependência do banco.\n", "body")
+                         "Use o Painel Modelo como referência. Os passos são:\n\n", "body")
         text_area.insert(tk.END,
-                         "DATABASE_ENABLED = False\n"
-                         "USE_LOGIN = False\n"
-                         "INITIALIZE_DATABASE_ON_STARTUP = False # Obrigatório!\n"
-                         "REDIRECT_CONSOLE_TO_LOG = False", "code")
-        text_area.insert(tk.END,
-                         "\n   ↳ Comportamento: Operação sem banco. Login pulado. Painéis que precisam de dados exibirão avisos, mas a navegação e a interface funcionarão.\n\n", "body")
-
-        text_area.insert(tk.END, "❌ Cenários Inválidos (Bloqueados Automaticamente)\n", ("h2", "danger"))
-        text_area.insert(tk.END, "   ↳ O validador (`run.py`) impede o início se detectar estas combinações:\n\n", "body")
-
-        text_area.insert(tk.END, "Inválido 1: Exigir Login Sem Banco de Dados\n", "h3")
-        text_area.insert(tk.END,
-                         "DATABASE_ENABLED = False\n"
-                         "USE_LOGIN = True", "code")
-        text_area.insert(tk.END,
-                         "\n   ↳ Motivo: Impossível validar um usuário sem acesso ao banco de dados que contém suas credenciais.\n\n", "body")
-
-        text_area.insert(tk.END, "Inválido 2: Inicializar Banco de Dados Desativado\n", "h3")
-        text_area.insert(tk.END,
-                         "DATABASE_ENABLED = False\n"
-                         "INITIALIZE_DATABASE_ON_STARTUP = True", "code")
-        text_area.insert(tk.END,
-                         "\n   ↳ Motivo: Não se pode criar estruturas (`True`) se o acesso ao banco está desabilitado (`False`).\n\n", "body")
+                         "1. Copie `painel_modelo.py` para um novo arquivo.\n"
+                         "2. Renomeie a classe e defina PANEL_NAME, PANEL_ICON.\n"
+                         "3. Implemente `create_widgets()` com sua UI.\n"
+                         "4. Registre o novo painel em `panels/__init__.py`.\n", "code")
+        text_area.insert(tk.END, "\n", "body")
 
         text_area.insert(tk.END, "--- Fim do Guia ---\n", ("italic", "body"))
 
         text_area.config(state="disabled")
-
-                                                                                                              
