@@ -1,0 +1,1 @@
+"""Ferramentas compartilhadas do template."""

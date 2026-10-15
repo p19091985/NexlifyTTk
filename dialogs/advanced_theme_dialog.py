@@ -292,7 +292,7 @@ class AdvancedThemeDialog(tk.Toplevel):
         pos_x = parent_x + (parent_width // 2) - (self_width // 2)
         pos_y = parent_y + (parent_height // 2) - (self_height // 2)
 
-        self.geometry(f"{self_width}x{self_height}+{pos_x}+{pos_y}")
+        self.geometry(f"{self_width}x{self_height}{pos_x:+d}{pos_y:+d}")
         self.resizable(False, False)
 
         self.app = parent

@@ -1,0 +1,69 @@
+name: Windows e Linux
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.14']
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Bibliotecas Linux para testes gráficos e ODBC
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk xvfb xauth unixodbc
+      - name: Instalação Windows
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: instalacao\setup.bat --headless --profile dev --database sqlite
+      - name: Instalação Linux
+        if: runner.os == 'Linux'
+        run: bash instalacao/setup.sh --headless --profile dev --database sqlite
+      - name: Drivers opcionais e testes Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          .venv/Scripts/python.exe -m pip install --require-hashes -r requirements-all.lock
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          ./iniciar.ps1 --diagnose --no-db --check-gui
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          .venv/Scripts/python.exe -m pytest -q
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          .venv/Scripts/python.exe -m pip check
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          .venv/Scripts/python.exe -m pip_audit
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          .venv/Scripts/python.exe -m bandit -r app.py run.py reset_admin.py config.py settings_manager.py theme.py servidor.py persistencia services instalacao utils dialogs modals panels -ll
+          exit $LASTEXITCODE
+      - name: Drivers opcionais e testes Linux
+        if: runner.os == 'Linux'
+        run: |
+          .venv/bin/python -m pip install --require-hashes -r requirements-all.lock
+          xvfb-run -a bash iniciar.sh --diagnose --no-db --check-gui
+          xvfb-run -a .venv/bin/python -m pytest -q
+          .venv/bin/python -m pip check
+          .venv/bin/python -m pip_audit
+          .venv/bin/python -m bandit -r app.py run.py reset_admin.py config.py settings_manager.py theme.py servidor.py persistencia services instalacao utils dialogs modals panels -ll
+      - name: Segredos em todos os refs e árvore atual (Linux)
+        if: runner.os == 'Linux' && matrix.python == '3.14'
+        run: .venv/bin/python -m instalacao.secret_scan

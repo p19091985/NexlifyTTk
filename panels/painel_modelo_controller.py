@@ -6,7 +6,6 @@ from .painel_modelo_view import ModeloView
 class PainelModelo(BasePanel):
     PANEL_NAME = "Painel Modelo"
     PANEL_ICON = "📋"
-    ALLOWED_ACCESS = []
 
     def __init__(self, parent, app_controller, **kwargs):
         super().__init__(parent, app_controller, **kwargs)

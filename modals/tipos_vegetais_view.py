@@ -125,4 +125,4 @@ class TiposVegetaisView(tk.Toplevel):
         w, h = self.winfo_width(), self.winfo_height()
         x = p_x + (p_w // 2) - (w // 2)
         y = p_y + (p_h // 2) - (h // 2)
-        self.geometry(f"{w}x{h}+{x}+{y}")
+        self.geometry(f"{w}x{h}{x:+d}{y:+d}")

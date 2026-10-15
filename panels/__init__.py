@@ -1,17 +1,31 @@
-from .painel_gestao_gatos_controller import PainelGestaoGatos
-from .painel_vegetais_auditoria_controller import PainelVegetaisAuditoria
-from .painel_cadastro_vegetais_controller import PainelCadastroVegetais
-from .painel_modelo_controller import PainelModelo
-from .painel_guia_config_controller import PainelGuiaConfig
-
-from .painel_gestao_usuarios_controller import PainelGestaoUsuariosController
-
-ALL_PANELS = [
-    PainelGestaoGatos,
-    PainelVegetaisAuditoria,
-    PainelCadastroVegetais,
-                                 
-    PainelGestaoUsuariosController,
-    PainelModelo,
-    PainelGuiaConfig,
-]
+"""Registro declarativo; controladores são importados no primeiro acesso."""
+ALL_PANELS = [{'name': 'Cadastro de Vegetais',
+  'icon': '🥕',
+  'visible': True,
+  'module': 'panels.painel_cadastro_vegetais_controller',
+  'class_name': 'PainelCadastroVegetais'},
+ {'name': 'Gestão de Espécies (Gatos)',
+  'icon': '🐈',
+  'visible': True,
+  'module': 'panels.painel_gestao_gatos_controller',
+  'class_name': 'PainelGestaoGatos'},
+ {'name': 'Gestão de Usuários',
+  'icon': '👤',
+  'visible': True,
+  'module': 'panels.painel_gestao_usuarios_controller',
+  'class_name': 'PainelGestaoUsuariosController'},
+ {'name': 'Guia de Configuração',
+  'icon': '📚',
+  'visible': True,
+  'module': 'panels.painel_guia_config_controller',
+  'class_name': 'PainelGuiaConfig'},
+ {'name': 'Painel Modelo',
+  'icon': '📋',
+  'visible': True,
+  'module': 'panels.painel_modelo_controller',
+  'class_name': 'PainelModelo'},
+ {'name': 'Vegetais e Auditoria',
+  'icon': '🌿',
+  'visible': True,
+  'module': 'panels.painel_vegetais_auditoria_controller',
+  'class_name': 'PainelVegetaisAuditoria'}]

@@ -8,7 +8,6 @@ class PainelGuiaConfig(BasePanel):
     """
     PANEL_NAME = "Guia de Configuração"
     PANEL_ICON = "📚"
-    ALLOWED_ACCESS = []                                         
 
     def __init__(self, parent, app_controller, **kwargs):
         super().__init__(parent, app_controller, **kwargs)

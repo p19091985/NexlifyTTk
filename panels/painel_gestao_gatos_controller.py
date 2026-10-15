@@ -11,7 +11,6 @@ class PainelGestaoGatos(BasePanel):
     """Controller consolidado para todas as operações da tabela especie_gatos."""
     PANEL_NAME = "Gestão de Espécies (Gatos)"   
     PANEL_ICON = "🐈"   
-    ALLOWED_ACCESS = []   
 
     def __init__(self, parent, app_controller, **kwargs):
         self.selected_item_id = None
@@ -135,4 +134,4 @@ class PainelGestaoGatos(BasePanel):
             messagebox.showinfo("Transação Concluída", mensagem, parent=self)   
             self.carregar_dados()   
         else:   
-            messagebox.showerror("Falha na Transação", mensagem, parent=self)   
+            messagebox.showerror("Falha na Transação", mensagem, parent=self)

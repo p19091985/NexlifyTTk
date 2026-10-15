@@ -12,7 +12,6 @@ class PainelCadastroVegetais(BasePanel):
     """Controller para a tela de cadastro de vegetais."""
     PANEL_NAME = "Cadastro de Vegetais"   
     PANEL_ICON = "🥕"   
-    ALLOWED_ACCESS = ['Administrador Global', 'Diretor de Operações', 'Gerente de TI', 'Analista de Dados']   
 
     def __init__(self, parent, app_controller, **kwargs):
         self.selected_item_id = None
@@ -134,4 +133,4 @@ class PainelCadastroVegetais(BasePanel):
                                                               
         self.selected_item_id = values[0]        
         self.nome_var.set(values[1])          
-        self.tipo_var.set(values[2])          
+        self.tipo_var.set(values[2])

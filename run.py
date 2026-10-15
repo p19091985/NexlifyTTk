@@ -1,96 +1,106 @@
-from tkinter import messagebox
+"""Entrada desktop e diagnóstico automatizável, independente da pasta atual."""
 import sys
 import logging
-import os
+import threading
+import time
+from utils.paths import PROJECT_ROOT
 
-project_root = os.path.dirname(os.path.abspath(__file__))
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
-
-from persistencia.logger import setup_loggers
-
-setup_loggers()
-
-import config
-from persistencia.database import DatabaseManager
-from app import AplicacaoPrincipal
-
-def validar_configuracoes():
-    """
-    Verifica a consistência das flags de configuração antes de iniciar a aplicação.
-    Retorna True se a configuração for válida, False caso contrário.
-    """
-                                                           
-    if config.USE_LOGIN and not config.DATABASE_ENABLED:
-        messagebox.showerror(
-            "Erro de Configuração Inválida",
-            "A aplicação não pode iniciar devido a uma configuração inconsistente.\n\n"
-            "Problema Detectado:\n"
-            "   • USE_LOGIN está definido como True\n"
-            "   • DATABASE_ENABLED está definido como False\n\n"
-            "Motivo: O sistema de login requer acesso ao banco de dados para verificar "
-            "as credenciais dos usuários. É impossível autenticar com o banco desativado.\n\n"
-            "Solução: Altere seu arquivo config.py para uma das opções abaixo:\n"
-            "1. Habilite o banco de dados: DATABASE_ENABLED = True\n"
-            "2. Desabilite o login: USE_LOGIN = False"
-        )
-        return False
-
-    if config.INITIALIZE_DATABASE_ON_STARTUP and not config.DATABASE_ENABLED:
-        messagebox.showerror(
-            "Erro de Configuração Inválida",
-            "A aplicação não pode iniciar devido a uma configuração inconsistente.\n\n"
-            "Problema Detectado:\n"
-            "   • INITIALIZE_DATABASE_ON_STARTUP está definido como True\n"
-            "   • DATABASE_ENABLED está definido como False\n\n"
-            "Motivo: O sistema não pode criar as tabelas do banco (schema) se o acesso "
-            "ao banco de dados como um todo está desativado.\n\n"
-            "Solução: Altere seu arquivo config.py para uma das opções abaixo:\n"
-            "1. Habilite o banco de dados: DATABASE_ENABLED = True\n"
-            "2. Desabilite a inicialização automática: INITIALIZE_DATABASE_ON_STARTUP = False"
-        )
-        return False
-
-    return True
 
 def main():
-    main_logger = logging.getLogger("main_app")
-
-    if not validar_configuracoes():
-        main_logger.error("Validação de configuração falhou. A aplicação será encerrada.")
-        return                                                        
-
-    main_logger.info("=" * 20 + " Aplicação Iniciada " + "=" * 20)
-
-    if not config.DATABASE_ENABLED:
-        main_logger.warning("DATABASE_ENABLED está como False. O banco de dados não será utilizado.")
-
-    if config.DATABASE_ENABLED and config.INITIALIZE_DATABASE_ON_STARTUP:
+    import argparse
+    parser = argparse.ArgumentParser(description='NexlifyTTk')
+    parser.add_argument('--diagnose', action='store_true')
+    parser.add_argument('--no-db', action='store_true', help='Diagnóstico sem conectar ao banco')
+    parser.add_argument('--check-gui', action='store_true', help='No diagnóstico, verifica também a criação de uma janela Tk')
+    args = parser.parse_args()
+    if args.diagnose:
+        from utils.diagnostics import diagnose
+        import json
+        results = diagnose(check_database=not args.no_db, check_tk=args.check_gui)
+        print(json.dumps(results, ensure_ascii=False, indent=2))
+        return int(any(row['status'] == 'FAIL' for row in results))
+    import config
+    from persistencia.logger import setup_loggers
+    from persistencia.database import DatabaseManager
+    import tkinter as tk
+    from tkinter import messagebox
+    from utils.startup_splash import StartupSplash
+    splash = None
+    try:
+        config.validate()
+        setup_loggers()
+        splash = StartupSplash(str(PROJECT_ROOT), logging.getLogger('startup'))
+        splash.set_status('Verificando banco e carregando módulos...')
+        result = {}
+        def prepare():
+            try:
+                if config.API_MODE != 'client' and config.DATABASE_ENABLED and config.INITIALIZE_DATABASE_ON_STARTUP:
+                    DatabaseManager.initialize_database()
+                from app import AplicacaoPrincipal
+                result['app'] = AplicacaoPrincipal
+            except Exception as error:
+                result['error'] = error
+        worker = threading.Thread(target=prepare, daemon=True)
+        worker.start()
+        while worker.is_alive():
+            splash.pump()
+            if splash.cancelled:
+                return 0
+            time.sleep(0.02)
+        if 'error' in result:
+            raise result['error']
+        splash.close()
+        splash = None
+        if config.USE_LOGIN and config.API_MODE != 'client':
+            from sqlalchemy import select, func
+            from persistencia.schema import usuarios
+            with DatabaseManager.get_engine().connect() as connection:
+                empty = connection.execute(select(func.count()).select_from(usuarios)).scalar_one() == 0
+            if empty:
+                from dialogs.password_dialog import PasswordDialog
+                root = tk.Tk()
+                root.withdraw()
+                dialog = PasswordDialog(root, mode='bootstrap')
+                root.wait_window(dialog)
+                success = dialog.success
+                root.destroy()
+                if not success:
+                    return 0
+        from theme import set_active_theme_colors
+        from settings_manager import SettingsManager
+        from persistencia.auth import clear_session
+        while True:
+            clear_session()
+            settings = SettingsManager(str(PROJECT_ROOT)).load_settings()
+            set_active_theme_colors(settings['active_theme'])
+            app = result['app'](project_root=str(PROJECT_ROOT))
+            try:
+                if app.winfo_exists():
+                    app.mainloop()
+            except tk.TclError:
+                pass
+            if not getattr(app, '_restart_requested', False):
+                break
+        return 0
+    except Exception as error:
+        logging.getLogger('startup').error('Inicialização falhou (%s).', type(error).__name__)
+        if splash:
+            splash.close()
+            splash = None
         try:
-            main_logger.info("Inicializando verificação do banco de dados...")
-            DatabaseManager.initialize_database()
-            main_logger.info("Banco de dados pronto.")
-        except Exception as e:
-            main_logger.critical(f"Falha na inicialização do banco: {e}", exc_info=True)
-            messagebox.showerror("Erro de Banco de Dados",
-                                 f"Não foi possível inicializar ou conectar ao banco de dados.\n\nDetalhe: {e}")
-            return
-
-    main_logger.info("Iniciando a aplicação principal...")
-    try:
-        app = AplicacaoPrincipal(project_root=project_root)
-        app.mainloop()
-        main_logger.info("Aplicação finalizada normalmente.")
-    except Exception as e:
-        main_logger.critical(f"Erro fatal na aplicação principal: {e}", exc_info=True)
-        messagebox.showerror("Erro Crítico", f"A aplicação encontrou um erro fatal e precisa ser fechada: {e}")
-
-if __name__ == "__main__":
-    try:
-        main()
-    except SystemExit as e:
-        logging.info(f"Aplicação encerrada com código de saída: {e.code}")
-    except Exception as e:
-        logging.getLogger("main_app").critical(f"Erro não tratado no escopo global: {e}", exc_info=True)
+            root = tk.Tk()
+            root.withdraw()
+            detail = str(error) if isinstance(error, (ValueError, PermissionError)) else 'Verifique o banco, os drivers e as dependências pelo diagnóstico.'
+            messagebox.showerror('Falha na inicialização', detail, parent=root)
+            root.destroy()
+        except tk.TclError:
+            print('Não foi possível abrir a interface gráfica. Execute --diagnose.', file=sys.stderr)
+        return 1
     finally:
-        logging.info("=" * 20 + " Execução Finalizada " + "=" * 20 + "\n")
+        if splash:
+            splash.close()
+        DatabaseManager.dispose()
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

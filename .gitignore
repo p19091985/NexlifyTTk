@@ -1,4 +1,19 @@
 # Byte-compiled / optimized / DLL files
+# Configuração e segredos exclusivos desta instalação
+.secrets/
+.runtime/
+banco.local.ini
+config.local.ini
+secret.key
+*.ini.tmp
+.*.ini-*.tmp
+.installation.json-*.tmp
+*.corrupt
+.settings-*.tmp
+*.db-journal
+*.db-wal
+*.db-shm
+logs/
 
 *.log
 *.logs

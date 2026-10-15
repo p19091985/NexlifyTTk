@@ -1,0 +1,6 @@
+# Somente homologação/CI. Na instalação normal, escolha um driver no assistente.
+psycopg[binary]==3.3.6
+PyMySQL[rsa]==1.2.3
+pyodbc==5.3.0
+oracledb==4.0.2
+sqlalchemy-firebird==2.2.0

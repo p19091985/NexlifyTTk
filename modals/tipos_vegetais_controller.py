@@ -4,6 +4,8 @@ from .tipos_vegetais_view import TiposVegetaisView
 
 class TiposVegetaisController:
     def __init__(self, parent, on_close_callback=None):
+        from persistencia.auth import authorize_page
+        authorize_page('settings.types')
         self.model = TiposVegetaisModel()
         self.view = TiposVegetaisView(parent)
         self.view.set_controller(self)

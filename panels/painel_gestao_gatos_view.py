@@ -34,6 +34,13 @@ class GestaoGatosView(ttk.Frame):
         trans_frame = ttk.LabelFrame(main_frame, text=" 🛡️ Operação Atômica (Transação) ", padding=15)
         trans_frame.grid(row=2, column=0, sticky="nsew", pady=(10, 0))
         self._create_transaction_widgets(trans_frame)
+        if controller.read_only:
+            top_container.grid_remove()
+            trans_frame.grid_remove()
+            toolbar = ttk.Frame(main_frame)
+            toolbar.grid(row=0, column=0, sticky='ew', pady=(0, 10))
+            ttk.Label(toolbar, text='Somente consulta — seu perfil não permite alterações.').pack(side='left')
+            ttk.Button(toolbar, text='Atualizar lista', command=controller.carregar_dados).pack(side='right')
 
     def _create_form_widgets(self, parent):
         parent.columnconfigure(1, weight=1)

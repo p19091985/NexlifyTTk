@@ -12,5 +12,7 @@
     },
     "border_width": 1,
     "border_radius": 8,
-    "focus_ring": true
+    "focus_ring": true,
+    "active_theme": "Gato a Noite",
+    "installation_profile": null
 }

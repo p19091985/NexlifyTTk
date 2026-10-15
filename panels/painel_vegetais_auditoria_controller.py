@@ -13,7 +13,6 @@ class PainelVegetaisAuditoria(BasePanel):
     """Controller consolidado para a gestão de Vegetais e visualização de Auditoria."""
     PANEL_NAME = "Vegetais e Auditoria"   
     PANEL_ICON = "🌿"   
-    ALLOWED_ACCESS = ['Administrador Global', 'Diretor de Operações', 'Gerente de TI', 'Analista de Dados']   
 
     def __init__(self, parent, app_controller, **kwargs):
         self.selected_item_id = None
@@ -176,4 +175,4 @@ class PainelVegetaisAuditoria(BasePanel):
             messagebox.showinfo("Sucesso", mensagem, parent=self)   
             self.carregar_dados()   
         else:   
-            messagebox.showerror("Falha na Transação", mensagem, parent=self)   
+            messagebox.showerror("Falha na Transação", mensagem, parent=self)

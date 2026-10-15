@@ -20,9 +20,12 @@ class ModeloView(ttk.Frame):
             "Passos para criar um novo painel:\n"
             "1. Copie `painel_modelo_controller.py` e `painel_modelo_view.py` para novos arquivos.\n"
             "2. Renomeie as classes (Controller e View) nos dois arquivos.\n"
-            "3. No Controller, altere `PANEL_NAME`, `PANEL_ICON` e `ALLOWED_ACCESS`.\n"
+            "3. No Controller, altere `PANEL_NAME` e `PANEL_ICON`.\n"
             "4. Adicione seus widgets na classe View e a lógica no Controller.\n"
-            "5. Registre a classe Controller no arquivo `panels/__init__.py`."
+            "5. Registre a classe Controller no arquivo `panels/__init__.py`.\n"
+            "6. Cadastre o PANEL_NAME e os perfis em `persistencia/access_policy.py`.\n"
+            "7. Proteja as tabelas da página nessa política e teste acessos permitidos e negados.\n"
+            "Páginas sem regra explícita ficam bloqueadas para todos os perfis."
         )
         instrucoes_label = ttk.Label(conteudo_frame, text=instrucoes_texto, justify="left")
         instrucoes_label.pack(pady=10)
